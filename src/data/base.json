@@ -1,0 +1,1322 @@
+{
+ "fuente": "Media de encuestas nacionales de octubre de 2026 repartida con la estimación provincial de ElectoPanel (12-10-2026)",
+ "encuestadoras": [
+  "40dB",
+  "Ateneo del Dato",
+  "CIS",
+  "DYM",
+  "Data10",
+  "EM-Analytics",
+  "GAD3",
+  "GESOP",
+  "Hamalgama Métrica",
+  "IMOP",
+  "InvyMark",
+  "NC Report",
+  "Sigma Dos",
+  "SocioMétrica",
+  "Target Point",
+  "Winston"
+ ],
+ "mediaNacional": {
+  "PP": 31.58,
+  "PSOE": 26.91,
+  "VOX": 18.73,
+  "SUMAR": 6.31,
+  "PODEMOS": 3.07,
+  "ERC": 2.22,
+  "JUNTS": 1.53,
+  "BILDU": 1.39,
+  "PNV": 0.89,
+  "BNG": 0.9,
+  "CC": 0.41,
+  "SALF": 1.66
+ },
+ "provincias": [
+  {
+   "id": "15",
+   "nombre": "A Coruña",
+   "censo": 1085673,
+   "escanos": 8,
+   "lon": -8.464,
+   "lat": 43.126,
+   "vecinos": [
+    "27",
+    "36"
+   ],
+   "votos": {
+    "BNG": 97587,
+    "PP": 270044,
+    "PSOE": 152843,
+    "PODEMOS": 20237,
+    "SALF": 4351,
+    "SUMAR": 42663,
+    "VOX": 54002,
+    "OTROS": 1315,
+    "BLANCO": 5315
+   }
+  },
+  {
+   "id": "03",
+   "nombre": "Alacant/Alicante",
+   "censo": 1306311,
+   "escanos": 12,
+   "lon": -0.568,
+   "lat": 38.479,
+   "vecinos": [
+    "02",
+    "30",
+    "46"
+   ],
+   "votos": {
+    "COMPROMIS": 66863,
+    "PP": 285963,
+    "PSOE": 239065,
+    "PODEMOS": 29360,
+    "SALF": 16516,
+    "SUMAR": 26254,
+    "VOX": 219425,
+    "OTROS": 550,
+    "BLANCO": 6583
+   }
+  },
+  {
+   "id": "02",
+   "nombre": "Albacete",
+   "censo": 307988,
+   "escanos": 4,
+   "lon": -1.981,
+   "lat": 38.826,
+   "vecinos": [
+    "03",
+    "13",
+    "16",
+    "18",
+    "23",
+    "30",
+    "46"
+   ],
+   "votos": {
+    "PP": 89134,
+    "PSOE": 66218,
+    "PODEMOS": 4105,
+    "SALF": 5830,
+    "SUMAR": 9208,
+    "VOX": 47062,
+    "OTROS": 223,
+    "BLANCO": 1777
+   }
+  },
+  {
+   "id": "04",
+   "nombre": "Almería",
+   "censo": 516114,
+   "escanos": 6,
+   "lon": -2.345,
+   "lat": 37.196,
+   "vecinos": [
+    "18",
+    "30"
+   ],
+   "votos": {
+    "ADELANTE": 16753,
+    "PP": 127604,
+    "PSOE": 78859,
+    "PODEMOS": 4845,
+    "SALF": 7861,
+    "SUMAR": 13155,
+    "VOX": 85847,
+    "OTROS": 506,
+    "BLANCO": 2443
+   }
+  },
+  {
+   "id": "01",
+   "nombre": "Araba/Álava",
+   "censo": 260214,
+   "escanos": 4,
+   "lon": -2.718,
+   "lat": 42.825,
+   "vecinos": [
+    "09",
+    "20",
+    "26",
+    "31",
+    "48"
+   ],
+   "votos": {
+    "BILDU": 34846,
+    "PNV": 23515,
+    "PP": 28480,
+    "PSOE": 38606,
+    "PODEMOS": 5293,
+    "SALF": 786,
+    "SUMAR": 11570,
+    "VOX": 11350,
+    "OTROS": 673,
+    "BLANCO": 746
+   }
+  },
+  {
+   "id": "33",
+   "nombre": "Asturias",
+   "censo": 959023,
+   "escanos": 7,
+   "lon": -5.993,
+   "lat": 43.292,
+   "vecinos": [
+    "24",
+    "27",
+    "39"
+   ],
+   "votos": {
+    "PP": 195720,
+    "PSOE": 167081,
+    "PODEMOS": 19357,
+    "SALF": 8635,
+    "SUMAR": 48184,
+    "VOX": 127325,
+    "OTROS": 2162,
+    "BLANCO": 6072
+   }
+  },
+  {
+   "id": "06",
+   "nombre": "Badajoz",
+   "censo": 550702,
+   "escanos": 5,
+   "lon": -6.142,
+   "lat": 38.71,
+   "vecinos": [
+    "10",
+    "13",
+    "14",
+    "21",
+    "41",
+    "45"
+   ],
+   "votos": {
+    "PP": 152628,
+    "PSOE": 136611,
+    "PODEMOS": 7268,
+    "SALF": 6205,
+    "SUMAR": 13731,
+    "VOX": 73018,
+    "OTROS": 623,
+    "BLANCO": 3226
+   }
+  },
+  {
+   "id": "08",
+   "nombre": "Barcelona",
+   "censo": 4243500,
+   "escanos": 32,
+   "lon": 1.984,
+   "lat": 41.731,
+   "vecinos": [
+    "17",
+    "25",
+    "43"
+   ],
+   "votos": {
+    "ERC": 378591,
+    "JUNTS": 238699,
+    "PP": 417441,
+    "PSOE": 928860,
+    "PODEMOS": 114919,
+    "SALF": 23581,
+    "SUMAR": 255066,
+    "VOX": 319157,
+    "OTROS": 32284,
+    "BLANCO": 21225
+   }
+  },
+  {
+   "id": "48",
+   "nombre": "Bizkaia",
+   "censo": 942983,
+   "escanos": 8,
+   "lon": -2.852,
+   "lat": 43.241,
+   "vecinos": [
+    "09",
+    "20",
+    "39",
+    "01"
+   ],
+   "votos": {
+    "BILDU": 132784,
+    "PNV": 135837,
+    "PP": 66423,
+    "PSOE": 132021,
+    "PODEMOS": 16374,
+    "SALF": 1958,
+    "SUMAR": 36843,
+    "VOX": 27025,
+    "OTROS": 1575,
+    "BLANCO": 3563
+   }
+  },
+  {
+   "id": "09",
+   "nombre": "Burgos",
+   "censo": 296401,
+   "escanos": 4,
+   "lon": -3.604,
+   "lat": 42.362,
+   "vecinos": [
+    "26",
+    "34",
+    "39",
+    "40",
+    "42",
+    "47",
+    "48",
+    "01"
+   ],
+   "votos": {
+    "PP": 85754,
+    "PSOE": 62761,
+    "PODEMOS": 4796,
+    "SALF": 2994,
+    "SUMAR": 9881,
+    "VOX": 38216,
+    "BLANCO": 1849
+   }
+  },
+  {
+   "id": "39",
+   "nombre": "Cantabria",
+   "censo": 507818,
+   "escanos": 5,
+   "lon": -4.032,
+   "lat": 43.197,
+   "vecinos": [
+    "09",
+    "24",
+    "33",
+    "34",
+    "48"
+   ],
+   "votos": {
+    "PP": 138486,
+    "PSOE": 94638,
+    "PODEMOS": 5294,
+    "SALF": 5679,
+    "SUMAR": 16650,
+    "VOX": 84341,
+    "OTROS": 433,
+    "BLANCO": 3246
+   }
+  },
+  {
+   "id": "12",
+   "nombre": "Castelló/Castellón",
+   "censo": 430830,
+   "escanos": 5,
+   "lon": -0.147,
+   "lat": 40.241,
+   "vecinos": [
+    "43",
+    "44",
+    "46"
+   ],
+   "votos": {
+    "COMPROMIS": 26952,
+    "PP": 85688,
+    "PSOE": 74815,
+    "PODEMOS": 8900,
+    "SALF": 5672,
+    "SUMAR": 7838,
+    "VOX": 86997,
+    "BLANCO": 2656
+   }
+  },
+  {
+   "id": "51",
+   "nombre": "Ceuta",
+   "censo": 63310,
+   "escanos": 1,
+   "lon": -5.347,
+   "lat": 35.893,
+   "vecinos": [],
+   "votos": {
+    "PP": 13028,
+    "PSOE": 9844,
+    "PODEMOS": 169,
+    "SALF": 891,
+    "SUMAR": 536,
+    "VOX": 10542,
+    "OTROS": 17,
+    "BLANCO": 325
+   }
+  },
+  {
+   "id": "13",
+   "nombre": "Ciudad Real",
+   "censo": 391495,
+   "escanos": 5,
+   "lon": -3.816,
+   "lat": 38.919,
+   "vecinos": [
+    "02",
+    "06",
+    "14",
+    "16",
+    "23",
+    "45"
+   ],
+   "votos": {
+    "PP": 116130,
+    "PSOE": 86782,
+    "PODEMOS": 4116,
+    "SALF": 5317,
+    "SUMAR": 10558,
+    "VOX": 61746,
+    "OTROS": 381,
+    "BLANCO": 854
+   }
+  },
+  {
+   "id": "16",
+   "nombre": "Cuenca",
+   "censo": 152694,
+   "escanos": 3,
+   "lon": -2.196,
+   "lat": 39.896,
+   "vecinos": [
+    "02",
+    "13",
+    "19",
+    "28",
+    "44",
+    "45",
+    "46"
+   ],
+   "votos": {
+    "PP": 45339,
+    "PSOE": 36765,
+    "PODEMOS": 1562,
+    "SALF": 2046,
+    "SUMAR": 3370,
+    "VOX": 25411,
+    "BLANCO": 343
+   }
+  },
+  {
+   "id": "10",
+   "nombre": "Cáceres",
+   "censo": 339491,
+   "escanos": 4,
+   "lon": -6.161,
+   "lat": 39.712,
+   "vecinos": [
+    "05",
+    "06",
+    "37",
+    "45"
+   ],
+   "votos": {
+    "PP": 92323,
+    "PSOE": 81716,
+    "PODEMOS": 4396,
+    "SALF": 3719,
+    "SUMAR": 8565,
+    "VOX": 44887,
+    "OTROS": 629,
+    "BLANCO": 1721
+   }
+  },
+  {
+   "id": "11",
+   "nombre": "Cádiz",
+   "censo": 1017958,
+   "escanos": 8,
+   "lon": -5.76,
+   "lat": 36.554,
+   "vecinos": [
+    "21",
+    "29",
+    "41"
+   ],
+   "votos": {
+    "ADELANTE": 135285,
+    "PP": 170945,
+    "PSOE": 138798,
+    "PODEMOS": 15312,
+    "SALF": 11169,
+    "SUMAR": 42253,
+    "VOX": 95524,
+    "OTROS": 1064,
+    "BLANCO": 7075
+   }
+  },
+  {
+   "id": "14",
+   "nombre": "Córdoba",
+   "censo": 645288,
+   "escanos": 6,
+   "lon": -4.809,
+   "lat": 37.993,
+   "vecinos": [
+    "06",
+    "13",
+    "18",
+    "23",
+    "29",
+    "41"
+   ],
+   "votos": {
+    "ADELANTE": 34834,
+    "PP": 154738,
+    "PSOE": 112979,
+    "PODEMOS": 14339,
+    "SALF": 7234,
+    "SUMAR": 31818,
+    "VOX": 74226,
+    "OTROS": 1860,
+    "BLANCO": 4339
+   }
+  },
+  {
+   "id": "20",
+   "nombre": "Gipuzkoa",
+   "censo": 585873,
+   "escanos": 6,
+   "lon": -2.194,
+   "lat": 43.144,
+   "vecinos": [
+    "31",
+    "48",
+    "01"
+   ],
+   "votos": {
+    "BILDU": 124331,
+    "PNV": 70394,
+    "PP": 30913,
+    "PSOE": 72859,
+    "PODEMOS": 10161,
+    "SALF": 951,
+    "SUMAR": 22074,
+    "VOX": 13488,
+    "OTROS": 189,
+    "BLANCO": 2087
+   }
+  },
+  {
+   "id": "17",
+   "nombre": "Girona",
+   "censo": 546370,
+   "escanos": 6,
+   "lon": 2.676,
+   "lat": 42.127,
+   "vecinos": [
+    "08",
+    "25"
+   ],
+   "votos": {
+    "ERC": 63665,
+    "JUNTS": 68136,
+    "PP": 39151,
+    "PSOE": 102431,
+    "PODEMOS": 11471,
+    "SALF": 2624,
+    "SUMAR": 25560,
+    "VOX": 43585,
+    "OTROS": 7780,
+    "BLANCO": 2971
+   }
+  },
+  {
+   "id": "18",
+   "nombre": "Granada",
+   "censo": 765478,
+   "escanos": 7,
+   "lon": -3.267,
+   "lat": 37.312,
+   "vecinos": [
+    "02",
+    "04",
+    "14",
+    "23",
+    "29",
+    "30"
+   ],
+   "votos": {
+    "ADELANTE": 39850,
+    "PP": 170430,
+    "PSOE": 129731,
+    "PODEMOS": 14004,
+    "SALF": 13072,
+    "SUMAR": 28251,
+    "VOX": 98483,
+    "OTROS": 2937,
+    "BLANCO": 4036
+   }
+  },
+  {
+   "id": "19",
+   "nombre": "Guadalajara",
+   "censo": 196983,
+   "escanos": 3,
+   "lon": -2.623,
+   "lat": 40.813,
+   "vecinos": [
+    "16",
+    "28",
+    "40",
+    "42",
+    "44",
+    "50"
+   ],
+   "votos": {
+    "PP": 50995,
+    "PSOE": 39725,
+    "PODEMOS": 3343,
+    "SALF": 4209,
+    "SUMAR": 7200,
+    "VOX": 37345,
+    "OTROS": 587,
+    "BLANCO": 1135
+   }
+  },
+  {
+   "id": "21",
+   "nombre": "Huelva",
+   "censo": 402504,
+   "escanos": 5,
+   "lon": -6.829,
+   "lat": 37.577,
+   "vecinos": [
+    "06",
+    "11",
+    "41"
+   ],
+   "votos": {
+    "ADELANTE": 14037,
+    "PP": 89917,
+    "PSOE": 76559,
+    "PODEMOS": 7175,
+    "SALF": 4353,
+    "SUMAR": 14474,
+    "VOX": 46338,
+    "OTROS": 130,
+    "BLANCO": 2409
+   }
+  },
+  {
+   "id": "22",
+   "nombre": "Huesca",
+   "censo": 173391,
+   "escanos": 3,
+   "lon": -0.073,
+   "lat": 42.203,
+   "vecinos": [
+    "25",
+    "31",
+    "50"
+   ],
+   "votos": {
+    "PP": 46540,
+    "PSOE": 35246,
+    "PODEMOS": 3412,
+    "SALF": 2623,
+    "SUMAR": 8076,
+    "VOX": 24858,
+    "BLANCO": 1217
+   }
+  },
+  {
+   "id": "07",
+   "nombre": "Illes Balears",
+   "censo": 828755,
+   "escanos": 8,
+   "lon": 2.957,
+   "lat": 39.614,
+   "vecinos": [],
+   "votos": {
+    "PP": 161897,
+    "PSOE": 123345,
+    "PODEMOS": 18746,
+    "SALF": 8848,
+    "SUMAR": 41893,
+    "VOX": 127025,
+    "OTROS": 1246,
+    "BLANCO": 4691
+   }
+  },
+  {
+   "id": "23",
+   "nombre": "Jaén",
+   "censo": 518371,
+   "escanos": 5,
+   "lon": -3.442,
+   "lat": 38.016,
+   "vecinos": [
+    "02",
+    "13",
+    "14",
+    "18"
+   ],
+   "votos": {
+    "ADELANTE": 20899,
+    "PP": 139073,
+    "PSOE": 115822,
+    "PODEMOS": 1049,
+    "SALF": 6271,
+    "SUMAR": 16991,
+    "VOX": 73975,
+    "OTROS": 5666,
+    "BLANCO": 2482
+   }
+  },
+  {
+   "id": "26",
+   "nombre": "La Rioja",
+   "censo": 252091,
+   "escanos": 4,
+   "lon": -2.517,
+   "lat": 42.275,
+   "vecinos": [
+    "09",
+    "31",
+    "42",
+    "50",
+    "01"
+   ],
+   "votos": {
+    "PP": 77337,
+    "PSOE": 51663,
+    "PODEMOS": 3182,
+    "SALF": 1975,
+    "SUMAR": 6950,
+    "VOX": 29706,
+    "OTROS": 42,
+    "BLANCO": 1607
+   }
+  },
+  {
+   "id": "35",
+   "nombre": "Las Palmas",
+   "censo": 898882,
+   "escanos": 8,
+   "lon": -14.037,
+   "lat": 28.405,
+   "vecinos": [],
+   "votos": {
+    "CC": 37494,
+    "NC": 17990,
+    "PP": 150832,
+    "PSOE": 165439,
+    "PODEMOS": 16378,
+    "SALF": 8726,
+    "SUMAR": 58866,
+    "VOX": 156674,
+    "OTROS": 963,
+    "BLANCO": 2979
+   }
+  },
+  {
+   "id": "24",
+   "nombre": "León",
+   "censo": 422917,
+   "escanos": 4,
+   "lon": -5.84,
+   "lat": 42.619,
+   "vecinos": [
+    "27",
+    "32",
+    "33",
+    "34",
+    "39",
+    "47",
+    "49"
+   ],
+   "votos": {
+    "PP": 124416,
+    "PSOE": 97331,
+    "PODEMOS": 5955,
+    "SALF": 4107,
+    "SUMAR": 13361,
+    "UPL": 12895,
+    "VOX": 62436,
+    "OTROS": 599,
+    "BLANCO": 1576
+   }
+  },
+  {
+   "id": "25",
+   "nombre": "Lleida",
+   "censo": 317225,
+   "escanos": 4,
+   "lon": 1.048,
+   "lat": 42.044,
+   "vecinos": [
+    "08",
+    "17",
+    "22",
+    "43",
+    "50"
+   ],
+   "votos": {
+    "ERC": 43261,
+    "JUNTS": 33571,
+    "PP": 27280,
+    "PSOE": 55179,
+    "PODEMOS": 4530,
+    "SALF": 1457,
+    "SUMAR": 9667,
+    "VOX": 24179,
+    "OTROS": 16,
+    "BLANCO": 2061
+   }
+  },
+  {
+   "id": "27",
+   "nombre": "Lugo",
+   "censo": 337755,
+   "escanos": 4,
+   "lon": -7.446,
+   "lat": 43.012,
+   "vecinos": [
+    "15",
+    "24",
+    "32",
+    "33",
+    "36"
+   ],
+   "votos": {
+    "BNG": 25647,
+    "PP": 95220,
+    "PSOE": 50007,
+    "PODEMOS": 2717,
+    "SALF": 1021,
+    "SUMAR": 5642,
+    "VOX": 13647,
+    "OTROS": 139,
+    "BLANCO": 1275
+   }
+  },
+  {
+   "id": "28",
+   "nombre": "Madrid",
+   "censo": 5224561,
+   "escanos": 38,
+   "lon": -3.716,
+   "lat": 40.495,
+   "vecinos": [
+    "05",
+    "16",
+    "19",
+    "40",
+    "45"
+   ],
+   "votos": {
+    "PP": 1406586,
+    "PSOE": 849120,
+    "PODEMOS": 145330,
+    "SALF": 85944,
+    "SUMAR": 299796,
+    "VOX": 687908,
+    "BLANCO": 28799
+   }
+  },
+  {
+   "id": "52",
+   "nombre": "Melilla",
+   "censo": 61118,
+   "escanos": 1,
+   "lon": -2.949,
+   "lat": 35.29,
+   "vecinos": [],
+   "votos": {
+    "OTROS": 1626,
+    "PP": 13891,
+    "PSOE": 6519,
+    "PODEMOS": 273,
+    "SALF": 501,
+    "SUMAR": 541,
+    "VOX": 7631,
+    "BLANCO": 251
+   }
+  },
+  {
+   "id": "30",
+   "nombre": "Murcia",
+   "censo": 1099703,
+   "escanos": 10,
+   "lon": -1.485,
+   "lat": 38.002,
+   "vecinos": [
+    "02",
+    "03",
+    "04",
+    "18"
+   ],
+   "votos": {
+    "PP": 313949,
+    "PSOE": 164053,
+    "PODEMOS": 18091,
+    "SALF": 18746,
+    "SUMAR": 39809,
+    "VOX": 220910,
+    "OTROS": 3060,
+    "BLANCO": 4989
+   }
+  },
+  {
+   "id": "29",
+   "nombre": "Málaga",
+   "censo": 1239846,
+   "escanos": 11,
+   "lon": -4.726,
+   "lat": 36.814,
+   "vecinos": [
+    "11",
+    "14",
+    "18",
+    "41"
+   ],
+   "votos": {
+    "ADELANTE": 39363,
+    "PP": 269359,
+    "PSOE": 183013,
+    "PODEMOS": 22132,
+    "SALF": 14977,
+    "SUMAR": 46367,
+    "VOX": 205679,
+    "OTROS": 2506,
+    "BLANCO": 7475
+   }
+  },
+  {
+   "id": "31",
+   "nombre": "Navarra",
+   "censo": 519918,
+   "escanos": 5,
+   "lon": -1.647,
+   "lat": 42.668,
+   "vecinos": [
+    "20",
+    "22",
+    "26",
+    "50",
+    "01"
+   ],
+   "votos": {
+    "BILDU": 63590,
+    "PP": 54581,
+    "PSOE": 78048,
+    "PODEMOS": 11243,
+    "SALF": 2262,
+    "SUMAR": 24948,
+    "UPN": 54625,
+    "VOX": 42015,
+    "OTROS": 6908,
+    "BLANCO": 2893
+   }
+  },
+  {
+   "id": "32",
+   "nombre": "Ourense",
+   "censo": 355765,
+   "escanos": 4,
+   "lon": -7.592,
+   "lat": 42.196,
+   "vecinos": [
+    "24",
+    "27",
+    "36",
+    "49"
+   ],
+   "votos": {
+    "BNG": 23116,
+    "PP": 88694,
+    "PSOE": 47417,
+    "PODEMOS": 2552,
+    "SALF": 1071,
+    "SUMAR": 5504,
+    "VOX": 14329,
+    "BLANCO": 1130
+   }
+  },
+  {
+   "id": "34",
+   "nombre": "Palencia",
+   "censo": 137642,
+   "escanos": 3,
+   "lon": -4.538,
+   "lat": 42.37,
+   "vecinos": [
+    "09",
+    "24",
+    "39",
+    "47"
+   ],
+   "votos": {
+    "PP": 43835,
+    "PSOE": 30824,
+    "PODEMOS": 1471,
+    "SALF": 1446,
+    "SUMAR": 3662,
+    "VOX": 20018,
+    "BLANCO": 831
+   }
+  },
+  {
+   "id": "36",
+   "nombre": "Pontevedra",
+   "censo": 909434,
+   "escanos": 7,
+   "lon": -8.459,
+   "lat": 42.435,
+   "vecinos": [
+    "15",
+    "27",
+    "32"
+   ],
+   "votos": {
+    "BNG": 80810,
+    "PP": 214417,
+    "PSOE": 142016,
+    "PODEMOS": 18297,
+    "SALF": 3269,
+    "SUMAR": 39993,
+    "VOX": 40589,
+    "BLANCO": 3958
+   }
+  },
+  {
+   "id": "37",
+   "nombre": "Salamanca",
+   "censo": 300506,
+   "escanos": 4,
+   "lon": -6.066,
+   "lat": 40.805,
+   "vecinos": [
+    "05",
+    "10",
+    "47",
+    "49"
+   ],
+   "votos": {
+    "PP": 97344,
+    "PSOE": 54264,
+    "PODEMOS": 2783,
+    "SALF": 3366,
+    "SUMAR": 7113,
+    "VOX": 38653,
+    "BLANCO": 1639
+   }
+  },
+  {
+   "id": "38",
+   "nombre": "Santa Cruz de Tenerife",
+   "censo": 881217,
+   "escanos": 7,
+   "lon": -16.557,
+   "lat": 28.29,
+   "vecinos": [],
+   "votos": {
+    "CC": 59321,
+    "PP": 136431,
+    "PSOE": 127808,
+    "PODEMOS": 12514,
+    "SALF": 13743,
+    "SUMAR": 22206,
+    "VOX": 92045,
+    "OTROS": 1679,
+    "BLANCO": 4814
+   }
+  },
+  {
+   "id": "40",
+   "nombre": "Segovia",
+   "censo": 119454,
+   "escanos": 3,
+   "lon": -4.054,
+   "lat": 41.171,
+   "vecinos": [
+    "05",
+    "09",
+    "19",
+    "28",
+    "42",
+    "47"
+   ],
+   "votos": {
+    "PP": 39872,
+    "PSOE": 23755,
+    "PODEMOS": 1708,
+    "SALF": 1444,
+    "SUMAR": 4058,
+    "VOX": 17068,
+    "OTROS": 231,
+    "BLANCO": 871
+   }
+  },
+  {
+   "id": "41",
+   "nombre": "Sevilla",
+   "censo": 1564082,
+   "escanos": 12,
+   "lon": -5.683,
+   "lat": 37.436,
+   "vecinos": [
+    "06",
+    "11",
+    "14",
+    "21",
+    "29"
+   ],
+   "votos": {
+    "ADELANTE": 133146,
+    "PP": 318095,
+    "PSOE": 276623,
+    "PODEMOS": 33730,
+    "SALF": 16362,
+    "SUMAR": 65118,
+    "VOX": 162202,
+    "OTROS": 7850,
+    "BLANCO": 10953
+   }
+  },
+  {
+   "id": "42",
+   "nombre": "Soria",
+   "censo": 75768,
+   "escanos": 2,
+   "lon": -2.588,
+   "lat": 41.621,
+   "vecinos": [
+    "09",
+    "19",
+    "26",
+    "40",
+    "50"
+   ],
+   "votos": {
+    "PP": 24205,
+    "PSOE": 16974,
+    "PODEMOS": 627,
+    "SALF": 1095,
+    "SUMAR": 1161,
+    "SORIA": 14546,
+    "VOX": 12167,
+    "OTROS": 142,
+    "BLANCO": 284
+   }
+  },
+  {
+   "id": "43",
+   "nombre": "Tarragona",
+   "censo": 596689,
+   "escanos": 6,
+   "lon": 0.818,
+   "lat": 41.088,
+   "vecinos": [
+    "08",
+    "12",
+    "25",
+    "44",
+    "50"
+   ],
+   "votos": {
+    "ERC": 65855,
+    "JUNTS": 39312,
+    "PP": 56186,
+    "PSOE": 116260,
+    "PODEMOS": 12573,
+    "SALF": 4435,
+    "SUMAR": 26889,
+    "VOX": 58816,
+    "OTROS": 5682,
+    "BLANCO": 3185
+   }
+  },
+  {
+   "id": "44",
+   "nombre": "Teruel",
+   "censo": 106352,
+   "escanos": 3,
+   "lon": -0.815,
+   "lat": 40.661,
+   "vecinos": [
+    "12",
+    "16",
+    "19",
+    "43",
+    "46",
+    "50"
+   ],
+   "votos": {
+    "PP": 36649,
+    "PSOE": 26795,
+    "PODEMOS": 1384,
+    "SALF": 2660,
+    "SUMAR": 3428,
+    "TE": 8820,
+    "VOX": 21885,
+    "OTROS": 100,
+    "BLANCO": 407
+   }
+  },
+  {
+   "id": "45",
+   "nombre": "Toledo",
+   "censo": 542567,
+   "escanos": 6,
+   "lon": -4.149,
+   "lat": 39.794,
+   "vecinos": [
+    "05",
+    "06",
+    "10",
+    "13",
+    "16",
+    "28"
+   ],
+   "votos": {
+    "PP": 146231,
+    "PSOE": 109979,
+    "PODEMOS": 7605,
+    "SALF": 8768,
+    "SUMAR": 18073,
+    "VOX": 103071,
+    "OTROS": 404,
+    "BLANCO": 2596
+   }
+  },
+  {
+   "id": "47",
+   "nombre": "Valladolid",
+   "censo": 431381,
+   "escanos": 5,
+   "lon": -4.843,
+   "lat": 41.631,
+   "vecinos": [
+    "05",
+    "09",
+    "24",
+    "34",
+    "37",
+    "40",
+    "49"
+   ],
+   "votos": {
+    "PP": 130759,
+    "PSOE": 91899,
+    "PODEMOS": 7423,
+    "SALF": 5542,
+    "SUMAR": 15638,
+    "VOX": 65569,
+    "OTROS": 371,
+    "BLANCO": 2412
+   }
+  },
+  {
+   "id": "46",
+   "nombre": "València/Valencia",
+   "censo": 1999340,
+   "escanos": 16,
+   "lon": -0.783,
+   "lat": 39.345,
+   "vecinos": [
+    "02",
+    "03",
+    "12",
+    "16",
+    "44"
+   ],
+   "votos": {
+    "COMPROMIS": 152572,
+    "PP": 358744,
+    "PSOE": 343841,
+    "PODEMOS": 53477,
+    "SALF": 25422,
+    "SUMAR": 37819,
+    "VOX": 400144,
+    "OTROS": 433,
+    "BLANCO": 10840
+   }
+  },
+  {
+   "id": "49",
+   "nombre": "Zamora",
+   "censo": 162998,
+   "escanos": 3,
+   "lon": -5.98,
+   "lat": 41.727,
+   "vecinos": [
+    "24",
+    "32",
+    "37",
+    "47"
+   ],
+   "votos": {
+    "PP": 49557,
+    "PSOE": 30461,
+    "PODEMOS": 1477,
+    "SALF": 1576,
+    "SUMAR": 3775,
+    "VOX": 20619,
+    "OTROS": 224,
+    "BLANCO": 918
+   }
+  },
+  {
+   "id": "50",
+   "nombre": "Zaragoza",
+   "censo": 740060,
+   "escanos": 7,
+   "lon": -1.064,
+   "lat": 41.621,
+   "vecinos": [
+    "19",
+    "22",
+    "25",
+    "26",
+    "31",
+    "42",
+    "43",
+    "44"
+   ],
+   "votos": {
+    "PP": 194612,
+    "PSOE": 142359,
+    "PODEMOS": 19615,
+    "SALF": 13114,
+    "SUMAR": 42268,
+    "VOX": 116205,
+    "OTROS": 639,
+    "BLANCO": 4670
+   }
+  },
+  {
+   "id": "05",
+   "nombre": "Ávila",
+   "censo": 136669,
+   "escanos": 3,
+   "lon": -4.945,
+   "lat": 40.571,
+   "vecinos": [
+    "10",
+    "28",
+    "37",
+    "40",
+    "45",
+    "47"
+   ],
+   "votos": {
+    "PP": 53419,
+    "PSOE": 28964,
+    "PODEMOS": 1571,
+    "SALF": 1776,
+    "SUMAR": 3388,
+    "VOX": 25646,
+    "OTROS": 291,
+    "BLANCO": 629
+   }
+  }
+ ]
+}
