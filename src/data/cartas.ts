@@ -16,7 +16,7 @@ type Def = Omit<Carta, 'retirar' | 'mazo'> & { retirar?: boolean };
 
 const encuesta = (id: number, zona: ZonaId, nombre: string, contexto: string): Def => ({
   id, nombre, ops: 0, lado: 'E', zona, contexto,
-  texto: 'Puntúa la zona: presencia, dominio o control, +1 PV por cada provincia clave que controles y +1 por cada feudo rival que controles. El saldo se aplica a la Ventaja (máx. 5). Debe jugarse antes de acabar el turno. En el turno 8 (veda demoscópica) no da PV.',
+  texto: 'Puntúa la zona: presencia, dominio o control, +1 por clave y por feudo rival que controles (saldo máx. 5 PV). Publícala esta semana. En la semana 8 (veda) no da PV.',
   efectos: [{ e: 'puntuar', zona }],
 });
 

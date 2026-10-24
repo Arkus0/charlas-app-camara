@@ -11,7 +11,8 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "datos": "tsx scripts/construir-datos.ts",
-    "simulate": "tsx scripts/simular.ts"
+    "simulate": "tsx scripts/simular.ts",
+    "cartas": "tsx scripts/listar-cartas.ts"
   },
   "dependencies": {
     "react": "^18.3.1",

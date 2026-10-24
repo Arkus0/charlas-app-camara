@@ -197,14 +197,14 @@ export const FECHAS: Record<number, string> = {
 };
 
 export const HITOS: Record<number, string> = {
-  1: 'Convocatoria: BOE del 6 de octubre',
+  1: 'Convocatoria en el BOE',
   2: 'Precampaña',
-  3: 'Cierre de listas (26 oct) al final del turno',
+  3: 'Cierre de listas el 26 oct',
   4: 'Entra el mazo de Campaña',
-  5: 'Precampaña: último turno',
-  6: '13N: arranca la campaña (pegada de carteles)',
-  7: '16N: cara a cara · entra el mazo de Recta final',
-  8: '26N: debate a cuatro · veda demoscópica · 28N reflexión',
+  5: 'Última semana de precampaña',
+  6: '13N: pegada de carteles',
+  7: '16N: cara a cara',
+  8: '26N: debate a cuatro · veda',
 };
 
 // —— Condiciones de los eventos ——
