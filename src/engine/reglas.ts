@@ -3,7 +3,7 @@ import { MADRID, PROV, PROVINCIAS, ZONAS } from '../data/provincias';
 import { TERRITORIO } from '../data/partidos';
 import { CARTAS } from '../data/cartas';
 import { controlDe, proyectar, REGIONALES, vetoVoxActivo } from './electoral';
-import type { Bando, Carta, Cond, Estado, Filtro, Provincia, RegionalId, Uso, ZonaId } from './tipos';
+import type { Bando, Carta, Cond, Estado, Filtro, Negociable, Provincia, Uso, ZonaId } from './tipos';
 import { RIVAL } from './tipos';
 
 export const ZONA_IDS = Object.keys(ZONAS) as ZonaId[];
@@ -63,13 +63,16 @@ export function objetivosAtaque(e: Estado, b: Bando, filtro?: Filtro): string[] 
   return PROVINCIAS.filter((p) => e.presencia[p.id][RIVAL[b]] > 0 && !zonaVetada(e, p.zona) && cumpleFiltro(e, p, filtro, b)).map((p) => p.id);
 }
 
-export function partidosNegociables(e: Estado, b: Bando): RegionalId[] {
-  return REGIONALES.filter((k) => {
+export function partidosNegociables(e: Estado, b: Bando): Negociable[] {
+  const res: Negociable[] = REGIONALES.filter((k) => {
     if (e.negociado.includes(k)) return false;
     const a = e.afinidad[k];
     if (b === 'P' ? a <= -3 : a >= 3) return false;
     return TERRITORIO[k].some((id) => e.presencia[id][b] > 0);
   });
+  // A Podemos solo puede cortejarlo el Progresista: nunca apoyará a Feijóo
+  if (b === 'P' && !e.negociado.includes('PODEMOS') && e.podemos.humor < 3) res.unshift('PODEMOS');
+  return res;
 }
 
 // —— Carrera Programática ——
@@ -173,6 +176,12 @@ export function esEncuesta(id: number): boolean {
   return CARTAS[id].lado === 'E';
 }
 
+/** ¿Usar esta carta por sus PC activa su evento? Sí si es del rival o un comodín de Podemos. */
+export function eventoAjeno(id: number, b: Bando): boolean {
+  const lado = CARTAS[id].lado;
+  return lado === RIVAL[b] || lado === 'W';
+}
+
 export function usosCarta(e: Estado, b: Bando, id: number): Uso[] {
   const c = CARTAS[id];
   if (id === 0) return ['ops'];
@@ -218,7 +227,7 @@ export function cumpleCond(e: Estado, c: Cond, yo: Bando): boolean {
     case 'rivalAventaja': return favor(r) >= c.n;
     case 'yoAventajo': return favor(yo) >= c.n;
     case 'turnoMax': return e.turno <= c.n;
-    case 'listasAbiertas': return e.listaConjunta === null;
+    case 'humorPodemosMin': return e.podemos.humor >= c.n;
     case 'socioMin': return e.socio[c.bloque === 'yo' ? yo : r] >= c.n;
     case 'socioMax': return e.socio[c.bloque === 'yo' ? yo : r] <= c.n;
     case 'mayoriaRival': return proyectar(PROVINCIAS, e).apoyos[r] >= 176;

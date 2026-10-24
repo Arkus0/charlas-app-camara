@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Lanza N simulaciones en 4 procesos: scripts/simular-paralelo.sh 100 normal normal
-N=${1:-40}; P=${2:-normal}; C=${3:-normal}; POR=$(( (N + 3) / 4 ))
-for i in 0 1 2 3; do npx tsx scripts/simular.ts $POR $P $C $(( 1 + i * POR )) > /tmp/sim_$i.json & done
+# Lanza N simulaciones en 4 procesos: scripts/simular-paralelo.sh 100 normal normal [semillaInicial]
+N=${1:-40}; P=${2:-normal}; C=${3:-normal}; S0=${4:-1}; POR=$(( (N + 3) / 4 ))
+for i in 0 1 2 3; do npx tsx scripts/simular.ts $POR $P $C $(( S0 + i * POR )) > /tmp/sim_$i.json & done
 wait
 node -e '
 const fs=require("fs"); const r=[0,1,2,3].map(i=>JSON.parse(fs.readFileSync("/tmp/sim_"+i+".json","utf8")));

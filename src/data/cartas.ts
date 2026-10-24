@@ -1,5 +1,6 @@
 // Las cartas de «176 · La Batalla del 29N».
 // Cada carta: PC (1-4) y un evento Progresista (P), Conservador (C) o Neutral (N). E = Encuesta.
+// W = comodín de Podemos: su evento se activa siempre que se use por sus PC, lo juegue quien lo juegue.
 // Los temas son públicos y reales; los textos describen situaciones genéricas, sin atribuir hechos a personas.
 import type { Carta, Efecto, Filtro, ZonaId } from '../engine/tipos';
 
@@ -11,6 +12,7 @@ const clima = (n: number): Efecto => ({ e: 'clima', n });
 const colocar = (n: number, filtro?: Filtro, maxPor?: number, unaSola?: boolean): Efecto => ({ e: 'colocar', n, filtro, maxPor, unaSola });
 const retirar = (n: number, filtro?: Filtro, maxPor?: number): Efecto => ({ e: 'retirar', n, filtro, maxPor });
 const socio = (bloque: 'yo' | 'rival' | 'P' | 'C', n: number): Efecto => ({ e: 'socio', bloque, n });
+const podemos = (fuerza: number, humor: number): Efecto => ({ e: 'podemos', fuerza, humor });
 
 type Def = Omit<Carta, 'retirar' | 'mazo'> & { retirar?: boolean };
 
@@ -44,7 +46,7 @@ const MAZO_1: Def[] = [
     contexto: 'La Seguridad Social encadena máximos de afiliados.',
     efectos: [{ e: 'si', cond: { c: 'climaMin', n: 3 }, entonces: [pv(2)], sino: [pv(1)] }] },
   { id: 5, nombre: 'Frenar a la ultraderecha', ops: 3, lado: 'P', retirar: true,
-    texto: 'La polarización moviliza a los extremos: el medidor de Vox sube 1, el de los socios progresistas baja 1 (voto útil al PSOE) y ganas 1 PV.',
+    texto: 'La polarización moviliza a los extremos: el medidor de Vox sube 1, el de Frente Amplio baja 1 (voto útil al PSOE) y ganas 1 PV.',
     contexto: 'El «que viene la derecha» como resorte de movilización, como en el 23J.',
     efectos: [socio('C', 1), socio('P', -1), pv(1)] },
   { id: 6, nombre: 'Agenda territorial', ops: 2, lado: 'P', retirar: true,
@@ -60,9 +62,9 @@ const MAZO_1: Def[] = [
     contexto: 'Listas de espera y cribados en el debate autonómico.',
     efectos: [retirar(2, { zonas: ['AND', 'MAD'] }, 1)] },
   { id: 9, nombre: 'Reconocimiento de Palestina', ops: 1, lado: 'P',
-    texto: 'La política exterior moviliza a la izquierda: el medidor de socios progresistas baja 1 y la unidad de la izquierda sube 1.',
+    texto: 'La política exterior moviliza a la izquierda: el medidor de Frente Amplio baja 1 y el humor de Podemos mejora 1.',
     contexto: 'La posición de España sobre Gaza agrupa al electorado progresista.',
-    efectos: [socio('P', -1), { e: 'unidad', n: 1 }] },
+    efectos: [socio('P', -1), podemos(0, 1)] },
   { id: 10, nombre: 'Ministros en campaña', ops: 3, lado: 'P',
     texto: 'Coloca 2 presencia en cualquier provincia (sin adyacencia). El Clima baja 1.',
     contexto: 'La agenda institucional se llena de actos por toda España.',
@@ -71,11 +73,10 @@ const MAZO_1: Def[] = [
     texto: 'Gana 1 PV y coloca 1 presencia en 2 provincias de Andalucía o de Levante y Baleares (máx. 1 por provincia).',
     contexto: 'La jornada de 37,5 horas, bandera laboral del Gobierno.',
     efectos: [pv(1), colocar(2, { zonas: ['AND', 'LEV'] }, 1)] },
-  { id: 12, nombre: 'Primarias abiertas', ops: 1, lado: 'P', retirar: true,
-    texto: 'Si las listas siguen abiertas, la unidad de la izquierda sube 1.',
-    contexto: 'Podemos ofrece primarias para una candidatura conjunta.',
-    requisito: { c: 'listasAbiertas' },
-    efectos: [{ e: 'unidad', n: 1 }] },
+  { id: 12, nombre: 'Mano tendida a Podemos', ops: 1, lado: 'P',
+    texto: 'El humor de Podemos mejora 1.',
+    contexto: 'Llamadas discretas para asegurar sus votos en la investidura.',
+    efectos: [podemos(0, 1)] },
 
   // —— Conservadoras ——
   { id: 21, nombre: 'Ola autonómica', ops: 3, lado: 'C', retirar: true,
@@ -162,9 +163,9 @@ const MAZO_1: Def[] = [
     contexto: 'Un programa de entretenimiento con millones de espectadores.',
     efectos: [{ e: 'carrera', n: 1 }] },
   { id: 47, nombre: 'Gasto en defensa', ops: 2, lado: 'N',
-    texto: 'El compromiso con la OTAN divide a la izquierda: el medidor de socios progresistas sube 1 y la unidad de la izquierda baja 1.',
+    texto: 'El compromiso con la OTAN divide a la izquierda: el medidor de Frente Amplio sube 1, Podemos gana 1 de fuerza y su humor empeora 1.',
     contexto: 'El aumento del gasto militar enfrenta a los socios del Gobierno.',
-    efectos: [socio('P', 1), { e: 'unidad', n: -1 }] },
+    efectos: [socio('P', 1), podemos(1, -1)] },
   { id: 48, nombre: 'Voto por correo', ops: 2, lado: 'N',
     texto: 'Quien tenga menos presencia total en el mapa coloca 2 presencia (máx. 1 por provincia).',
     contexto: 'Colas en Correos: el voto anticipado se dispara.',
@@ -177,6 +178,23 @@ const MAZO_1: Def[] = [
     texto: 'Ves la mano del rival durante este turno y ganas 1 PV.',
     contexto: 'El argumentario del rival aparece publicado en un digital.',
     efectos: [{ e: 'verMano' }, pv(1)] },
+
+  // —— Comodines de Podemos ——
+  { id: 131, nombre: 'Podemos rompe la baraja', ops: 3, lado: 'W',
+    texto: 'Podemos endurece sus condiciones: gana 1 de fuerza y su humor empeora 1. Después, cada bloque retira 1 presencia rival en una provincia clave, empezando por quien juega la carta.',
+    contexto: 'Ni con el PSOE ni contra él: con sus propias condiciones.',
+    efectos: [podemos(1, -1), retirar(1, { clave: true }), { e: 'como', bando: 'rival', efectos: [retirar(1, { clave: true })] }] },
+  { id: 132, nombre: 'Movilización en la calle', ops: 2, lado: 'W',
+    texto: 'Podemos llena las calles de Madrid y Barcelona: gana 1 de fuerza y cada bloque pierde 1 presencia en Madrid y otra en Barcelona.',
+    contexto: 'Una manifestación que nadie controla.',
+    efectos: [podemos(1, 0), { e: 'retirar', n: 2, maxPor: 1, de: 'ambos', filtro: { provs: ['28', '08'] } }] },
+  { id: 133, nombre: 'Ultimátum al PSOE', ops: 2, lado: 'W',
+    texto: 'Podemos exige compromisos por escrito. El Progresista elige: ceder (el Conservador gana 2 PV) o plantarse (el humor de Podemos empeora 2).',
+    contexto: '«Sin vivienda pública no hay investidura».',
+    efectos: [{ e: 'como', bando: 'P', efectos: [{ e: 'elegir', opciones: [
+      { texto: 'Ceder a Podemos: el Conservador gana 2 PV', efectos: [pv(-2)] },
+      { texto: 'Plantarse: el humor de Podemos empeora 2', efectos: [podemos(0, -2)] },
+    ] }] }] },
 ];
 
 const MAZO_2: Def[] = [
@@ -198,7 +216,7 @@ const MAZO_2: Def[] = [
     contexto: 'La subida con el IPC, en las provincias más envejecidas.',
     efectos: [colocar(4, { zonas: ['INT', 'NOR', 'MAD'], maxEscanos: 5 }, 1)] },
   { id: 15, nombre: 'El miedo a la mayoría PP-Vox', ops: 3, lado: 'P', retirar: true,
-    texto: 'Si la proyección da al Conservador 176 o más apoyos, ganas 2 PV y el medidor de socios progresistas baja 1. Si no, ganas 1 PV.',
+    texto: 'Si la proyección da al Conservador 176 o más apoyos, ganas 2 PV y el medidor de Frente Amplio baja 1. Si no, ganas 1 PV.',
     contexto: 'La posibilidad de Vox en el Consejo de Ministros moviliza.',
     efectos: [{ e: 'si', cond: { c: 'mayoriaRival' }, entonces: [pv(2), socio('yo', -1)], sino: [pv(1)] }] },
   { id: 16, nombre: 'Acuerdo con el PNV', ops: 2, lado: 'P',
@@ -214,9 +232,9 @@ const MAZO_2: Def[] = [
     contexto: 'Transporte público barato para los que viven lejos del trabajo.',
     efectos: [colocar(2, { zonas: ['MAD', 'CAT'], clave: true }, 1)] },
   { id: 19, nombre: 'Frente común', ops: 2, lado: 'P',
-    texto: 'Si las listas siguen abiertas, la unidad de la izquierda sube 1. Si no, coloca 1 presencia en 2 provincias clave.',
-    contexto: 'Negociaciones in extremis a la izquierda del PSOE.',
-    efectos: [{ e: 'si', cond: { c: 'listasAbiertas' }, entonces: [{ e: 'unidad', n: 1 }], sino: [colocar(2, { clave: true }, 1)] }] },
+    texto: 'El humor de Podemos mejora 1 y colocas 1 presencia en 2 provincias clave (máx. 1 por provincia).',
+    contexto: 'Un acto conjunto de toda la izquierda contra la derecha.',
+    efectos: [podemos(0, 1), colocar(2, { clave: true }, 1)] },
   { id: 20, nombre: 'Movilización feminista', ops: 2, lado: 'P',
     texto: 'Coloca 1 presencia en 3 provincias clave (máx. 1 por provincia).',
     contexto: 'Las políticas de igualdad, a examen.',
@@ -310,9 +328,9 @@ const MAZO_2: Def[] = [
     contexto: 'El voto útil también funciona en Cataluña, Euskadi o Galicia.',
     efectos: [{ e: 'fugaNacionalista', pct: 0.15 }] },
   { id: 85, nombre: 'Debate a siete en RTVE', ops: 2, lado: 'N',
-    texto: 'Los socios ganan foco: ambos medidores de socios suben 1. Quien controle más provincias clave de Madrid y Centro gana 1 PV.',
+    texto: 'Los socios ganan foco: los medidores de Vox y de Frente Amplio suben 1 y Podemos gana 1 de fuerza. Quien controle más provincias clave de Madrid y Centro gana 1 PV.',
     contexto: 'Portavoces de todos los grupos con representación.',
-    efectos: [socio('P', 1), socio('C', 1), { e: 'alQueControlaMas', provs: ['28', '45', '06'], efectos: [pv(1)] }] },
+    efectos: [socio('P', 1), socio('C', 1), podemos(1, 0), { e: 'alQueControlaMas', provs: ['28', '45', '06'], efectos: [pv(1)] }] },
   { id: 86, nombre: 'Campaña en redes', ops: 2, lado: 'N',
     texto: 'Coloca 2 presencia en provincias de 8 o más escaños (máx. 1 por provincia).',
     contexto: 'Vídeos cortos para un electorado que ya no ve la tele.',
@@ -325,14 +343,28 @@ const MAZO_2: Def[] = [
     texto: 'El medidor de Vox sube 1 y colocas 2 presencia en Canarias, Ceuta o Melilla (máx. 1 por provincia).',
     contexto: 'La gestión de los menores migrantes enfrenta a las administraciones.',
     efectos: [socio('C', 1), colocar(2, { zonas: ['CAN'] }, 1)] },
+
+  // —— Comodines de Podemos ——
+  { id: 134, nombre: 'Vetos cruzados', ops: 2, lado: 'W',
+    texto: 'Podemos y Frente Amplio se enzarzan: el medidor de Frente Amplio baja 1 y Podemos gana 1 de fuerza. El ruido también da alas a Vox (+1).',
+    contexto: 'La izquierda del PSOE, otra vez dividida.',
+    efectos: [socio('P', -1), podemos(1, 0), socio('C', 1)] },
+  { id: 135, nombre: 'Podemos tiende la mano', ops: 2, lado: 'W',
+    texto: 'El humor de Podemos mejora 2, pero pierde 1 de fuerza: parte de su electorado vuelve al PSOE.',
+    contexto: '«Lo primero es que no gobiernen PP y Vox».',
+    efectos: [podemos(-1, 2)] },
+  { id: 136, nombre: 'Guerra en redes', ops: 3, lado: 'W',
+    texto: 'Podemos dispara contra todos: el Clima baja 1 y cada bloque retira 2 presencia rival (máx. 1 por provincia), empezando por quien juega la carta.',
+    contexto: 'Un hilo viral contra «el bipartidismo» incendia la campaña.',
+    efectos: [clima(-1), retirar(2, undefined, 1), { e: 'como', bando: 'rival', efectos: [retirar(2, undefined, 1)] }] },
 ];
 
 const MAZO_3: Def[] = [
   // —— Progresistas ——
   { id: 91, nombre: 'Llamamiento al voto útil', ops: 3, lado: 'P', retirar: true,
-    texto: 'El medidor de socios progresistas baja 2.',
+    texto: 'El medidor de Frente Amplio baja 2 y Podemos pierde 1 de fuerza.',
     contexto: '«Cada voto a la izquierda del PSOE en una provincia pequeña es un escaño para la derecha».',
-    efectos: [socio('P', -2)] },
+    efectos: [socio('P', -2), podemos(-1, 0)] },
   { id: 92, nombre: 'Remontada', ops: 3, lado: 'P', retirar: true,
     texto: 'Si el Conservador aventaja por 5 o más, ganas 3 PV; si no, 1 PV.',
     contexto: 'El relato del 23J: las encuestas se equivocaron.',
@@ -401,6 +433,20 @@ const MAZO_3: Def[] = [
     texto: 'Ves la mano del rival este turno y avanzas 1 casilla en la Carrera sin tirar.',
     contexto: 'El tracking diario que solo ven los jefes de campaña.',
     efectos: [{ e: 'verMano' }, { e: 'carrera', n: 1 }] },
+
+  // —— Comodines de Podemos ——
+  { id: 137, nombre: 'La llave morada', ops: 3, lado: 'W', retirar: true,
+    texto: 'Tira un dado: con 1-2 Podemos anuncia que no apoyará a Sánchez sin acuerdo (su humor empeora 2); con 3-4, nada; con 5-6 pacta in extremis (su humor mejora 2).',
+    contexto: 'Sus escaños pueden decidir la investidura.',
+    efectos: [{ e: 'dado', tabla: [
+      { hasta: 2, efectos: [podemos(0, -2)] },
+      { hasta: 4, efectos: [] },
+      { hasta: 6, efectos: [podemos(0, 2)] },
+    ] }] },
+  { id: 138, nombre: 'Remontada morada', ops: 2, lado: 'W',
+    texto: 'Podemos gana 2 de fuerza y la polarización también da alas a Vox (+1).',
+    contexto: 'Los mítines morados se llenan en la recta final.',
+    efectos: [podemos(2, 0), socio('C', 1)] },
 ];
 
 export const VOTO_UTIL: Carta = {

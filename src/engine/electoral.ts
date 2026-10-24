@@ -28,7 +28,7 @@ export function dhondt(escanos: number, votos: Votos, umbral = UMBRAL): Votos {
 }
 
 export const BLOQUE_C: PartidoId[] = ['PP', 'VOX'];
-export const BLOQUE_P: PartidoId[] = ['PSOE', 'SUMAR', 'PODEMOS'];
+export const BLOQUE_P: PartidoId[] = ['PSOE', 'SUMAR'];
 
 /** pp de voto por punto de presencia neta: más alto en circunscripciones pequeñas */
 export function ppPorPresencia(escanos: number): number {
@@ -37,11 +37,12 @@ export function ppPorPresencia(escanos: number): number {
 export const PP_POR_PV = 0.4;
 export const PASO_SOCIO = 0.03; // cuota del bloque por paso del medidor de socios
 export const MOVILIZACION_SOCIO = 0.004; // votos válidos que añade/quita cada paso del medidor
-export const SINERGIA_LISTA = 1.03;
+export const PASO_PODEMOS = 0.25; // cada paso de fuerza multiplica su voto de partida por ±25%
+export const PODEMOS_DESDE_IZQUIERDA = 0.8; // lo que gana Podemos sale en un 80% del bloque progresista y en un 20% del conservador
 
 export type EntradaModelo = Pick<
   Estado,
-  'presencia' | 'presencia0' | 'control0' | 'ventaja' | 'socio' | 'listaConjunta' | 'unidad' | 'modsProv' | 'modsPartido'
+  'presencia' | 'presencia0' | 'control0' | 'ventaja' | 'socio' | 'podemos' | 'modsProv' | 'modsPartido'
 > & { sesgo?: number };
 
 export function controlDe(p: Provincia, pres: { P: number; C: number }): -1 | 0 | 1 {
@@ -71,24 +72,39 @@ export function votosProvincia(p: Provincia, e: EntradaModelo, extraPP = 0): Vot
   for (const [k, m] of Object.entries(e.modsPartido) as [RegionalId, number][]) {
     if (!m || !g(k)) continue;
     const delta = g(k) * m;
-    const bloques = g('PP') + g('VOX') + g('PSOE') + g('SUMAR') + g('PODEMOS');
+    const grandes: PartidoId[] = [...BLOQUE_C, ...BLOQUE_P, 'PODEMOS'];
+    const bloques = grandes.reduce((a, q) => a + g(q), 0);
     if (bloques <= 0) continue;
-    for (const q of [...BLOQUE_C, ...BLOQUE_P]) v[q] = Math.max(0, g(q) - (delta * g(q)) / bloques);
+    for (const q of grandes) v[q] = Math.max(0, g(q) - (delta * g(q)) / bloques);
     v[k] = g(k) + delta;
   }
 
-  // 2. bloques y reparto interno
+  // 2. Podemos, el comodín: su fuerza le quita (o le devuelve) voto sobre todo a la izquierda
+  const podemosBase = g('PODEMOS');
+  if (podemosBase > 0 && e.podemos.fuerza) {
+    const nuevo = podemosBase * Math.max(0, 1 + PASO_PODEMOS * e.podemos.fuerza);
+    const delta = nuevo - podemosBase;
+    const quitar = (bloque: PartidoId[], cantidad: number) => {
+      const total = bloque.reduce((a, q) => a + g(q), 0);
+      if (total <= 0) return;
+      for (const q of bloque) v[q] = Math.max(0, g(q) - (cantidad * g(q)) / total);
+    };
+    quitar(BLOQUE_P, delta * PODEMOS_DESDE_IZQUIERDA);
+    quitar(BLOQUE_C, delta * (1 - PODEMOS_DESDE_IZQUIERDA));
+    v.PODEMOS = nuevo;
+  }
+
+  // 3. bloques y reparto interno
   let R = g('PP') + g('VOX');
-  let L = g('PSOE') + g('SUMAR') + g('PODEMOS');
+  let L = g('PSOE') + g('SUMAR');
   const cuotaVox = R > 0 ? g('VOX') / R : 0;
-  const cuotaIzq = L > 0 ? (g('SUMAR') + g('PODEMOS')) / L : 0;
-  const ratioSumar = g('SUMAR') + g('PODEMOS') > 0 ? g('SUMAR') / (g('SUMAR') + g('PODEMOS')) : 1;
+  const cuotaIzq = L > 0 ? g('SUMAR') / L : 0;
   const sv = Math.max(0.02, Math.min(0.9, cuotaVox + PASO_SOCIO * e.socio.C));
   const si = Math.max(0.02, Math.min(0.9, cuotaIzq + PASO_SOCIO * e.socio.P));
   R = Math.max(0, R + validos * MOVILIZACION_SOCIO * e.socio.C);
   L = Math.max(0, L + validos * MOVILIZACION_SOCIO * e.socio.P);
 
-  // 3. trasvase entre bloques: campaña provincial + ventaja nacional + eventos
+  // 4. trasvase entre bloques: campaña provincial + ventaja nacional + eventos
   const pp = efectoCampana(p, e) + PP_POR_PV * e.ventaja + (e.modsProv[p.id] ?? 0) + (e.sesgo ?? 0) + extraPP;
   let t = (validos * pp) / 100;
   if (t > 0) t = Math.min(t, 0.85 * L);
@@ -99,15 +115,7 @@ export function votosProvincia(p: Provincia, e: EntradaModelo, extraPP = 0): Vot
   v.PP = R * (1 - sv);
   v.VOX = R * sv;
   v.PSOE = L * (1 - si);
-  const socios = L * si;
-  const conjunta = e.listaConjunta === true || (e.listaConjunta === null && e.unidad >= 3);
-  if (conjunta) {
-    v.SUMAR = socios * SINERGIA_LISTA;
-    v.PODEMOS = 0;
-  } else {
-    v.SUMAR = socios * ratioSumar;
-    v.PODEMOS = socios * (1 - ratioSumar);
-  }
+  v.SUMAR = L * si;
   return v;
 }
 
@@ -139,15 +147,23 @@ export function vetoVoxActivo(e: Pick<Estado, 'socio'>): boolean {
   return e.socio.C >= 0;
 }
 
+/** Voto de Podemos según su humor: nunca a Feijóo; a Sánchez, sí (≥1), abstención (0) o no (≤−1). */
+export function votoPodemos(cand: Bando, humor: number): 'si' | 'no' | 'abst' {
+  if (cand === 'C') return 'no';
+  return humor >= 1 ? 'si' : humor === 0 ? 'abst' : 'no';
+}
+
 /** Voto de un partido en la investidura del candidato de `cand`. */
 export function votoInvestidura(
   partido: PartidoId,
   cand: Bando,
   afinidad: Record<RegionalId, number>,
   veto: boolean,
+  humorPodemos = 0,
 ): 'si' | 'no' | 'abst' {
   if (partido === 'PP' || partido === 'VOX') return cand === 'C' ? 'si' : 'no';
-  if (partido === 'PSOE' || partido === 'SUMAR' || partido === 'PODEMOS') return cand === 'P' ? 'si' : 'no';
+  if (partido === 'PSOE' || partido === 'SUMAR') return cand === 'P' ? 'si' : 'no';
+  if (partido === 'PODEMOS') return votoPodemos(cand, humorPodemos);
   if (partido === 'SALF') return cand === 'C' ? 'abst' : 'no';
   const a = (afinidad as Record<string, number>)[partido];
   if (a === undefined) return 'abst'; // Soria ¡Ya!, UPL, Teruel Existe…
@@ -161,11 +177,11 @@ export function votoInvestidura(
   return 'no';
 }
 
-export function investir(escanos: Votos, cand: Bando, afinidad: Record<RegionalId, number>, veto: boolean): Investidura {
+export function investir(escanos: Votos, cand: Bando, afinidad: Record<RegionalId, number>, veto: boolean, humorPodemos = 0): Investidura {
   let si = 0, no = 0, abst = 0;
   for (const [k, n] of Object.entries(escanos) as [PartidoId, number][]) {
     if (!n) continue;
-    const v = votoInvestidura(k, cand, afinidad, veto);
+    const v = votoInvestidura(k, cand, afinidad, veto, humorPodemos);
     if (v === 'si') si += n;
     else if (v === 'no') no += n;
     else abst += n;
@@ -194,8 +210,8 @@ export function proyectar(
     P: BLOQUE_P.reduce((a, k) => a + (escanos[k] ?? 0), 0),
   };
   const veto = vetoVoxActivo(e);
-  const invC = investir(escanos, 'C', e.afinidad, veto);
-  const invP = investir(escanos, 'P', e.afinidad, veto);
+  const invC = investir(escanos, 'C', e.afinidad, veto, e.podemos.humor);
+  const invP = investir(escanos, 'P', e.afinidad, veto, e.podemos.humor);
   const apoyos = { C: invC.si, P: invP.si };
   // el Rey propone primero al candidato del bloque con más escaños
   const orden: Bando[] = bloque.C >= bloque.P ? ['C', 'P'] : ['P', 'C'];

@@ -32,7 +32,14 @@ export function Ayuda({ onCerrar }: { onCerrar: () => void }) {
             <li><b>Clima de campaña</b> (5 Sereno → 1 Ruptura): sube 1 cada semana. Quien lo lleve a 1 en su jugada pierde. Con Clima 4 no hay ofensivas en Cataluña; con 3, tampoco en la Cornisa Norte; con 2, tampoco en Madrid y Centro.</li>
             <li><b>Ventaja demoscópica:</b> cada PV desplaza 0,4 puntos de voto en toda España. Llegar a 20 es victoria inmediata.</li>
             <li><b>El Voto Útil:</b> 4 PC (+1 en circunscripciones de 5 escaños o menos). Empieza en manos del Gobierno y, tras usarla, pasa boca abajo al rival.</li>
-            <li><b>Socios:</b> los medidores de Vox y de FA+Podemos reparten el voto dentro de cada bloque. Más socio moviliza algo más, pero D'Hondt castiga la división. Con el <b>veto de Vox</b> activo (medidor en 0 o más), PNV, Junts y CC no darán el sí al PP.</li>
+            <li><b>Socios:</b> los medidores de Vox y de Frente Amplio reparten el voto dentro de cada bloque. Más socio moviliza algo más, pero D'Hondt castiga la división. Con el <b>veto de Vox</b> activo (medidor en 0 o más), PNV, Junts y CC no darán el sí al PP.</li>
+          </ul>
+          <h3>Podemos, el comodín</h3>
+          <ul>
+            <li>Podemos va por libre: no pertenece a ningún bloque. Su <b>fuerza</b> (−3…+3) le quita voto sobre todo a PSOE y Frente Amplio, y algo de voto protesta a la derecha.</li>
+            <li>Su <b>humor</b> (−3…+3) decide su voto en la investidura de Sánchez: sí con +1 o más, abstención con 0, no con −1 o menos. A Feijóo no le vota nunca.</li>
+            <li>Las <b>cartas moradas</b> son sus comodines: su evento se activa siempre, aunque las uses por sus PC (solo la Carrera lo evita). Siembran el caos en los dos bloques: elige bien cuándo soltarlas.</li>
+            <li>Solo el Progresista puede negociar con Podemos (2 PC por punto de humor), y cada cesión da 1 PV al Conservador.</li>
           </ul>
           <h3>Carrera Programática</h3>
           <ul>
@@ -40,7 +47,7 @@ export function Ayuda({ onCerrar }: { onCerrar: () => void }) {
           </ul>
           <h3>El calendario real</h3>
           <ul>
-            <li>Fin de la semana 3: <b>cierre de listas</b> (26 oct). Con unidad 3, FA y Podemos concurren juntos.</li>
+            <li>Fin de la semana 3: <b>cierre de listas</b> (26 oct). Podemos va en solitario y un dado decide su estrategia: ir a por todas (+1 fuerza, −1 humor), seguir igual o guiñar al PSOE (+1 humor).</li>
             <li>Semana 6: arranca la campaña el 13N, con pegada de carteles (2 de presencia cada uno).</li>
             <li>Semana 7: <b>cara a cara</b> el 16N. Cada uno sacrifica una carta; ganan sus PC + dado + preparación.</li>
             <li>Semana 8: <b>debate a cuatro</b> el 26N y <b>veda demoscópica</b>: las Encuestas no dan PV, salvo «El Periódico de Andorra».</li>

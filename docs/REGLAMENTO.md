@@ -6,8 +6,9 @@ Juego de estrategia por cartas para dos jugadores (o uno contra la IA) inspirado
 
 | Bando | Partidos | Candidato |
 |---|---|---|
-| **Bloque Progresista** (rojo, Gobierno) | PSOE, Frente Amplio, Podemos | Pedro Sánchez |
+| **Bloque Progresista** (rojo, Gobierno) | PSOE, Frente Amplio | Pedro Sánchez |
 | **Bloque Conservador** (azul) | PP, Vox | Alberto Núñez Feijóo |
+| **Podemos** (morado, comodín) | No pertenece a ningún bloque | Irene Montero |
 
 Gana quien logre investir a su candidato la noche del 29N: **176 síes** en primera votación o **más síes que noes** en la segunda. El Rey propone primero al candidato del bloque con más escaños. Si nadie es investido hay repetición electoral, y gana quien lidere la **Ventaja demoscópica** (con Ventaja 0, el Gobierno sigue en funciones y gana el Progresista).
 
@@ -31,7 +32,7 @@ Victorias anticipadas:
 |---|---|---|
 | 1 | 6–11 oct | Convocatoria. Mazo I (Precampaña) |
 | 2 | 12–18 oct | |
-| 3 | 19–25 oct | Al final: **cierre de listas** (26 oct) |
+| 3 | 19–25 oct | Al final: **cierre de listas** (26 oct): Podemos decide su estrategia |
 | 4 | 26 oct–1 nov | Entra el mazo II (Campaña). Mano de 9 y 7 rondas |
 | 5 | 2–8 nov | |
 | 6 | 9–15 nov | 13N: arranca la campaña. **Pegada de carteles**: 2 de presencia cada bloque |
@@ -46,11 +47,13 @@ Victorias anticipadas:
 
 ## 4. Jugar una carta
 
-Cada carta tiene **PC** (puntos de campaña, 1–4) y un **evento** progresista, conservador o neutral. En tu ronda juegas una carta de una de estas formas:
+Cada carta tiene **PC** (puntos de campaña, 1–4) y un **evento** progresista, conservador, neutral o **comodín de Podemos** (morado). En tu ronda juegas una carta de una de estas formas:
 
-- **Evento**: si es tuyo o neutral, lo resuelves tú.
-- **Operaciones**: usas sus PC. Si el evento es **del rival, se activa igualmente** a su favor (tú eliges si antes o después de tus operaciones).
+- **Evento**: si es tuyo, neutral o un comodín, lo resuelves tú.
+- **Operaciones**: usas sus PC. Si el evento es **del rival o un comodín de Podemos, se activa igualmente** (tú eliges si antes o después de tus operaciones).
 - **Carrera Programática**: la carta se descarta sin activar ningún evento.
+
+Los **comodines de Podemos** no son de nadie: siembran el caos en los dos bloques (quitan presencia a ambos, bajan el Clima, lanzan ultimátums, cambian la fuerza y el humor de Podemos). La habilidad está en soltarlos cuando más daño hagan al rival.
 
 Las cartas marcadas con **\*** se retiran del juego tras activar su evento.
 
@@ -61,7 +64,7 @@ Las cartas marcadas con **\*** se retiran del juego tras activar su evento.
 - **Presencia**: 1 PC por punto (2 donde el rival tiene el control). Solo en provincias con tu presencia, vecinas de ellas o en Madrid (sede nacional). Las provincias válidas se fijan al empezar la operación.
 - **Ofensiva**: en una provincia con presencia rival, tira dado + PC − 2 × Fidelidad. Si es positivo, quitas esa cantidad de presencia rival y el sobrante se convierte en presencia tuya. Cuenta para la Exigencia. En una provincia clave, el Clima baja 1.
 - **Debate local**: un intento por PC en una provincia con presencia rival. Cada bloque tira un dado y suma +1 por vecina controlada, +1 si tiene más presencia allí y +1 si es su feudo. El perdedor pierde la diferencia.
-- **Negociación**: 2 PC por paso de afinidad de una fuerza regional, una vez por fuerza y semana, y solo si tienes presencia en su territorio. Cada paso del Progresista hacia ERC, Junts o EH Bildu da 1 PV al Conservador.
+- **Negociación**: 2 PC por paso de afinidad de una fuerza regional, una vez por fuerza y semana, y solo si tienes presencia en su territorio. Cada paso del Progresista hacia ERC, Junts o EH Bildu da 1 PV al Conservador. **Con Podemos** solo puede negociar el Progresista: cada paso mejora 1 su humor y da 1 PV al Conservador.
 
 Restricciones de Clima para ofensivas y debates: con Clima 4 no hay en Cataluña; con 3, tampoco en la Cornisa Norte; con 2, tampoco en Madrid y Centro.
 
@@ -83,15 +86,17 @@ Restricciones de Clima para ofensivas y debates: con Clima 4 no hay en Cataluña
 | 7. Relato ganador | 3 | ≤3 | 4 PV al primero, 2 al segundo |
 | 8. Campaña perfecta | 4 | ≤2 | 2 PV y una ronda extra por semana |
 
-- **Socios del bloque** (−3…+3): el peso de Vox dentro de la derecha y el de FA+Podemos dentro de la izquierda, respecto a las encuestas. Cada paso mueve 3 puntos de cuota dentro del bloque y moviliza (o desmoviliza) un 0,4% de votantes. D'Hondt castiga la división en las provincias pequeñas.
+- **Socios del bloque** (−3…+3): el peso de Vox dentro de la derecha y el de Frente Amplio dentro de la izquierda, respecto a las encuestas. Cada paso mueve 3 puntos de cuota dentro del bloque y moviliza (o desmoviliza) un 0,4% de votantes. D'Hondt castiga la división en las provincias pequeñas.
 - **Veto de Vox**: mientras el medidor de Vox esté en 0 o más, PNV, Junts y CC no votarán sí al candidato conservador (se abstienen como mucho).
-- **Unidad de la izquierda** (0–3): al cierre de listas, con 3, Frente Amplio y Podemos concurren juntos.
+- **Podemos · fuerza** (−3…+3): cada paso cambia su voto de partida un 25%. Lo que gana sale en un 80% de PSOE y Frente Amplio y en un 20% de PP y Vox (voto protesta).
+- **Podemos · humor** (−3…+3, empieza en 0 «exigente»): decide su voto en la investidura (sección 8).
+- **Cierre de listas** (fin de la semana 3): Podemos va en solitario y tira un dado. Con 1–2 va a por todas (+1 fuerza, −1 humor); con 3–4 sigue igual; con 5–6 guiña al PSOE (+1 humor).
 - **El Voto Útil** (la «carta China»): 4 PC (+1 si se emplean en circunscripciones de 5 escaños o menos). Solo para operaciones. Empieza en el Gobierno; tras usarla pasa boca abajo al rival.
 
 ## 7. Debates televisados
 
 - **Cara a cara (16N)**: cada candidato sacrifica en secreto una carta (cuentan sus PC; el evento no se juega). Suman dado + 1 si van por delante en la Carrera + 1 por zona dominada o controlada (máx. 2). El ganador suma la diferencia en PV (máx. 3); con 4 o más de diferencia, el Clima baja 1 (nunca por debajo de 2).
-- **Debate a cuatro (26N)**: primero, los dos medidores de socios suben 1. Después, igual que el cara a cara, con un máximo de 2 PV.
+- **Debate a cuatro (26N)**: PSOE, PP, Vox y Frente Amplio. Primero, los dos medidores de socios suben 1, y Podemos, que se queda fuera, lo hace estallar en redes (+1 fuerza). Después, igual que el cara a cara, con un máximo de 2 PV.
 
 ## 8. Fuerzas regionales e investidura
 
@@ -107,14 +112,17 @@ Cada fuerza regional tiene una **afinidad** de −3 (socia del progresismo) a +3
 
 Afinidad inicial: Compromís −3; ERC, EH Bildu, BNG y Adelante Andalucía −2; PNV y Nueva Canarias −1; Junts y CC 0; UPN +3.
 
+**Podemos** nunca vota a Feijóo. A Sánchez le vota según su humor: **sí** con +1 o más, **abstención** con 0 y **no** con −1 o menos. Empieza en 0: el Progresista tiene que ganárselo, y sus comodines pueden torcerlo en cualquier momento.
+
 ## 9. La noche electoral: el modelo de voto
 
 1. **Base**: la media de 16 encuestadoras de octubre de 2026 (PP 31,6 · PSOE 26,9 · Vox 18,7 · FA 6,3 · Podemos 3,1…) repartida por provincias con la estimación provincial de ElectoPanel (12-10-2026).
-2. **Escenario**: *Encuestas de octubre* la usa tal cual; *Campaña abierta* desplaza 6,5 puntos del bloque conservador al progresista para empezar en empate técnico y equilibrar la partida.
-3. **Campaña**: en cada provincia, la presencia neta respecto a la foto de salida desplaza voto entre bloques (2,4 puntos por punto de presencia en las provincias pequeñas, 0,8 en Madrid; más un plus si cambia el control; máx. 12 puntos).
-4. **Ventaja**: 0,4 puntos por PV en toda España.
-5. **Socios, unidad y eventos** sobre fuerzas regionales.
-6. **D'Hondt** con umbral del 3% de los votos válidos en cada circunscripción. Con los votos oficiales de 2023, este reparto reproduce exactamente los 350 escaños del 23J.
+2. **Escenario**: *Encuestas de octubre* la usa tal cual; *Campaña abierta* desplaza 7,75 puntos del bloque conservador al progresista para equilibrar la partida (calibrado con partidas de la IA contra sí misma: cada bloque gana alrededor de la mitad).
+3. **Podemos**: su fuerza le da o le quita voto (sección 6).
+4. **Campaña**: en cada provincia, la presencia neta respecto a la foto de salida desplaza voto entre bloques (2,4 puntos por punto de presencia en las provincias pequeñas, 0,8 en Madrid; más un plus si cambia el control; máx. 12 puntos).
+5. **Ventaja**: 0,4 puntos por PV en toda España.
+6. **Socios y eventos** sobre fuerzas regionales.
+7. **D'Hondt** con umbral del 3% de los votos válidos en cada circunscripción. Con los votos oficiales de 2023, este reparto reproduce exactamente los 350 escaños del 23J.
 
 La proyección «si se votara hoy» del panel lateral es exactamente este cálculo.
 
@@ -135,7 +143,7 @@ Las cartas tratan temas públicos de forma genérica y equilibrada; no atribuyen
 |---|---|---|---|
 | El Voto Útil | 4 | Neutral | Solo para operaciones: 4 PC (+1 si todas se emplean en circunscripciones de 5 escaños o menos). Después pasa boca abajo al rival, que podrá usarla a partir del turno siguiente. No puede jugarse como Portada. |
 
-### Mazo I · Precampaña (semana 1) (38 cartas)
+### Mazo I · Precampaña (semana 1) (41 cartas)
 
 | Carta | PC | Evento | Efecto |
 |---|---|---|---|
@@ -147,14 +155,14 @@ Las cartas tratan temas públicos de forma genérica y equilibrada; no atribuyen
 | Escudo social | 3 | Progresista | Pensiones y ayudas: coloca 4 presencia en circunscripciones de 5 escaños o menos (máx. 1 por provincia). |
 | Topes al alquiler | 2 | Progresista | Coloca 1 presencia en 3 de estas provincias: Madrid, Barcelona, Valencia, Málaga, Sevilla o Baleares. |
 | Récord de afiliación | 2 | Progresista | Los datos de empleo acompañan: +2 PV si el Clima está en 3 o más; si no, +1 PV. |
-| Frenar a la ultraderecha * | 3 | Progresista | La polarización moviliza a los extremos: el medidor de Vox sube 1, el de los socios progresistas baja 1 (voto útil al PSOE) y ganas 1 PV. |
+| Frenar a la ultraderecha * | 3 | Progresista | La polarización moviliza a los extremos: el medidor de Vox sube 1, el de Frente Amplio baja 1 (voto útil al PSOE) y ganas 1 PV. |
 | Agenda territorial * | 2 | Progresista | ERC y Junts se acercan 1 al bloque progresista y colocas 1 presencia en Barcelona. El Conservador gana 1 PV. |
 | Fondos europeos | 3 | Progresista | Coloca 3 presencia en provincias donde ya tengas presencia (máx. 1 por provincia). |
 | Marea blanca | 2 | Progresista | Protestas por la sanidad pública: retira 2 presencia conservadora en Andalucía o Madrid y Centro (máx. 1 por provincia). |
-| Reconocimiento de Palestina | 1 | Progresista | La política exterior moviliza a la izquierda: el medidor de socios progresistas baja 1 y la unidad de la izquierda sube 1. |
+| Reconocimiento de Palestina | 1 | Progresista | La política exterior moviliza a la izquierda: el medidor de Frente Amplio baja 1 y el humor de Podemos mejora 1. |
 | Ministros en campaña | 3 | Progresista | Coloca 2 presencia en cualquier provincia (sin adyacencia). El Clima baja 1. |
 | Reducción de jornada | 2 | Progresista | Gana 1 PV y coloca 1 presencia en 2 provincias de Andalucía o de Levante y Baleares (máx. 1 por provincia). |
-| Primarias abiertas * | 1 | Progresista | Si las listas siguen abiertas, la unidad de la izquierda sube 1. |
+| Mano tendida a Podemos | 1 | Progresista | El humor de Podemos mejora 1. |
 | Ola autonómica * | 3 | Conservador | Los gobiernos autonómicos del PP empujan: coloca 1 presencia en 4 provincias de Interior, Andalucía o Madrid y Centro (máx. 1 por provincia). |
 | Rebaja fiscal | 2 | Conservador | Coloca 3 presencia en Madrid y Centro o Levante y Baleares (máx. 2 por provincia). |
 | Tribunales en campaña | 3 | Conservador | Investigaciones judiciales en el entorno del Gobierno copan los titulares: +2 PV y el Clima baja 1. |
@@ -173,12 +181,15 @@ Las cartas tratan temas públicos de forma genérica y equilibrada; no atribuyen
 | Bulo viral | 2 | Neutral | Retira 2 presencia rival (máx. 1 por provincia). El Clima baja 1. |
 | Mitin multitudinario | 3 | Neutral | Coloca 3 presencia en una sola provincia clave donde ya tengas presencia. |
 | Entrevista en prime time | 1 | Neutral | Avanza 1 casilla en la Carrera Programática sin tirar. |
-| Gasto en defensa | 2 | Neutral | El compromiso con la OTAN divide a la izquierda: el medidor de socios progresistas sube 1 y la unidad de la izquierda baja 1. |
+| Gasto en defensa | 2 | Neutral | El compromiso con la OTAN divide a la izquierda: el medidor de Frente Amplio sube 1, Podemos gana 1 de fuerza y su humor empeora 1. |
 | Voto por correo | 2 | Neutral | Quien tenga menos presencia total en el mapa coloca 2 presencia (máx. 1 por provincia). |
 | Debate sobre la vivienda | 2 | Neutral | Quien controle más provincias entre Madrid, Barcelona, Valencia, Málaga, Sevilla y Baleares gana 2 PV. |
 | Filtración de la estrategia | 1 | Neutral | Ves la mano del rival durante este turno y ganas 1 PV. |
+| Podemos rompe la baraja | 3 | Comodín de Podemos | Podemos endurece sus condiciones: gana 1 de fuerza y su humor empeora 1. Después, cada bloque retira 1 presencia rival en una provincia clave, empezando por quien juega la carta. |
+| Movilización en la calle | 2 | Comodín de Podemos | Podemos llena las calles de Madrid y Barcelona: gana 1 de fuerza y cada bloque pierde 1 presencia en Madrid y otra en Barcelona. |
+| Ultimátum al PSOE | 2 | Comodín de Podemos | Podemos exige compromisos por escrito. El Progresista elige: ceder (el Conservador gana 2 PV) o plantarse (el humor de Podemos empeora 2). |
 
-### Mazo II · Campaña (semana 4) (37 cartas)
+### Mazo II · Campaña (semana 4) (40 cartas)
 
 | Carta | PC | Evento | Efecto |
 |---|---|---|---|
@@ -188,11 +199,11 @@ Las cartas tratan temas públicos de forma genérica y equilibrada; no atribuyen
 | Barómetro del CIS | — | Encuesta | Cada bando suma 1 por provincia clave que controle; la diferencia (máx. 3) va a la Ventaja. En el turno 8 no da PV. |
 | La hemeroteca de la corrupción | 3 | Progresista | Juicios y sumarios del pasado del principal partido de la oposición vuelven a los titulares: +2 PV y el Clima baja 1. |
 | Pensiones revalorizadas | 3 | Progresista | Coloca 1 presencia en 4 provincias de 5 escaños o menos de Interior, Cornisa Norte o Madrid y Centro (máx. 1 por provincia). |
-| El miedo a la mayoría PP-Vox * | 3 | Progresista | Si la proyección da al Conservador 176 o más apoyos, ganas 2 PV y el medidor de socios progresistas baja 1. Si no, ganas 1 PV. |
+| El miedo a la mayoría PP-Vox * | 3 | Progresista | Si la proyección da al Conservador 176 o más apoyos, ganas 2 PV y el medidor de Frente Amplio baja 1. Si no, ganas 1 PV. |
 | Acuerdo con el PNV | 2 | Progresista | El PNV se acerca 1 al bloque progresista y colocas 1 presencia en Bizkaia. |
 | Subida del salario mínimo | 2 | Progresista | Gana 1 PV y coloca 1 presencia en 2 provincias de Andalucía (máx. 1 por provincia). |
 | Abono único de transporte | 2 | Progresista | Coloca 2 presencia en provincias clave de Madrid y Centro o de Cataluña (máx. 1 por provincia). |
-| Frente común | 2 | Progresista | Si las listas siguen abiertas, la unidad de la izquierda sube 1. Si no, coloca 1 presencia en 2 provincias clave. |
+| Frente común | 2 | Progresista | El humor de Podemos mejora 1 y colocas 1 presencia en 2 provincias clave (máx. 1 por provincia). |
 | Movilización feminista | 2 | Progresista | Coloca 1 presencia en 3 provincias clave (máx. 1 por provincia). |
 | La campaña del PSC | 3 | Progresista | Coloca 3 presencia en Cataluña (máx. 2 por provincia). |
 | Sanidad y educación públicas | 1 | Progresista | Retira 1 presencia conservadora en 2 provincias (máx. 1 por provincia). |
@@ -215,16 +226,19 @@ Las cartas tratan temas públicos de forma genérica y equilibrada; no atribuyen
 | Encuestas contradictorias | 2 | Neutral | Ganas 1 PV; 2 si la Ventaja te es contraria por 5 o más. |
 | Abstención de castigo | 2 | Neutral | Elige 3 provincias: en cada una, cada bando pierde 1 presencia (si la tiene). |
 | Fuga del voto nacionalista | 2 | Neutral | Elige una fuerza nacionalista: pierde el 15% de su voto, que va a los grandes bloques, y colocas 1 presencia en su territorio. |
-| Debate a siete en RTVE | 2 | Neutral | Los socios ganan foco: ambos medidores de socios suben 1. Quien controle más provincias clave de Madrid y Centro gana 1 PV. |
+| Debate a siete en RTVE | 2 | Neutral | Los socios ganan foco: los medidores de Vox y de Frente Amplio suben 1 y Podemos gana 1 de fuerza. Quien controle más provincias clave de Madrid y Centro gana 1 PV. |
 | Campaña en redes | 2 | Neutral | Coloca 2 presencia en provincias de 8 o más escaños (máx. 1 por provincia). |
 | Junts marca distancias | 2 | Neutral | Junts se mueve 1 hacia la neutralidad y crece un 10% en Cataluña. |
 | Debate migratorio | 2 | Neutral | El medidor de Vox sube 1 y colocas 2 presencia en Canarias, Ceuta o Melilla (máx. 1 por provincia). |
+| Vetos cruzados | 2 | Comodín de Podemos | Podemos y Frente Amplio se enzarzan: el medidor de Frente Amplio baja 1 y Podemos gana 1 de fuerza. El ruido también da alas a Vox (+1). |
+| Podemos tiende la mano | 2 | Comodín de Podemos | El humor de Podemos mejora 2, pero pierde 1 de fuerza: parte de su electorado vuelve al PSOE. |
+| Guerra en redes | 3 | Comodín de Podemos | Podemos dispara contra todos: el Clima baja 1 y cada bloque retira 2 presencia rival (máx. 1 por provincia), empezando por quien juega la carta. |
 
-### Mazo III · Recta final (semana 7) (17 cartas)
+### Mazo III · Recta final (semana 7) (19 cartas)
 
 | Carta | PC | Evento | Efecto |
 |---|---|---|---|
-| Llamamiento al voto útil * | 3 | Progresista | El medidor de socios progresistas baja 2. |
+| Llamamiento al voto útil * | 3 | Progresista | El medidor de Frente Amplio baja 2 y Podemos pierde 1 de fuerza. |
 | Remontada * | 3 | Progresista | Si el Conservador aventaja por 5 o más, ganas 3 PV; si no, 1 PV. |
 | Gran mitin de cierre | 2 | Progresista | Coloca 2 presencia en una sola provincia clave y gana 1 PV. |
 | Pacto de investidura * | 3 | Progresista | Dos fuerzas nacionalistas a tu elección se acercan 1 al bloque progresista, sin coste. |
@@ -241,5 +255,7 @@ Las cartas tratan temas públicos de forma genérica y equilibrada; no atribuyen
 | Indecisos de última hora | 2 | Neutral | Quien vaya por detrás en la Ventaja gana 1 PV y coloca 1 presencia. |
 | Lluvia el 29N | 1 | Neutral | Baja la participación: los medidores de socios de ambos bloques bajan 1. |
 | Último sondeo interno | 1 | Neutral | Ves la mano del rival este turno y avanzas 1 casilla en la Carrera sin tirar. |
+| La llave morada * | 3 | Comodín de Podemos | Tira un dado: con 1-2 Podemos anuncia que no apoyará a Sánchez sin acuerdo (su humor empeora 2); con 3-4, nada; con 5-6 pacta in extremis (su humor mejora 2). |
+| Remontada morada | 2 | Comodín de Podemos | Podemos gana 2 de fuerza y la polarización también da alas a Vox (+1). |
 
-Resumen: 29 progresistas (68 PC), 30 conservadoras (68 PC), 26 neutrales, 8 encuestas. * = se retira tras jugar el evento.
+Resumen: 29 progresistas (68 PC), 30 conservadoras (68 PC), 8 comodines de Podemos (19 PC), 26 neutrales, 8 encuestas. * = se retira tras jugar el evento.

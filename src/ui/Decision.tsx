@@ -82,7 +82,7 @@ export function Decision({ e, humano, seleccion, onResponder, onSeleccion }: Pro
           <div className="botones">
             {d.opciones.map((k) => (
               <button key={k} className="boton" type="button" onClick={() => onResponder({ tipo: 'partido', id: k })}>
-                {PARTIDOS[k].siglas} <span className="dato" style={{ color: 'var(--tenue)' }}>{fmtAfin(e.afinidad[k])}</span>
+                {PARTIDOS[k].siglas} <span className="dato" style={{ color: 'var(--tenue)' }}>{k === 'PODEMOS' ? `humor ${e.podemos.humor > 0 ? '+' : ''}${e.podemos.humor} · cuesta 1 PV` : fmtAfin(e.afinidad[k])}</span>
               </button>
             ))}
             {d.opcional && <button className="boton" type="button" onClick={() => onResponder({ tipo: 'partido', id: null })}>Terminar</button>}
@@ -104,8 +104,9 @@ export function Decision({ e, humano, seleccion, onResponder, onSeleccion }: Pro
       }
       const c = CARTAS[sel];
       const esRival = c.lado === RIVAL[b];
+      const esComodin = c.lado === 'W';
       const peligro = (uso: Uso) => {
-        const disparaEvento = uso === 'evento' ? c.lado !== 'E' : uso === 'ops' && esRival && eventoJugable(e, sel, b);
+        const disparaEvento = uso === 'evento' ? c.lado !== 'E' : uso === 'ops' && (esRival || esComodin) && eventoJugable(e, sel, b);
         return disparaEvento && bajaClima(sel) && e.clima <= 2;
       };
       const elegir = (uso?: Uso) => { onResponder({ tipo: 'carta', carta: sel, uso }); onSeleccion(null); };
@@ -128,7 +129,8 @@ export function Decision({ e, humano, seleccion, onResponder, onSeleccion }: Pro
               )}
             </div>
             {esRival && usos.includes('ops') && eventoJugable(e, sel, b) && <div className="aviso">Si usas sus PC se activará el evento del rival: {c.texto}</div>}
-            {esRival && usos.includes('carrera') && <div className="hito" style={{ fontSize: 12, color: 'var(--tenue)' }}>En la Carrera, el evento rival no se activa.</div>}
+            {esComodin && usos.includes('ops') && <div className="aviso">Comodín de Podemos: aunque uses sus PC, su evento se activa igualmente.</div>}
+            {(esRival || esComodin) && usos.includes('carrera') && <div className="hito" style={{ fontSize: 12, color: 'var(--tenue)' }}>En la Carrera, el evento no se activa.</div>}
             {(peligro('evento') || peligro('ops')) && <div className="aviso"><b>¡Peligro!</b> Este evento baja el Clima a 1 en tu ronda: perderías la partida por Ruptura.</div>}
             <div className="botones"><button className="boton pequeno" type="button" onClick={() => onSeleccion(null)}>Elegir otra carta</button></div>
           </div>

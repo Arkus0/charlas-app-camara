@@ -10,8 +10,11 @@ export type PartidoId =
   | 'ERC' | 'JUNTS' | 'BILDU' | 'PNV' | 'BNG' | 'CC' | 'UPN' | 'COMPROMIS' | 'ADELANTE' | 'NC'
   | 'SALF' | 'SORIA' | 'UPL' | 'TE' | 'OTROS' | 'BLANCO';
 
-/** Fuerzas con las que se puede negociar (los «países neutrales»). */
+/** Fuerzas regionales con las que se puede negociar (los «países neutrales»). */
 export type RegionalId = 'ERC' | 'JUNTS' | 'BILDU' | 'PNV' | 'BNG' | 'CC' | 'UPN' | 'COMPROMIS' | 'ADELANTE' | 'NC';
+
+/** Todo aquello con lo que se puede negociar: las regionales y Podemos, el comodín. */
+export type Negociable = RegionalId | 'PODEMOS';
 
 export type Votos = Partial<Record<PartidoId, number>>;
 
@@ -41,7 +44,7 @@ export interface Zona {
 export type Uso = 'evento' | 'ops' | 'carrera';
 export type Operacion = 'presencia' | 'ofensiva' | 'debate' | 'negociacion';
 
-export type LadoCarta = 'P' | 'C' | 'N' | 'E'; // E = encuesta
+export type LadoCarta = 'P' | 'C' | 'N' | 'E' | 'W'; // E = encuesta, W = comodín de Podemos
 
 export interface Filtro {
   zonas?: ZonaId[];
@@ -63,7 +66,7 @@ export type Cond =
   | { c: 'rivalAventaja'; n: number } // la Ventaja favorece al rival por n o más
   | { c: 'yoAventajo'; n: number }
   | { c: 'turnoMax'; n: number }
-  | { c: 'listasAbiertas' }
+  | { c: 'humorPodemosMin'; n: number }
   | { c: 'socioMin'; bloque: 'yo' | 'rival'; n: number }
   | { c: 'socioMax'; bloque: 'yo' | 'rival'; n: number }
   | { c: 'mayoriaRival' } // la proyección da al rival 176 o más con sus socios
@@ -79,7 +82,7 @@ export type Efecto =
   | { e: 'colocar'; n: number; maxPor?: number; filtro?: Filtro; unaSola?: boolean }
   | { e: 'retirar'; n: number; maxPor?: number; filtro?: Filtro; de?: 'rival' | 'ambos'; unaSola?: boolean }
   | { e: 'retirarTodo'; provs: string[] }
-  | { e: 'como'; bando: Bando; efectos: Efecto[] }
+  | { e: 'como'; bando: Bando | 'rival'; efectos: Efecto[] }
   | { e: 'alQueMenosPresencia'; efectos: Efecto[] }
   | { e: 'alQueControlaMas'; provs: string[]; efectos: Efecto[] }
   | { e: 'alQueVaDetras'; efectos: Efecto[] }
@@ -87,7 +90,7 @@ export type Efecto =
   | { e: 'fugaNacionalista'; pct: number }
   | { e: 'afinidadNeutral'; partido: RegionalId }
   | { e: 'socio'; bloque: 'yo' | 'rival' | 'P' | 'C'; n: number }
-  | { e: 'unidad'; n: number }
+  | { e: 'podemos'; fuerza?: number; humor?: number }
   | { e: 'afinidad'; partido: RegionalId; n: number }
   | { e: 'afinidadElegir'; n: number; veces: number; partidos?: RegionalId[] }
   | { e: 'carrera'; n: number }
@@ -130,14 +133,14 @@ export type Decision =
   | { tipo: 'carta'; bando: Bando; texto: string; proposito: 'portada' | 'accion' | 'debate' | 'descarte'; opciones: number[]; usos: Record<number, Uso[]>; opcional: boolean }
   | { tipo: 'operacion'; bando: Bando; texto: string; carta: number; pc: number; opciones: Operacion[] }
   | { tipo: 'opcion'; bando: Bando; texto: string; opciones: string[] }
-  | { tipo: 'partido'; bando: Bando; texto: string; opciones: RegionalId[]; opcional: boolean };
+  | { tipo: 'partido'; bando: Bando; texto: string; opciones: Negociable[]; opcional: boolean };
 
 export type Respuesta =
   | { tipo: 'provincia'; id: string | null }
   | { tipo: 'carta'; carta: number | null; uso?: Uso }
   | { tipo: 'operacion'; op: Operacion }
   | { tipo: 'opcion'; i: number }
-  | { tipo: 'partido'; id: RegionalId | null };
+  | { tipo: 'partido'; id: Negociable | null };
 
 export interface EntradaLog {
   turno: number;
@@ -155,7 +158,7 @@ export interface Ganador {
 export type Tarea = { t: string; [k: string]: any };
 
 export interface Estado {
-  version: 1;
+  version: 2;
   rng: number;
   turno: number;
   ronda: number;
@@ -171,11 +174,12 @@ export interface Estado {
   exigencia: { P: number; C: number };
   carrera: { P: number; C: number };
   carreraTurno: { P: number; C: number };
-  socio: { P: number; C: number }; // peso de los socios (Sumar/Podemos | Vox) respecto a la base
-  unidad: number;
-  listaConjunta: boolean | null;
+  socio: { P: number; C: number }; // peso de los socios (Frente Amplio | Vox) respecto a la base
+  /** Podemos, el comodín: fuerza (−3…+3, su voto respecto a las encuestas) y humor
+   *  (−3…+3: 1 o más, sí a Sánchez; 0, abstención; −1 o menos, no). Nunca vota a Feijóo. */
+  podemos: { fuerza: number; humor: number };
   afinidad: Record<RegionalId, number>; // − hacia P, + hacia C
-  negociado: RegionalId[]; // partidos negociados este turno
+  negociado: Negociable[]; // fuerzas negociadas este turno
   modsProv: Record<string, number>; // pp a favor del Conservador por eventos
   modsPartido: Partial<Record<RegionalId, number>>;
   mazo: number[];

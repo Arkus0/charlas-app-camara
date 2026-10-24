@@ -44,7 +44,7 @@ export function Menu({ inicial, hayGuardada, onEmpezar, onContinuar }: Props) {
               <div className="grupo">
                 <span className="etiqueta">Tu bando</span>
                 <div className="selector">
-                  <Opcion valor="P" actual={c.humano} onElegir={(humano) => setC({ ...c, humano })} titulo="Bloque Progresista" texto="PSOE, Frente Amplio y Podemos. Gobierna y tiene El Voto Útil." />
+                  <Opcion valor="P" actual={c.humano} onElegir={(humano) => setC({ ...c, humano })} titulo="Bloque Progresista" texto="PSOE y Frente Amplio. Gobierna, tiene El Voto Útil y necesita a Podemos." />
                   <Opcion valor="C" actual={c.humano} onElegir={(humano) => setC({ ...c, humano })} titulo="Bloque Conservador" texto="PP y Vox. Lideran las encuestas y quieren el cambio." />
                 </div>
               </div>

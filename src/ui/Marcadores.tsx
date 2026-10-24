@@ -1,5 +1,5 @@
 import { CARRERA, FECHAS, HITOS, rondasDe, zonaVetada } from '../engine/reglas';
-import { fmtVentaja, NOMBRES_CLIMA } from '../engine/motor';
+import { fmtVentaja, HUMOR_PODEMOS, NOMBRES_CLIMA } from '../engine/motor';
 import { ZONAS } from '../data/provincias';
 import { CORTO_BANDO } from '../data/partidos';
 import type { Estado, ZonaId } from '../engine/tipos';
@@ -67,12 +67,14 @@ export function Marcadores({ e, onAyuda, onMenu }: { e: Estado; onAyuda: () => v
       <div className="marcador caja">
         <span className="etiqueta">Socios del bloque</span>
         <span className="hito fila-medidor"><b className="c">Vox</b><Medidor valor={e.socio.C} min={-3} max={3} /></span>
-        <span className="hito fila-medidor"><b className="p">FA + Podemos</b><Medidor valor={e.socio.P} min={-3} max={3} /></span>
-      </div>
-      <div className="marcador caja">
-        <span className="etiqueta">Izquierda · Voto Útil</span>
-        <span className="hito" style={{ color: 'var(--tinta)' }}>{e.listaConjunta === null ? `Unidad ${e.unidad}/3 (con 3, lista conjunta)` : e.listaConjunta ? 'FA y Podemos, lista conjunta' : 'FA y Podemos, por separado'}</span>
+        <span className="hito fila-medidor"><b className="p">Frente Amplio</b><Medidor valor={e.socio.P} min={-3} max={3} /></span>
         <span className="hito">Voto Útil: <b className={e.votoUtil.duenio === 'P' ? 'p' : 'c'}>{CORTO_BANDO[e.votoUtil.duenio]}</b>{e.votoUtil.disponible ? '' : ' (boca abajo)'}</span>
+      </div>
+      <div className="marcador caja podemos" title="Podemos va por libre: su fuerza le quita voto sobre todo a la izquierda y su humor decide su voto en la investidura de Sánchez (a Feijóo nunca le vota).">
+        <span className="etiqueta">Podemos · comodín</span>
+        <span className="hito fila-medidor"><b>Fuerza</b><Medidor valor={e.podemos.fuerza} min={-3} max={3} /></span>
+        <span className="hito fila-medidor"><b>Humor</b><Medidor valor={e.podemos.humor} min={-3} max={3} /></span>
+        <span className="hito">{HUMOR_PODEMOS[e.podemos.humor]}: {e.podemos.humor >= 1 ? 'sí a Sánchez' : e.podemos.humor === 0 ? 'abstención' : 'no a Sánchez'}</span>
       </div>
     </header>
   );

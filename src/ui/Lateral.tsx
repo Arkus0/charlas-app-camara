@@ -23,7 +23,7 @@ export const Escrutinio = memo(function Escrutinio({ r }: { r: Resultado }) {
       </div>
       <Hemiciclo escanos={r.escanos} />
       <div className="bloques">
-        <div className="bloque-n p"><b>{r.bloque.P}</b><small>PSOE + FA + Podemos · {r.apoyos.P} apoyos</small></div>
+        <div className="bloque-n p"><b>{r.bloque.P}</b><small>PSOE + Frente Amplio · {r.apoyos.P} apoyos</small></div>
         <div className="bloque-n c"><b>{r.bloque.C}</b><small>PP + Vox · {r.apoyos.C} apoyos</small></div>
       </div>
       <div className="veredicto">{veredicto(r)}{r.vetoVox ? ' Veto de Vox activo: PNV, Junts y CC no darán el sí al PP.' : ''}</div>
@@ -39,7 +39,12 @@ export const Escrutinio = memo(function Escrutinio({ r }: { r: Resultado }) {
 export const Afinidades = memo(function Afinidades({ e, r }: { e: Estado; r: Resultado }) {
   return (
     <section className="caja afinidades" aria-label="Afinidad de las fuerzas regionales">
-      <h3 className="etiqueta">Fuerzas regionales · afinidad para la investidura</h3>
+      <h3 className="etiqueta">Apoyos en la investidura</h3>
+      <div className="afin-fila" title="Podemos va por libre. A Feijóo nunca le vota; a Sánchez, según su humor: sí (+1 o más), abstención (0) o no (−1 o menos).">
+        <span style={{ color: 'var(--morado-claro)' }}>Podemos <span className="dato" style={{ color: 'var(--tenue)' }}>{r.escanos.PODEMOS ?? 0}</span></span>
+        <span className="afin-escala"><b style={{ left: `${((3 - e.podemos.humor) / 6) * 100}%`, background: 'var(--morado-claro)' }} /></span>
+        <span className="dato" style={{ fontSize: 11, color: 'var(--tenue)' }}>{e.podemos.humor >= 1 ? 'sí' : e.podemos.humor === 0 ? 'abst' : 'no'}</span>
+      </div>
       {REGIONALES.map((k) => {
         const a = e.afinidad[k];
         const esc = r.escanos[k as PartidoId] ?? 0;

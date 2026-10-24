@@ -23,7 +23,9 @@ export function escanosSuaves(e: Estado, id: string): Votos {
 /** Peso de cada escaño en X (+1 suma al Conservador, −1 al Progresista). */
 export function pesos(e: Estado): Partial<Record<PartidoId, number>> {
   const veto = vetoVoxActivo(e);
-  const w: Partial<Record<PartidoId, number>> = { PP: 1, VOX: 1, PSOE: -1, SUMAR: -1, PODEMOS: -1, SALF: 0.5 };
+  // Podemos nunca vota a Feijóo; a Sánchez, según su humor (sí −1, abstención −0,5, no 0)
+  const hp = e.podemos.humor;
+  const w: Partial<Record<PartidoId, number>> = { PP: 1, VOX: 1, PSOE: -1, SUMAR: -1, PODEMOS: hp >= 1 ? -1 : hp === 0 ? -0.5 : 0, SALF: 0.5 };
   for (const [k, a] of Object.entries(e.afinidad)) {
     let v = a >= 2 ? 1 : a === 1 ? 0.5 : a === 0 ? 0 : a === -1 ? -0.5 : -1;
     if (veto && v === 1 && (k === 'PNV' || k === 'JUNTS' || k === 'CC')) v = 0.5;
@@ -86,7 +88,7 @@ export function riesgoBombas(e: Estado, b: Bando): number {
   if (e.clima > 3 || e.turno === 0) return 0;
   const rv = b === 'C' ? 'P' : 'C';
   const mano = e.manos[b];
-  const bombas = mano.filter((id) => CARTAS[id].lado === rv && bajaClima(id)).length;
+  const bombas = mano.filter((id) => (CARTAS[id].lado === rv || CARTAS[id].lado === 'W') && bajaClima(id)).length;
   if (!bombas) return 0;
   const quedan = Math.max(0, rondasDe(e, b) - e.rondasHechas[b]);
   const seguras = mano.length - bombas + (e.votoUtil.duenio === b && e.votoUtil.disponible ? 1 : 0);
@@ -115,8 +117,8 @@ export function valorar(e: Estado, b: Bando): Valoracion {
     for (const k in r) esc[k as PartidoId] = (esc[k as PartidoId] ?? 0) + (r[k as PartidoId] as number);
   }
   const veto = vetoVoxActivo(e);
-  const ic = investir(esc, 'C', e.afinidad, veto);
-  const ip = investir(esc, 'P', e.afinidad, veto);
+  const ic = investir(esc, 'C', e.afinidad, veto, e.podemos.humor);
+  const ip = investir(esc, 'P', e.afinidad, veto, e.podemos.humor);
   const dpv = pvFuturo(e, b) + pvExigencia(e);
   const ajuste = 2 * ESCANOS_POR_PV * dpv;
   const mC = ic.si - ic.no + ajuste;

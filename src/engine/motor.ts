@@ -7,11 +7,11 @@ import { PRESENCIA_INICIAL, PROV, PROVINCIAS, ZONAS } from '../data/provincias';
 import { controlDe, proyectar, REGIONALES } from './electoral';
 import { aleatorio, barajar, d6 } from './rng';
 import {
-  CARRERA, controla, costePresencia, cumpleCond, cumpleFiltro, elegiblesPresencia, esEncuesta, eventoJugable,
+  CARRERA, controla, costePresencia, cumpleCond, cumpleFiltro, elegiblesPresencia, esEncuesta, eventoAjeno, eventoJugable,
   ladoEvento, objetivosAtaque, partidosNegociables, presenciaTotal, puntuarCIS, puntuarZona, rondasDe,
   tamanoMano, tieneVentajaCarrera, usosCarta, ZONA_IDS, zonasDominadas, FECHAS,
 } from './reglas';
-import type { Bando, Decision, Efecto, EntradaLog, Escenario, Estado, Operacion, RegionalId, Respuesta, Tarea, Uso, ZonaId } from './tipos';
+import type { Bando, Decision, Efecto, EntradaLog, Escenario, Estado, Negociable, Operacion, RegionalId, Respuesta, Tarea, Uso, ZonaId } from './tipos';
 import { RIVAL } from './tipos';
 
 const N = (b: Bando) => CORTO_BANDO[b];
@@ -97,6 +97,19 @@ function moverAfinidad(e: Estado, k: RegionalId, hacia: Bando, n: number) {
   if (e.afinidad[k] !== antes) log(e, `${PARTIDOS[k].siglas}: afinidad ${fmtAfin(antes)} → ${fmtAfin(e.afinidad[k])}`, undefined, hacia);
 }
 
+export const HUMOR_PODEMOS: Record<number, string> = {
+  [-3]: 'en guerra con el PSOE', [-2]: 'ruptura', [-1]: 'enfadado', 0: 'exigente', 1: 'dispuesto', 2: 'socio', 3: 'socio firme',
+};
+
+/** Mueve los marcadores de Podemos (fuerza y humor, de −3 a +3). */
+function cambiarPodemos(e: Estado, fuerza: number, humor: number) {
+  const antes = { ...e.podemos };
+  e.podemos.fuerza = Math.max(-3, Math.min(3, e.podemos.fuerza + fuerza));
+  e.podemos.humor = Math.max(-3, Math.min(3, e.podemos.humor + humor));
+  if (e.podemos.fuerza !== antes.fuerza) log(e, `Fuerza de Podemos: ${fmtSigno(antes.fuerza)} → ${fmtSigno(e.podemos.fuerza)}`);
+  if (e.podemos.humor !== antes.humor) log(e, `Humor de Podemos: ${HUMOR_PODEMOS[antes.humor]} → ${HUMOR_PODEMOS[e.podemos.humor]} (${e.podemos.humor >= 1 ? 'votaría sí a Sánchez' : e.podemos.humor === 0 ? 'se abstendría con Sánchez' : 'votaría no a Sánchez'})`);
+}
+
 export function fmtAfin(a: number) {
   return a === 0 ? '0' : a < 0 ? `P${-a}` : `C${a}`;
 }
@@ -125,13 +138,14 @@ function puntuarZonaYAplicar(e: Estado, z: ZonaId, ignorarVeda: boolean) {
 
 // ————————————————————————————————————— creación
 /** Desplazamiento de partida (pp hacia el Conservador) de cada escenario. */
-export const SESGO_ESCENARIO: Record<Escenario, number> = { realista: 0, abierto: -6.5 };
+// Calibrado con partidas IA contra IA (nivel normal): el Progresista gana ~50% en «abierto»
+export const SESGO_ESCENARIO: Record<Escenario, number> = { realista: 0, abierto: -7.75 };
 
 export function crearPartida(semilla = Date.now(), escenario: Escenario = 'abierto'): Estado {
   const presencia: Estado['presencia'] = {};
   for (const p of PROVINCIAS) presencia[p.id] = { P: PRESENCIA_INICIAL[p.id]?.P ?? 0, C: PRESENCIA_INICIAL[p.id]?.C ?? 0 };
   const e: Estado = {
-    version: 1,
+    version: 2,
     rng: semilla >>> 0 || 1,
     turno: 0,
     ronda: 0,
@@ -148,8 +162,7 @@ export function crearPartida(semilla = Date.now(), escenario: Escenario = 'abier
     carrera: { P: 0, C: 0 },
     carreraTurno: { P: 0, C: 0 },
     socio: { P: 0, C: 0 },
-    unidad: 1,
-    listaConjunta: null,
+    podemos: { fuerza: 0, humor: 0 },
     afinidad: { ...AFINIDAD_INICIAL },
     negociado: [],
     modsProv: {},
@@ -311,7 +324,10 @@ function paso(e: Estado, t: Tarea, r: Respuesta | undefined): boolean {
       return tareaRonda(e, t, r);
 
     case 'ordenEvento': {
-      if (!r) return decidir(e, { tipo: 'opcion', bando: t.bando, texto: `Has jugado ${nombreCarta(t.carta)}, cuyo evento es del rival. ¿Qué va primero?`, opciones: ['Primero el evento del rival y después mis operaciones', 'Primero mis operaciones y después el evento del rival'] });
+      if (!r) {
+        const quien = CARTAS[t.carta].lado === 'W' ? 'de Podemos' : 'del rival';
+        return decidir(e, { tipo: 'opcion', bando: t.bando, texto: `Has jugado ${nombreCarta(t.carta)}: su evento ${quien} se activa igualmente. ¿Qué va primero?`, opciones: [`Primero el evento ${quien} y después mis operaciones`, `Primero mis operaciones y después el evento ${quien}`] });
+      }
       const ev = { t: 'evento', carta: t.carta, jugador: t.bando };
       const ops = { t: 'opsElegir', bando: t.bando, carta: t.carta, pc: t.pc };
       if ((r as any).i === 0) encolar(e, ev, ops);
@@ -452,12 +468,19 @@ function paso(e: Estado, t: Tarea, r: Respuesta | undefined): boolean {
       return true;
     }
 
-    case 'cierreListas':
-      e.listaConjunta = e.unidad >= 3;
-      log(e, e.listaConjunta
-        ? 'Lunes 26 de octubre, cierre de listas: Frente Amplio y Podemos concurren juntos en toda España'
-        : 'Lunes 26 de octubre, cierre de listas: Frente Amplio y Podemos concurren por separado', 'fase');
+    case 'cierreListas': {
+      const dado = d6(e);
+      log(e, `Lunes 26 de octubre, cierre de listas: Podemos va en solitario y decide su estrategia (dado ${dado})`, 'fase');
+      e.enJuego = null;
+      if (dado <= 2) {
+        log(e, 'Podemos va a por todas contra el PSOE y contra la derecha', 'evento');
+        cambiarPodemos(e, 1, -1);
+      } else if (dado >= 5) {
+        log(e, 'Podemos guiña al PSOE: «Estaremos para frenar a la derecha»', 'evento');
+        cambiarPodemos(e, 0, 1);
+      } else log(e, 'Podemos mantiene su estrategia', 'evento');
       return true;
+    }
 
     case 'nocheElectoral': {
       e.fase = 'fin';
@@ -574,7 +597,7 @@ function tareaRonda(e: Estado, t: Tarea, r: Respuesta | undefined): boolean {
     if (carta === 0) {
       encolar(e, { t: 'opsElegir', bando: b, carta, pc, votoUtil: true });
       log(e, 'El Voto Útil pasa boca abajo al rival', undefined, b);
-    } else if (c.lado === RIVAL[b] && eventoJugable(e, carta, b)) {
+    } else if (eventoAjeno(carta, b) && eventoJugable(e, carta, b)) {
       encolar(e, { t: 'ordenEvento', bando: b, carta, pc });
     } else {
       encolar(e, { t: 'opsElegir', bando: b, carta, pc }, { t: 'descartar', carta });
@@ -700,12 +723,18 @@ function tareaNegociacion(e: Estado, t: Tarea, r: Respuesta | undefined): boolea
   const opciones = partidosNegociables(e, b);
   if (opciones.length === 0) return true;
   if (!r) return decidir(e, { tipo: 'partido', bando: b, texto: `Negociación (${t.pasos} paso${t.pasos > 1 ? 's' : ''}): elige una fuerza con la que tengas presencia en su territorio`, opciones, opcional: true });
-  const k = (r as any).id as RegionalId | null;
+  const k = (r as any).id as Negociable | null;
   if (k === null) return true;
   log(e, `${N(b)} negocia con ${PARTIDOS[k].siglas}`, undefined, b);
-  moverAfinidad(e, k, b, 1);
   e.negociado.push(k);
-  if (b === 'P' && CESIONES_CARAS.includes(k)) {
+  if (k === 'PODEMOS') {
+    cambiarPodemos(e, 0, 1);
+    log(e, 'Las concesiones a Podemos tienen coste', undefined, 'C');
+    pv(e, 'C', 1);
+  } else {
+    moverAfinidad(e, k, b, 1);
+  }
+  if (b === 'P' && k !== 'PODEMOS' && CESIONES_CARAS.includes(k)) {
     log(e, 'Las cesiones tienen coste fuera de su territorio', undefined, 'C');
     pv(e, 'C', 1);
   }
@@ -723,7 +752,7 @@ function tareaEvento(e: Estado, t: Tarea): boolean {
     encolar(e, { t: 'finEvento', carta: t.carta });
     return true;
   }
-  if (c.lado !== 'E') log(e, `Evento ${nombreCarta(t.carta)}${c.lado === 'N' ? '' : ` (${N(c.lado as Bando)})`}: ${c.texto}`, 'evento', yo);
+  if (c.lado !== 'E') log(e, `Evento ${nombreCarta(t.carta)}${c.lado === 'N' ? '' : c.lado === 'W' ? ' (comodín de Podemos)' : ` (${N(c.lado as Bando)})`}: ${c.texto}`, 'evento', yo);
   encolar(e, { t: 'efectos', lista: c.efectos, i: 0, yo }, { t: 'finEvento', carta: t.carta });
   return true;
 }
@@ -810,7 +839,7 @@ function aplicarEfecto(e: Estado, ef: Efecto, yo: Bando): boolean {
       log(e, `Se retira toda la presencia de ${ef.provs.map((id) => PROV[id].corto).join(', ')}`);
       return false;
     case 'como':
-      encolar(e, { t: 'efectos', lista: ef.efectos, i: 0, yo: ef.bando });
+      encolar(e, { t: 'efectos', lista: ef.efectos, i: 0, yo: ef.bando === 'rival' ? rv : ef.bando });
       return true;
     case 'alQueMenosPresencia': {
       const p = presenciaTotal(e, 'P'), c = presenciaTotal(e, 'C');
@@ -851,13 +880,11 @@ function aplicarEfecto(e: Estado, ef: Efecto, yo: Bando): boolean {
       const b: Bando = ef.bloque === 'yo' ? yo : ef.bloque === 'rival' ? rv : ef.bloque;
       const antes = e.socio[b];
       e.socio[b] = Math.max(-3, Math.min(3, antes + ef.n));
-      if (e.socio[b] !== antes) log(e, `${b === 'C' ? 'Medidor de Vox' : 'Medidor de socios progresistas (FA y Podemos)'}: ${fmtSigno(antes)} → ${fmtSigno(e.socio[b])}`, undefined, b);
+      if (e.socio[b] !== antes) log(e, `${b === 'C' ? 'Medidor de Vox' : 'Medidor de Frente Amplio'}: ${fmtSigno(antes)} → ${fmtSigno(e.socio[b])}`, undefined, b);
       return false;
     }
-    case 'unidad':
-      if (e.listaConjunta !== null) { log(e, 'Las listas ya están cerradas: la unidad no cambia'); return false; }
-      e.unidad = Math.max(0, Math.min(3, e.unidad + ef.n));
-      log(e, `Unidad de la izquierda: ${e.unidad}/3`, undefined, 'P');
+    case 'podemos':
+      cambiarPodemos(e, ef.fuerza ?? 0, ef.humor ?? 0);
       return false;
     case 'afinidad': moverAfinidad(e, ef.partido, yo, ef.n); return false;
     case 'afinidadElegir':
@@ -944,7 +971,9 @@ function debateResolver(e: Estado, tipo: 'cara' | 'cuatro'): boolean {
   if (tipo === 'cuatro') {
     e.socio.P = Math.min(3, e.socio.P + 1);
     e.socio.C = Math.min(3, e.socio.C + 1);
-    log(e, 'Los socios ganan foco: ambos medidores de socios suben 1');
+    log(e, 'Vox y Frente Amplio ganan foco: ambos medidores de socios suben 1');
+    log(e, 'Podemos, fuera del debate, lo hace estallar en redes');
+    cambiarPodemos(e, 1, 0);
   }
   const tot: Record<Bando, number> = { P: 0, C: 0 };
   for (const b of ['P', 'C'] as Bando[]) {

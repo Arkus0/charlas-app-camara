@@ -7,7 +7,7 @@ import { REGIONALES } from '../engine/electoral';
 import { clonar, ejecutarAislado, responder } from '../engine/motor';
 import { aleatorio, barajar } from '../engine/rng';
 import { CARRERA, costePresencia, esEncuesta, objetivosAtaque, puntuarZona, ZONA_IDS } from '../engine/reglas';
-import type { Bando, Decision, Estado, Operacion, RegionalId, Respuesta, Tarea } from '../engine/tipos';
+import type { Bando, Decision, Estado, Negociable, Operacion, Respuesta, Tarea } from '../engine/tipos';
 import { RIVAL } from '../engine/tipos';
 import { ESCANOS_POR_PV, pesos, valorar, valorLocal, xDe, escanosSuaves } from './evaluar';
 
@@ -100,7 +100,7 @@ function elegirAccion(e: Estado, d: Extract<Decision, { tipo: 'carta' }>, ctx: C
       // Las cartas propias valen más como evento más adelante: pequeña prima por conservarlas si se usan para PC
       const c = CARTAS[carta];
       if (uso !== 'evento' && c.lado === b) v -= 0.004 * c.ops;
-      if (uso === 'carrera' && c.lado === RIVAL[b]) v += 0.002;
+      if (uso === 'carrera' && (c.lado === RIVAL[b] || c.lado === 'W')) v += 0.002;
       cands.push({ v, r });
     }
   }
@@ -134,7 +134,7 @@ function elegirParaDebate(e: Estado, b: Bando, opciones: number[]): number {
   let mv = -Infinity;
   for (const id of opciones) {
     const c = CARTAS[id];
-    const v = c.ops + (c.lado === RIVAL[b] ? 1.5 : c.lado === b ? -1.2 : 0) + (c.retirar && c.lado === b ? -0.5 : 0);
+    const v = c.ops + (c.lado === RIVAL[b] ? 1.5 : c.lado === 'W' ? 0.8 : c.lado === b ? -1.2 : 0) + (c.retirar && c.lado === b ? -0.5 : 0);
     if (v > mv) { mv = v; mejor = id; }
   }
   void e;
@@ -142,8 +142,9 @@ function elegirParaDebate(e: Estado, b: Bando, opciones: number[]): number {
 }
 
 function elegirDescarte(_e: Estado, b: Bando, opciones: number[]): number | null {
-  const rivales = opciones.filter((id) => CARTAS[id].lado === RIVAL[b]).sort((x, y) => CARTAS[y].ops - CARTAS[x].ops);
-  return rivales[0] ?? null;
+  const peso = (id: number) => (CARTAS[id].lado === RIVAL[b] ? 10 : 0) + CARTAS[id].ops;
+  const molestas = opciones.filter((id) => CARTAS[id].lado === RIVAL[b] || CARTAS[id].lado === 'W').sort((x, y) => peso(y) - peso(x));
+  return molestas[0] ?? null;
 }
 
 // ————————————————————————————————————— provincias
@@ -275,7 +276,7 @@ function elegirOperacion(e: Estado, d: Extract<Decision, { tipo: 'operacion' }>,
       v = mejor * d.pc * 0.8;
     } else {
       const pasos = Math.floor(d.pc / 2);
-      const valores = REGIONALES.map((k) => valorNegociar(e, k, b)).sort((x, y) => y - x);
+      const valores = [...REGIONALES, 'PODEMOS' as const].map((k) => valorNegociar(e, k, b)).sort((x, y) => y - x);
       v = valores.slice(0, pasos).reduce((a, x) => a + Math.max(0, x), 0);
     }
     cands.push({ v, r: op });
@@ -312,7 +313,17 @@ function simularColocacion(e: Estado, b: Bando, pc: number, ctx: Ctx): number {
   return total;
 }
 
-function valorNegociar(e: Estado, k: RegionalId, b: Bando): number {
+function valorNegociar(e: Estado, k: Negociable, b: Bando): number {
+  if (k === 'PODEMOS') {
+    if (b !== 'P' || e.podemos.humor >= 3 || e.negociado.includes(k)) return -Infinity;
+    const w0 = pesos(e).PODEMOS ?? 0;
+    e.podemos.humor++;
+    const w1 = pesos(e).PODEMOS ?? 0;
+    e.podemos.humor--;
+    let esc = 0;
+    for (const id of territorioDe('PODEMOS')) esc += escanosSuaves(e, id).PODEMOS ?? 0;
+    return -esc * (w1 - w0) - VALOR_PV;
+  }
   const a = e.afinidad[k];
   if (b === 'P' ? a <= -3 : a >= 3) return -Infinity;
   if (e.negociado.includes(k)) return -Infinity;
@@ -329,19 +340,20 @@ function valorNegociar(e: Estado, k: RegionalId, b: Bando): number {
   return v;
 }
 
-const TERR_CACHE: Partial<Record<RegionalId, string[]>> = {};
-function territorioDe(k: RegionalId): string[] {
+const TERR_CACHE: Partial<Record<Negociable, string[]>> = {};
+function territorioDe(k: Negociable): string[] {
   if (!TERR_CACHE[k]) TERR_CACHE[k] = PROVINCIAS.filter((p) => (p.base[k] ?? 0) > 0).map((p) => p.id);
   return TERR_CACHE[k]!;
 }
 
-function elegirPartido(e: Estado, b: Bando, opciones: RegionalId[], opcional: boolean): RegionalId | null {
+function elegirPartido(e: Estado, b: Bando, opciones: Negociable[], opcional: boolean): Negociable | null {
   const t = tareaActual(e);
   if (t.t === 'fuga') {
     // que pierda voto la fuerza más alejada de mí, con más escaños en juego
     let mejor = opciones[0];
     let mv = -Infinity;
     for (const k of opciones) {
+      if (k === 'PODEMOS') continue;
       let esc = 0;
       for (const id of territorioDe(k)) esc += escanosSuaves(e, id)[k] ?? 0;
       const lejania = b === 'C' ? -e.afinidad[k] : e.afinidad[k];

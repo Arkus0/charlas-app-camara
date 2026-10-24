@@ -15,7 +15,7 @@ export const PARTIDOS: Record<PartidoId, InfoPartido> = {
   VOX: { id: 'VOX', nombre: 'Vox', siglas: 'Vox', color: '#5bbe21', candidato: 'Santiago Abascal', bloque: 'C' },
   PSOE: { id: 'PSOE', nombre: 'Partido Socialista Obrero Español', siglas: 'PSOE', color: '#e0001b', candidato: 'Pedro Sánchez', bloque: 'P' },
   SUMAR: { id: 'SUMAR', nombre: 'Frente Amplio', siglas: 'FA', color: '#e5007e', candidato: 'Ada Colau', bloque: 'P' },
-  PODEMOS: { id: 'PODEMOS', nombre: 'Podemos', siglas: 'Podemos', color: '#7b3fa0', candidato: 'Irene Montero', bloque: 'P' },
+  PODEMOS: { id: 'PODEMOS', nombre: 'Podemos', siglas: 'Podemos', color: '#8e44c4', candidato: 'Irene Montero' }, // comodín: va por libre
   ERC: { id: 'ERC', nombre: 'Esquerra Republicana', siglas: 'ERC', color: '#f4a800' },
   JUNTS: { id: 'JUNTS', nombre: 'Junts per Catalunya', siglas: 'Junts', color: '#1e90a0' },
   BILDU: { id: 'BILDU', nombre: 'EH Bildu', siglas: 'Bildu', color: '#a2d213' },

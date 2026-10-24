@@ -42,7 +42,7 @@ describe("D'Hondt", () => {
 describe('Proyección de partida', () => {
   const vacio = Object.fromEntries(PROVINCIAS.map((p) => [p.id, { P: 0, C: 0 }]));
   const control0 = Object.fromEntries(PROVINCIAS.map((p) => [p.id, 0 as const]));
-  const base = { presencia: vacio, presencia0: vacio, control0, ventaja: 0, socio: { P: 0, C: 0 }, listaConjunta: false, unidad: 1, modsProv: {}, modsPartido: {}, afinidad: AFINIDAD_INICIAL };
+  const base = { presencia: vacio, presencia0: vacio, control0, ventaja: 0, socio: { P: 0, C: 0 }, podemos: { fuerza: 0, humor: 0 }, modsProv: {}, modsPartido: {}, afinidad: AFINIDAD_INICIAL };
 
   it('suma 350 escaños y es plausible respecto a las encuestas', () => {
     const r = proyectar(PROVINCIAS, base);
@@ -65,5 +65,34 @@ describe('Proyección de partida', () => {
     const afin = { ...AFINIDAD_INICIAL, PNV: 2, JUNTS: 2, CC: 2 };
     expect(investir(esc, 'C', afin, true).si).toBe(171);
     expect(investir(esc, 'C', afin, false).si).toBe(171 + 14);
+  });
+});
+
+describe('Podemos, el comodín', () => {
+  const vacio = Object.fromEntries(PROVINCIAS.map((p) => [p.id, { P: 0, C: 0 }]));
+  const control0 = Object.fromEntries(PROVINCIAS.map((p) => [p.id, 0 as const]));
+  const base = { presencia: vacio, presencia0: vacio, control0, ventaja: 0, socio: { P: 0, C: 0 }, podemos: { fuerza: 0, humor: 0 }, modsProv: {}, modsPartido: {}, afinidad: AFINIDAD_INICIAL };
+
+  it('no cuenta en el bloque progresista', () => {
+    const r = proyectar(PROVINCIAS, base);
+    expect(r.bloque.P).toBe((r.escanos.PSOE ?? 0) + (r.escanos.SUMAR ?? 0));
+  });
+
+  it('vota según su humor y nunca a Feijóo', () => {
+    const esc: Votos = { PP: 140, VOX: 30, PSOE: 120, SUMAR: 10, PODEMOS: 10, ERC: 8, BILDU: 7, BNG: 2, COMPROMIS: 3, JUNTS: 7, PNV: 5, CC: 1, UPN: 1, ADELANTE: 3, NC: 3 } as Votos;
+    expect(investir(esc, 'P', AFINIDAD_INICIAL, true, 1).si - investir(esc, 'P', AFINIDAD_INICIAL, true, 0).si).toBe(10);
+    expect(investir(esc, 'P', AFINIDAD_INICIAL, true, -1).no - investir(esc, 'P', AFINIDAD_INICIAL, true, 0).no).toBe(10);
+    expect(investir(esc, 'C', AFINIDAD_INICIAL, true, 3).no).toBeGreaterThanOrEqual(10);
+  });
+
+  it('su fuerza le quita voto sobre todo al bloque progresista', () => {
+    const a = proyectar(PROVINCIAS, base);
+    const b = proyectar(PROVINCIAS, { ...base, podemos: { fuerza: 3, humor: 0 } });
+    const dPod = (b.votos.PODEMOS ?? 0) - (a.votos.PODEMOS ?? 0);
+    const dIzq = (a.votos.PSOE ?? 0) + (a.votos.SUMAR ?? 0) - (b.votos.PSOE ?? 0) - (b.votos.SUMAR ?? 0);
+    const dDer = (a.votos.PP ?? 0) + (a.votos.VOX ?? 0) - (b.votos.PP ?? 0) - (b.votos.VOX ?? 0);
+    expect(dPod).toBeGreaterThan(0);
+    expect(dIzq).toBeGreaterThan(dDer);
+    expect(dDer).toBeGreaterThan(0);
   });
 });

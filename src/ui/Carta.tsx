@@ -1,7 +1,7 @@
 import { CARTAS } from '../data/cartas';
 import { ZONAS } from '../data/provincias';
 
-const LADO_TXT: Record<string, string> = { P: 'Progresista', C: 'Conservador', N: 'Neutral', E: 'Encuesta' };
+const LADO_TXT: Record<string, string> = { P: 'Progresista', C: 'Conservador', N: 'Neutral', E: 'Encuesta', W: 'Comodín · Podemos' };
 const MAZO_TXT: Record<number, string> = { 0: 'Especial', 1: 'Precampaña', 2: 'Campaña', 3: 'Recta final' };
 
 interface Props {

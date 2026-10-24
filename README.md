@@ -1,9 +1,10 @@
 # 176 · La Batalla del 29N
 
-Juego de estrategia por cartas, al estilo de *Twilight Struggle*, sobre las elecciones generales anticipadas del **29 de noviembre de 2026**. Dos bloques (Progresista y Conservador) se disputan las 52 circunscripciones durante las ocho semanas de precampaña y campaña. La noche electoral se reparten los escaños con D'Hondt y se vota la investidura.
+Juego de estrategia por cartas, al estilo de *Twilight Struggle*, sobre las elecciones generales anticipadas del **29 de noviembre de 2026**. Dos bloques (Progresista: PSOE y Frente Amplio; Conservador: PP y Vox) se disputan las 52 circunscripciones durante las ocho semanas de precampaña y campaña. La noche electoral se reparten los escaños con D'Hondt y se vota la investidura.
 
+- **Podemos es un comodín**: va por libre, su fuerza resta votos sobre todo a la izquierda, su humor decide si apoya a Sánchez, y sus cartas moradas se activan siempre y siembran el caos en los dos bloques.
 - Contra la IA (fácil, normal, difícil) o a dos jugadores en el mismo PC.
-- Mapa esquemático de las 52 circunscripciones, 93 cartas en tres mazos (Precampaña, Campaña y Recta final) y calendario real: cierre de listas, cara a cara del 16N, debate a cuatro del 26N y veda demoscópica.
+- Mapa esquemático de las 52 circunscripciones, 101 cartas en tres mazos (Precampaña, Campaña y Recta final) y calendario real: cierre de listas, cara a cara del 16N, debate a cuatro del 26N y veda demoscópica.
 - Proyección de escaños en directo con datos reales: la media de 16 encuestadoras de octubre de 2026 repartida por provincias.
 
 El reglamento completo y el listado de cartas están en [`docs/REGLAMENTO.md`](docs/REGLAMENTO.md).
