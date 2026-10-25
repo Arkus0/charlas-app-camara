@@ -9,7 +9,7 @@ import { posturaPodemos, votoPodemos } from '../engine/electoral';
 
 const VOTO_CORTO = { si: 'sí', no: 'no', abst: 'abst.' } as const;
 
-const COLOR_CLIMA: Record<number, string> = { 5: '#52c08a', 4: '#c8c24a', 3: '#e8a33c', 2: '#e5603f', 1: '#9e1f2b' };
+export const COLOR_CLIMA: Record<number, string> = { 5: '#52c08a', 4: '#c8c24a', 3: '#e8a33c', 2: '#e5603f', 1: '#9e1f2b' };
 
 function Medidor({ valor, min, max }: { valor: number; min: number; max: number }) {
   const puntos = [];

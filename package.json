@@ -5,7 +5,9 @@
   "type": "module",
   "description": "Juego de estrategia por cartas estilo Twilight Struggle sobre las elecciones generales del 29N de 2026.",
   "scripts": {
+    "predev": "node scripts/preparar-ilustraciones.mjs",
     "dev": "vite",
+    "prebuild": "node scripts/preparar-ilustraciones.mjs",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "test": "vitest run",
@@ -19,10 +21,18 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@types/d3-geo": "^3.1.0",
     "@types/node": "^22.10.1",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
+    "@types/topojson-client": "^3.1.5",
+    "@types/topojson-simplify": "^3.0.3",
     "@vitejs/plugin-react": "^4.3.4",
+    "d3-composite-projections": "^1.4.0",
+    "d3-geo": "^3.1.1",
+    "sharp": "^0.33.5",
+    "topojson-client": "^3.1.0",
+    "topojson-simplify": "^3.0.3",
     "tsx": "^4.19.2",
     "typescript": "^5.6.3",
     "vite": "^5.4.11",

@@ -36,7 +36,7 @@ export function Menu({ inicial, hayGuardada, onEmpezar, onContinuar }: Props) {
             <span className="etiqueta">Modo</span>
             <div className="selector">
               <Opcion valor="ia" actual={c.modo} onElegir={(modo) => setC({ ...c, modo })} titulo="Contra la IA" texto="Un jugador frente al ordenador." />
-              <Opcion valor="dos" actual={c.modo} onElegir={(modo) => setC({ ...c, modo })} titulo="Dos jugadores" texto="En el mismo PC; la mano se oculta al pasar el turno." />
+              <Opcion valor="dos" actual={c.modo} onElegir={(modo) => setC({ ...c, modo })} titulo="Dos jugadores" texto="En el mismo dispositivo; la mano se oculta al pasar el turno." />
             </div>
           </div>
           {c.modo === 'ia' && (
@@ -65,7 +65,7 @@ export function Menu({ inicial, hayGuardada, onEmpezar, onContinuar }: Props) {
           {hayGuardada && <button className="boton" type="button" onClick={onContinuar}>Continuar la partida guardada</button>}
           <button className="boton" type="button" onClick={() => setAyuda(true)}>Cómo se juega</button>
         </div>
-        <p className="fuente">{FUENTE_DATOS}: {ENCUESTADORAS.length} encuestadoras. Resultados de 2023 del Ministerio del Interior. Los eventos de las cartas describen temas públicos de forma genérica; no atribuyen hechos a personas.</p>
+        <p className="fuente">{FUENTE_DATOS}: {ENCUESTADORAS.length} encuestadoras. Resultados de 2023 del Ministerio del Interior. Las cartas marcadas «Noticia» se basan en hechos contrastados en prensa y se reparten por igual entre los dos bloques.</p>
       </div>
       {ayuda && <Ayuda onCerrar={() => setAyuda(false)} />}
     </main>

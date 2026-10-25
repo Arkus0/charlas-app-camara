@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { CARTAS } from '../data/cartas';
 import { ZONAS } from '../data/provincias';
 
-// Las ilustraciones que existan en src/assets/cartas/<id>.webp|png|jpg se empaquetan al compilar
-const ARCHIVOS = import.meta.glob('../assets/cartas/*.{webp,png,jpg,jpeg}', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+// Las ilustraciones de src/assets/cartas/<id>.png|jpg|webp, ya convertidas a WebP ligero en src/assets/web/cartas
+// (scripts/preparar-ilustraciones.mjs), se empaquetan al compilar
+const ARCHIVOS = import.meta.glob('../assets/web/cartas/*.webp', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 const IMAGEN: Record<number, string> = {};
 for (const [ruta, url] of Object.entries(ARCHIVOS)) {
-  const m = ruta.match(/(\d+)\.(webp|png|jpe?g)$/);
+  const m = ruta.match(/(\d+)\.webp$/);
   if (m) IMAGEN[Number(m[1])] = url;
 }
 

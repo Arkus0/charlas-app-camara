@@ -26,8 +26,15 @@ const path = require('path');
       await clic(await p.$('.plato-pie button.principal'));
       continue;
     }
-    const prov = await p.$('g.prov.opcion');
-    if (prov) { await clic(prov); continue; }
+    const prov = (await p.$('.prov-real.opcion')) || (await p.$('g.prov.opcion'));
+    if (prov) {
+      if (capturas === 0 && !(await p.$('.mapa-mostrado'))) {
+        await p.screenshot({ path: `${dir}/mapa-real-eligiendo.png` });
+        await p.evaluate(() => document.body.classList.add('mapa-mostrado'));
+      }
+      await prov.dispatchEvent('click');
+      continue;
+    }
     const principal = await p.$('.decision button.boton.principal');
     if (principal) { await clic(principal); continue; }
     const fila = await p.$('.decision .carta-fila:not(.sel)');

@@ -21,22 +21,29 @@ const LINEAS = (() => {
   return res;
 })();
 
+export const ANCHO_MAPA = 1340;
+export const ALTO_MAPA = 1110;
+
 interface Props {
   estado: Estado;
   opciones: Set<string> | null;
   onElegir: (id: string) => void;
-  onHover: (id: string | null, x: number, y: number) => void;
+  onHover?: (id: string | null, x: number, y: number) => void;
+  /** toque en una provincia que no es opción (en móvil abre su ficha) */
+  onTocar?: (id: string) => void;
+  viewBox?: string;
+  sinLeyenda?: boolean;
 }
 
-export const Mapa = memo(function Mapa({ estado, opciones, onElegir, onHover }: Props) {
+export const Mapa = memo(function Mapa({ estado, opciones, onElegir, onHover, onTocar, viewBox, sinLeyenda }: Props) {
   return (
-    <svg className="mapa" viewBox="0 0 1340 1110" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Mapa esquemático de las 52 circunscripciones">
-      <rect x="0" y="0" width="1340" height="1110" fill="var(--noche)" />
+    <svg className="mapa" viewBox={viewBox ?? `0 0 ${ANCHO_MAPA} ${ALTO_MAPA}`} preserveAspectRatio="xMidYMid meet" role="img" aria-label="Mapa esquemático de las 52 circunscripciones">
+      <rect x="-2000" y="-2000" width="6000" height="6000" fill="var(--noche)" />
       <g>
         <rect x="22" y="1020" width="282" height="80" rx="8" fill="none" stroke="var(--linea)" strokeDasharray="4 5" />
         <text x="30" y="1013" fontSize="15" fill="var(--tenue)" fontFamily="var(--f-display)">Canarias</text>
       </g>
-      <g fontFamily="var(--f-display)" fontSize="15" fill="var(--tenue)">
+      {!sinLeyenda && <g fontFamily="var(--f-display)" fontSize="15" fill="var(--tenue)">
         {Object.values(ZONAS).map((z, i) => (
           <g key={z.id} transform={`translate(${1000 + (i % 2) * 170}, ${660 + Math.floor(i / 2) * 26})`}>
             <rect width="14" height="14" rx="3" fill={z.color} />
@@ -46,7 +53,7 @@ export const Mapa = memo(function Mapa({ estado, opciones, onElegir, onHover }: 
         <text x="1000" y="780">◆ provincia clave · ○ fidelidad</text>
         <text x="1000" y="804">◣ feudo · casilla rellena = control</text>
         <text x="1000" y="828" fill="var(--morado-claro)">● marcador morado de Podemos (+1 fidelidad)</text>
-      </g>
+      </g>}
       <g>
         {LINEAS.map(({ a, b, mar }) => (
           <line
@@ -77,10 +84,10 @@ export const Mapa = memo(function Mapa({ estado, opciones, onElegir, onHover }: 
           <g
             key={p.id}
             className={`prov ${esOpcion ? 'opcion' : ''} ${atenuada ? 'atenuada' : ''}`}
-            onClick={esOpcion ? () => onElegir(p.id) : undefined}
-            onMouseEnter={(ev) => onHover(p.id, ev.clientX, ev.clientY)}
-            onMouseMove={(ev) => onHover(p.id, ev.clientX, ev.clientY)}
-            onMouseLeave={() => onHover(null, 0, 0)}
+            onClick={esOpcion ? () => onElegir(p.id) : onTocar ? () => onTocar(p.id) : undefined}
+            onMouseEnter={onHover ? (ev) => onHover(p.id, ev.clientX, ev.clientY) : undefined}
+            onMouseMove={onHover ? (ev) => onHover(p.id, ev.clientX, ev.clientY) : undefined}
+            onMouseLeave={onHover ? () => onHover(null, 0, 0) : undefined}
             role={esOpcion ? 'button' : undefined}
             tabIndex={esOpcion ? 0 : undefined}
             aria-label={`${p.nombre}: ${p.escanos} escaños, presencia progresista ${pr.P}, conservadora ${pr.C}`}

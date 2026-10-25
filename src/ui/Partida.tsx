@@ -17,6 +17,8 @@ import { Marcadores } from './Marcadores';
 import { Noche } from './Noche';
 import { Plato } from './Plato';
 import { cronicaSemana } from '../narrativa/plato';
+import { ENCUADRE_COMPLETO, GEO_REAL, MapaTactil, PartidaMovil } from './Movil';
+import { useMovil } from './useMovil';
 
 interface Props {
   config: Config;
@@ -42,6 +44,7 @@ export function Partida({ config, estado, onEstado, onMenu, onNueva }: Props) {
   const [ayuda, setAyuda] = useState(false);
   const [verTablero, setVerTablero] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const movil = useMovil();
   // el plató: se conecta solo al cerrar cada semana, y se puede volver a ver
   const [platoVisto, setPlatoVisto] = useState(() => semanaCerrada(estado));
   const [plato, setPlato] = useState<number | null>(null);
@@ -85,6 +88,8 @@ export function Partida({ config, estado, onEstado, onMenu, onNueva }: Props) {
   const opcionesMapa = decideYo && d!.tipo === 'provincia' ? new Set(d!.opciones) : null;
   const cartasElegibles = decideYo && d!.tipo === 'carta' ? new Set(d!.opciones) : null;
 
+  const [vistaMapa, setVistaMapa] = useState<'real' | 'tablero'>(() => { try { return localStorage.getItem('176-mapa-pc') === 'tablero' ? 'tablero' : 'real'; } catch { return 'real'; } });
+  const cambiarVista = (v: 'real' | 'tablero') => { setVistaMapa(v); try { localStorage.setItem('176-mapa-pc', v); } catch { /* sin almacenamiento */ } };
   const onHoverProv = useCallback((id: string | null, x: number, y: number) => setHover(id ? { id, x, y } : null), []);
   const onElegirProv = useCallback((id: string) => aplicar({ tipo: 'provincia', id }), [aplicar]);
 
@@ -95,13 +100,73 @@ export function Partida({ config, estado, onEstado, onMenu, onNueva }: Props) {
   const mano = [...estado.manos[vista]];
   const tieneVotoUtil = estado.votoUtil.duenio === vista;
   const rival = RIVAL[vista];
+  const humanoDecide = (b: Bando) => humano(b) && (config.modo === 'ia' || b === vista);
+  const onPlato = semanasConPlato.length ? () => setPlato(semanasConPlato[semanasConPlato.length - 1]) : undefined;
+
+  // capas comunes a las dos interfaces: errores, cortina del modo a dos, ayuda y plató
+  const capas = (
+    <>
+      {error && <div className="velo" onClick={() => setError(null)}><div className="caja dialogo"><h2>Jugada no válida</h2><p>{error}</p><button className="boton" type="button">Seguir</button></div></div>}
+      {cortina && d && (
+        <div className="velo" role="dialog" aria-modal="true">
+          <div className="caja dialogo" style={{ textAlign: 'center', justifyItems: 'center' }}>
+            <span className="etiqueta">{movil ? 'Pasa el móvil' : 'Pasa el ordenador'}</span>
+            <h2 className={d.bando === 'P' ? 'p' : 'c'}>Turno del {NOMBRE_BANDO[d.bando]}</h2>
+            <p>{d.texto}</p>
+            <button className="boton principal" type="button" onClick={() => { setVista(d.bando); setSel(null); }}>Soy el {CORTO_BANDO[d.bando]}: ver mi mano</button>
+          </div>
+        </div>
+      )}
+      {ayuda && <Ayuda onCerrar={() => setAyuda(false)} />}
+      {segmento && plato !== null && (
+        <Plato
+          segmento={segmento}
+          directo={plato === semanaCerrada(estado)}
+          onCerrar={() => setPlato(null)}
+          onAnterior={semanasConPlato.includes(plato - 1) ? () => setPlato(plato - 1) : undefined}
+          onSiguiente={semanasConPlato.includes(plato + 1) ? () => setPlato(plato + 1) : undefined}
+        />
+      )}
+    </>
+  );
+
+  if (movil) {
+    return (
+      <PartidaMovil
+        estado={estado}
+        vista={vista}
+        proy={proy}
+        sel={sel}
+        onSeleccion={setSel}
+        decideYo={decideYo}
+        cortina={cortina}
+        opcionesMapa={opcionesMapa}
+        cartasElegibles={cartasElegibles}
+        humanoDecide={humanoDecide}
+        onResponder={aplicar}
+        onElegirProv={onElegirProv}
+        onAyuda={() => setAyuda(true)}
+        onMenu={onMenu}
+        onPlato={onPlato}
+        onVolverResultados={estado.ganador && verTablero ? () => setVerTablero(false) : undefined}
+      >
+        {capas}
+      </PartidaMovil>
+    );
+  }
 
   return (
     <div className="partida">
-      <Marcadores e={estado} onAyuda={() => setAyuda(true)} onMenu={onMenu} onPlato={semanasConPlato.length ? () => setPlato(semanasConPlato[semanasConPlato.length - 1]) : undefined} />
+      <Marcadores e={estado} onAyuda={() => setAyuda(true)} onMenu={onMenu} onPlato={onPlato} />
       <div className="centro">
         <section className="caja zona-mapa" aria-label="Tablero">
-          <Mapa estado={estado} opciones={opcionesMapa} onElegir={onElegirProv} onHover={onHoverProv} />
+          {vistaMapa === 'real'
+            ? <MapaTactil geo={GEO_REAL} real e={estado} opciones={opcionesMapa} onElegir={onElegirProv} onHover={onHoverProv} encuadre={ENCUADRE_COMPLETO} pista="Elige una provincia resaltada · rueda o +/− para el zoom" />
+            : <Mapa estado={estado} opciones={opcionesMapa} onElegir={onElegirProv} onHover={onHoverProv} />}
+          <div className="conmutador conmutador-mapa" role="group" aria-label="Vista del mapa">
+            <button type="button" aria-pressed={vistaMapa === 'real'} onClick={() => cambiarVista('real')}>Mapa</button>
+            <button type="button" aria-pressed={vistaMapa === 'tablero'} onClick={() => cambiarVista('tablero')}>Tablero</button>
+          </div>
           <div className="jugada-flotante">
             {cartaHover !== null ? (
               <Carta id={cartaHover} grande />
@@ -164,35 +229,15 @@ export function Partida({ config, estado, onEstado, onMenu, onNueva }: Props) {
             </>
           )}
         </section>
-        <Decision e={estado} humano={(b) => humano(b) && (config.modo === 'ia' || b === vista)} seleccion={sel} onResponder={aplicar} onSeleccion={setSel} onHover={setCartaHover} />
+        <Decision e={estado} humano={humanoDecide} seleccion={sel} onResponder={aplicar} onSeleccion={setSel} onHover={setCartaHover} />
       </div>
-      {error && <div className="velo" onClick={() => setError(null)}><div className="caja dialogo"><h2>Jugada no válida</h2><p>{error}</p><button className="boton" type="button">Seguir</button></div></div>}
-      {cortina && d && (
-        <div className="velo" role="dialog" aria-modal="true">
-          <div className="caja dialogo" style={{ textAlign: 'center', justifyItems: 'center' }}>
-            <span className="etiqueta">Pasa el ordenador</span>
-            <h2 className={d.bando === 'P' ? 'p' : 'c'}>Turno del {NOMBRE_BANDO[d.bando]}</h2>
-            <p>{d.texto}</p>
-            <button className="boton principal" type="button" onClick={() => { setVista(d.bando); setSel(null); }}>Soy el {CORTO_BANDO[d.bando]}: ver mi mano</button>
-          </div>
-        </div>
-      )}
-      {ayuda && <Ayuda onCerrar={() => setAyuda(false)} />}
-      {segmento && plato !== null && (
-        <Plato
-          segmento={segmento}
-          directo={plato === semanaCerrada(estado)}
-          onCerrar={() => setPlato(null)}
-          onAnterior={semanasConPlato.includes(plato - 1) ? () => setPlato(plato - 1) : undefined}
-          onSiguiente={semanasConPlato.includes(plato + 1) ? () => setPlato(plato + 1) : undefined}
-        />
-      )}
+      {capas}
       {hover && <FichaProvincia id={hover.id} x={hover.x} y={hover.y} e={estado} escanos={proy.porProvincia[hover.id]} />}
     </div>
   );
 }
 
-function FichaProvincia({ id, x, y, e, escanos }: { id: string; x: number; y: number; e: Estado; escanos: Partial<Record<PartidoId, number>> }) {
+export function FichaProvincia({ id, x, y, e, escanos }: { id: string; x?: number; y?: number; e: Estado; escanos: Partial<Record<PartidoId, number>> }) {
   const p = PROV[id];
   const pr = e.presencia[id];
   const morado = e.morado[id] ?? 0;
@@ -200,10 +245,11 @@ function FichaProvincia({ id, x, y, e, escanos }: { id: string; x: number; y: nu
   const v = votosProvincia(p, e);
   const tot = Object.values(v).reduce((a, b) => a + (b ?? 0), 0);
   const filas = (Object.entries(v) as [PartidoId, number][]).filter(([k, n]) => k !== 'BLANCO' && k !== 'OTROS' && n / tot >= 0.02).sort((a, b) => b[1] - a[1]).slice(0, 7);
-  const izq = Math.min(x + 18, (typeof window !== 'undefined' ? window.innerWidth : 1200) - 270);
-  const arr = Math.min(y + 12, (typeof window !== 'undefined' ? window.innerHeight : 800) - 300);
+  const flotante = x !== undefined && y !== undefined;
+  const izq = flotante ? Math.min(x + 18, (typeof window !== 'undefined' ? window.innerWidth : 1200) - 270) : 0;
+  const arr = flotante ? Math.min(y + 12, (typeof window !== 'undefined' ? window.innerHeight : 800) - 300) : 0;
   return (
-    <div className="ficha-prov" style={{ position: 'fixed', left: izq, top: Math.max(8, arr) }}>
+    <div className={`ficha-prov ${flotante ? '' : 'fija'}`} style={flotante ? { position: 'fixed', left: izq, top: Math.max(8, arr) } : undefined}>
       <h4>{p.nombre}</h4>
       <div className="fila"><span className="etiqueta">{ZONAS[p.zona].nombre}</span><span className="dato">{p.escanos} escaños</span></div>
       <div className="fila"><span>Fidelidad {p.fidelidad + morado}{morado ? ` (${morado} morado${morado > 1 ? 's' : ''})` : ''}{p.clave ? ' · clave' : ''}{p.feudo ? ` · feudo ${CORTO_BANDO[p.feudo].toLowerCase()}` : ''}</span><span>{ctrl === -1 ? <b className="p">Control progresista</b> : ctrl === 1 ? <b className="c">Control conservador</b> : 'Sin control'}</span></div>
