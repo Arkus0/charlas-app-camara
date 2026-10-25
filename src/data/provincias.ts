@@ -1,7 +1,7 @@
 // Las 52 circunscripciones del Congreso con sus atributos de juego.
 // Escaños 2026 (RD 806/2026) y votos de partida en base.json (generado con `npm run datos`).
 import base from './base.json';
-import type { Bando, Provincia, Votos, Zona, ZonaId } from '../engine/tipos';
+import type { Bando, Provincia, Votos, Zona, ZonaId } from '../motor/base';
 
 export const ZONAS: Record<ZonaId, Zona> = {
   AND: { id: 'AND', nombre: 'Andalucía', pv: [2, 5, 7], color: '#c9a227' },
