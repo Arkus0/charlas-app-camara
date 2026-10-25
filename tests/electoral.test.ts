@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs';
-import { dhondt, investir, votoPodemos, proyectar } from '../src/engine/electoral';
+import { dhondt, investir, votoPodemos, proyectar } from '../src/motor/electoral';
 import { PROVINCIAS } from '../src/data/provincias';
 import { AFINIDAD_INICIAL } from '../src/data/partidos';
-import type { Votos } from '../src/engine/tipos';
+import type { Votos } from '../src/motor/base';
 
 function leer2023() {
   const filas = readFileSync(new URL('../data/fuentes/congreso_2023-07.csv', import.meta.url), 'utf-8').trim().split(/\r?\n/).map((l) => l.split(','));

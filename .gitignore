@@ -3,4 +3,5 @@ dist
 *.log
 .DS_Store
 capturas/
-src/assets/web/
+dist-artefacto
+dev-dist

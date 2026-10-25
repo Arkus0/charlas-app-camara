@@ -1,5 +1,5 @@
 // Partidos y candidaturas del 29N (editable si cambian las listas).
-import type { Bando, PartidoId, RegionalId } from '../engine/tipos';
+import type { Bando, PartidoId, RegionalId } from '../motor/base';
 
 export interface InfoPartido {
   id: PartidoId;
