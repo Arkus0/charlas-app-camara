@@ -3,7 +3,10 @@ import { PARTIDOS, ORDEN_HEMICICLO, LIDER } from '../data/partidos';
 import { REGIONALES, VETADOS_POR_VOX, type Resultado } from '../engine/electoral';
 import type { EntradaLog, Estado, PartidoId } from '../engine/tipos';
 import { Hemiciclo } from './Hemiciclo';
-import { fmtAfin } from '../engine/motor';
+import { fmtAfin, NOMBRE_EFECTO } from '../engine/motor';
+import { CARTAS } from '../data/cartas';
+import { PROV, ZONAS } from '../data/provincias';
+import { CORTO_BANDO } from '../data/partidos';
 
 export function veredicto(r: Resultado): string {
   const inv = r.investiduras.find((i) => i.exito);
@@ -71,6 +74,30 @@ export const Registro = memo(function Registro({ log }: { log: EntradaLog[] }) {
           <li key={log.length - i} className={`${l.bando ?? ''} ${l.tipo ?? ''}`}>{l.texto}</li>
         ))}
       </ol>
+    </section>
+  );
+});
+
+/** Efectos en curso (como NATO o Quagmire en TS) y la Agenda de Podemos de la semana. */
+export const EnVigor = memo(function EnVigor({ e, onHover }: { e: Estado; onHover?: (id: number | null) => void }) {
+  if (!e.efectos.length && e.agendaActual === null) return null;
+  return (
+    <section className="caja en-vigor" aria-label="Efectos en vigor">
+      <h3 className="etiqueta">En vigor</h3>
+      <ul>
+        {e.agendaActual !== null && (
+          <li className="W" onMouseEnter={() => onHover?.(e.agendaActual)} onMouseLeave={() => onHover?.(null)}>
+            <b>Agenda de Podemos</b> «{CARTAS[e.agendaActual].nombre}»
+          </li>
+        )}
+        {e.efectos.map((x, i) => (
+          <li key={i} className={x.dueno} onMouseEnter={() => x.carta >= 0 && onHover?.(x.carta)} onMouseLeave={() => onHover?.(null)}>
+            <b>{CORTO_BANDO[x.dueno]}</b> {NOMBRE_EFECTO[x.tipo]}
+            {x.zona ? ` · ${ZONAS[x.zona].nombre}` : ''}{x.zonas ? ` · ${x.zonas.map((z) => ZONAS[z].nombre).join(' y ')}` : ''}{x.prov ? ` · ${PROV[x.prov].corto}` : ''}
+            <span className="hasta">{x.hasta === 'turno' ? 'esta semana' : x.hasta === 'uso' ? 'hasta usarse' : 'toda la campaña'}</span>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 });

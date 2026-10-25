@@ -45,6 +45,7 @@ export const Mapa = memo(function Mapa({ estado, opciones, onElegir, onHover }: 
         ))}
         <text x="1000" y="780">◆ provincia clave · ○ fidelidad</text>
         <text x="1000" y="804">◣ feudo · casilla rellena = control</text>
+        <text x="1000" y="828" fill="var(--morado-claro)">● marcador morado de Podemos (+1 fidelidad)</text>
       </g>
       <g>
         {LINEAS.map(({ a, b, mar }) => (
@@ -62,7 +63,10 @@ export const Mapa = memo(function Mapa({ estado, opciones, onElegir, onHover }: 
       </g>
       {PROVINCIAS.map((p) => {
         const pr = estado.presencia[p.id];
-        const ctrl = controlDe(p, pr);
+        const morado = estado.morado[p.id] ?? 0;
+        const ctrl = controlDe(p, pr, morado);
+        const bastion = estado.efectos.find((x) => x.tipo === 'bastion' && x.prov === p.id);
+        const plaza = estado.efectos.find((x) => x.tipo === 'plazaFuerte' && x.prov === p.id);
         const esOpcion = !!opciones?.has(p.id);
         const atenuada = opciones !== null && !esOpcion;
         const x0 = p.x - W / 2;
@@ -95,8 +99,12 @@ export const Mapa = memo(function Mapa({ estado, opciones, onElegir, onHover }: 
             <rect x={x0 + W - 33} y={y0 + 23} width={26} height={24} rx={3} fill={ctrl === 1 ? 'var(--cons)' : 'none'} stroke="var(--cons)" strokeWidth={1.5} opacity={pr.C || ctrl === 1 ? 1 : 0.35} />
             <text x={x0 + W - 20} y={y0 + 41} fontSize="18" fontWeight="800" textAnchor="middle" fill={ctrl === 1 ? '#fff' : 'var(--cons)'} fontFamily="var(--f-dato)" opacity={pr.C ? 1 : 0.35}>{pr.C}</text>
             {/* fidelidad */}
-            <circle cx={p.x} cy={y0 + 35} r={9} fill="none" stroke="var(--tenue)" strokeWidth={1} />
-            <text x={p.x} y={y0 + 39.5} fontSize="12" textAnchor="middle" fill="var(--tenue)" fontFamily="var(--f-dato)">{p.fidelidad}</text>
+            <circle cx={p.x} cy={y0 + 35} r={9} fill={morado ? 'var(--morado)' : 'none'} stroke={morado ? 'var(--morado-claro)' : 'var(--tenue)'} strokeWidth={morado ? 1.6 : 1} />
+            <text x={p.x} y={y0 + 39.5} fontSize="12" textAnchor="middle" fill={morado ? '#fff' : 'var(--tenue)'} fontFamily="var(--f-dato)">{p.fidelidad + morado}</text>
+            {/* marcadores morados de Podemos */}
+            {Array.from({ length: morado }, (_, i) => <circle key={i} cx={p.x - 4 + i * 8} cy={y0 + 51} r={3} fill="var(--morado-claro)" />)}
+            {bastion && <path d={`M${x0 + W - 13} ${y0 + H - 13} h10 v5 q0 6 -5 8 q-5 -2 -5 -8 z`} fill={bastion.dueno === 'P' ? 'var(--prog)' : 'var(--cons)'} stroke="#fff" strokeWidth={0.8}><title>Bastión</title></path>}
+            {plaza && <path d={`M${x0 + W - 8} ${y0 + H - 15} l5 5 l-5 5 l-5 -5 z`} fill="none" stroke={plaza.dueno === 'P' ? 'var(--prog)' : 'var(--cons)'} strokeWidth={1.6}><title>Plaza fuerte: cuenta como clave</title></path>}
             {p.feudo && <path d={`M${x0} ${y0 + H - 12} v7 a5 5 0 0 0 5 5 h7 z`} fill={p.feudo === 'P' ? 'var(--prog)' : 'var(--cons)'} />}
           </g>
         );

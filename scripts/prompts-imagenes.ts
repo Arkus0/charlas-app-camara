@@ -15,7 +15,7 @@ l.push('## Cómo usarlos');
 l.push('');
 l.push('1. Pega en el chat el **estilo común** una sola vez y pide que lo mantenga en todas las imágenes.');
 l.push('2. Después pega el prompt de cada carta (ya incluye el estilo, por si lo usas suelto).');
-l.push('3. Guarda cada imagen en formato 4:3 (por ejemplo 1200 × 900) como `public/cartas/<id>.webp` (o .png renombrado). El juego la muestra sola; si falta, enseña el marcador con la descripción de la escena.');
+l.push('3. Guarda cada imagen en formato 4:3 (por ejemplo 1200 × 900) como `src/assets/cartas/<id>.webp` (también vale .png o .jpg). Al compilar, el juego la muestra sola; si falta, enseña el marcador con la descripción de la escena.');
 l.push('4. Revisa que no salga texto, logotipos ni caras reconocibles: el juego es neutral y no retrata a personas reales.');
 l.push('');
 l.push('## Estilo común');
@@ -31,7 +31,7 @@ for (const m of [0, 1, 2, 3, 4]) {
     l.push('');
     l.push(`### ${c.id} · ${c.nombre}`);
     l.push('');
-    l.push(`${LADO[c.lado]}${c.pareja !== undefined ? ` · pareja de la ${c.pareja}` : ''} · archivo \`public/${rutaImagen(c.id)}\``);
+    l.push(`${LADO[c.lado]}${c.pareja !== undefined ? ` · pareja de la ${c.pareja}` : ''} · archivo \`${rutaImagen(c.id)}\``);
     l.push('');
     l.push('```');
     l.push(promptImagen(c));

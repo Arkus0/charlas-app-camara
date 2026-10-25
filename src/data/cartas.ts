@@ -27,7 +27,7 @@ const bandera = (k: string): Efecto => ({ e: 'bandera', k });
 
 type Def = Omit<Carta, 'retirar' | 'mazo'> & { retirar?: boolean };
 type Mitad = Pick<Def, 'nombre' | 'texto' | 'contexto' | 'escena' | 'efectos'> & Partial<Pick<Def, 'requisito'>>;
-type Extra = Partial<Pick<Def, 'retirar' | 'batalla' | 'transfuga'>>;
+type Extra = Partial<Pick<Def, 'retirar' | 'batalla' | 'transfuga' | 'noticia'>>;
 
 const RIVAL_TXT: Record<Bloque, string> = { P: 'el Conservador', C: 'el Progresista' };
 const RIVAL_ADJ: Record<Bloque, string> = { P: 'conservadora', C: 'progresista' };
@@ -203,7 +203,7 @@ const MAZO_1: Def[] = [
     texto: b === 'P'
       ? 'Retira 4 presencia conservadora en Valencia, Murcia, Zaragoza o Badajoz (máx. 2 por provincia).'
       : 'Retira 4 presencia progresista en Barcelona, Bizkaia, Gipuzkoa o Navarra (máx. 2 por provincia).',
-    contexto: b === 'P' ? 'Los pactos autonómicos entre el PP y Vox se rompen entre reproches.' : 'Los socios parlamentarios del Gobierno le dan la espalda en votaciones clave.',
+    contexto: b === 'P' ? 'Vox rompió en 2024 los gobiernos autonómicos que compartía con el PP, y cada pacto nuevo se negocia entre reproches.' : 'Junts rompió con el PSOE y en octubre tumbó los decretos de vivienda que precipitaron el adelanto.',
     escena: `Una mesa de negociación partida en dos con sillas volcadas y papeles ${b === 'P' ? 'azules' : 'rojos'} por el suelo`,
     efectos: [retirar(4, { provs: b === 'P' ? ['46', '30', '50', '06'] : ['08', '48', '20', '31'] }, 2)],
   }), { retirar: true }),
@@ -211,7 +211,7 @@ const MAZO_1: Def[] = [
   ...espejo(17, 37, 3, (b) => ({
     nombre: b === 'P' ? 'Disolución de las Cortes' : 'Ola autonómica',
     texto: 'Coloca 1 presencia en 3 provincias clave y gana 1 PV.',
-    contexto: b === 'P' ? 'El presidente elige el momento: disuelve las Cortes y convoca para el 29 de noviembre.' : 'El PP llega a la cita tras gobernar la mayoría de las comunidades autónomas.',
+    contexto: b === 'P' ? 'El 2 de octubre el Congreso tumbó los decretos de vivienda por 178 votos a 172. Tres días después, el presidente disolvió las Cortes.' : 'El PP gobierna la mayoría de las comunidades y ganó en mayo las andaluzas, aunque sin mayoría absoluta.',
     escena: b === 'P'
       ? 'Un gran reloj de pared junto a un decreto con lacre rojo sobre un atril vacío'
       : 'Un mapa autonómico iluminándose comunidad a comunidad en azul, como fichas de dominó que caen',
@@ -231,7 +231,7 @@ const MAZO_1: Def[] = [
   ...espejo(19, 39, 2, (b) => ({
     nombre: b === 'P' ? 'Topes al alquiler' : 'Okupación y seguridad',
     texto: 'Coloca 1 presencia en 3 de estas provincias: Madrid, Barcelona, Valencia, Málaga, Sevilla o Baleares.',
-    contexto: b === 'P' ? 'La vivienda es la primera preocupación en las grandes ciudades.' : 'La seguridad en los barrios, en el foco de las tertulias.',
+    contexto: b === 'P' ? 'Los decretos de vivienda que tumbó el Congreso son la bandera de la campaña progresista.' : 'La okupación y la multirreincidencia, en el centro del mensaje de la oposición.',
     escena: b === 'P'
       ? 'Un bloque de pisos con ventanas encendidas y una llave roja gigante colgando del cielo'
       : 'Una puerta blindada azul en un rellano, con una cerradura gigante y luz de escalera',
@@ -248,7 +248,74 @@ const MAZO_1: Def[] = [
     efectos: [socio('rival', 1), socio('yo', -1), pv(1)],
   }), { retirar: true }),
 
+  // —— Noticias reales, también en espejo ——
+  ...espejo(61, 71, 3, (b) => ({
+    nombre: b === 'P' ? 'Caso Kitchen: Interior, en el banquillo' : 'Caso Koldo: 24 años para Ábalos',
+    texto: b === 'P'
+      ? 'El juicio a la cúpula de Interior del último Gobierno del PP abre los telediarios: ganas 2 PV y retiras 2 presencia conservadora de provincias clave (máx. 1 por provincia).'
+      : 'La condena del exministro socialista abre los telediarios: ganas 2 PV y retiras 2 presencia progresista de provincias clave (máx. 1 por provincia).',
+    contexto: b === 'P'
+      ? 'La Audiencia Nacional juzgó en abril al exministro del Interior Jorge Fernández Díaz por el presunto espionaje a Bárcenas con fondos públicos. La sentencia está pendiente.'
+      : 'En junio el Supremo condenó a José Luis Ábalos a 24 años de prisión y a su exasesor Koldo García a más de 19 por las mordidas de las mascarillas.',
+    escena: b === 'P'
+      ? 'Una cocina industrial en penumbra con carpetas azules sobre los fogones, una grabadora antigua y una lupa roja'
+      : 'Cajas de mascarillas apiladas en un almacén con un mazo de juez sobre ellas y sobres rojos por el suelo',
+    efectos: [pv(2), retirar(2, { clave: true }, 1)],
+  }), { retirar: true, noticia: true }),
+
+  ...espejo(62, 72, 3, (b) => ({
+    nombre: b === 'P' ? 'Caso Montoro' : 'La «fontanera» de Ferraz',
+    texto: `Retira 1 presencia ${RIVAL_ADJ[b]} en 3 provincias que controle ${RIVAL_TXT[b]}. El Clima baja 1.`,
+    contexto: b === 'P'
+      ? 'Un juez investiga al exministro de Hacienda Cristóbal Montoro por presuntamente favorecer con leyes a medida a gasistas que pagaban a su antiguo despacho.'
+      : 'Los audios de Leire Díez, que se presentaba como mano derecha de Santos Cerdán, buscando información contra un mando de la UCO, están en los juzgados. Ella niega haber actuado por encargo del PSOE.',
+    escena: b === 'P'
+      ? 'Una calculadora azul sobre un expediente de Hacienda, con bombonas de gas industrial al fondo y un foco rojo'
+      : 'Una caja de herramientas de fontanero roja abierta, con cintas de casete y unos auriculares, bajo una luz azul',
+    efectos: [retirar(3, { controla: 'rival' }, 1), clima(-1)],
+  }), { noticia: true }),
+
+  ...espejo(63, 73, 2, (b) => ({
+    nombre: b === 'P' ? 'Marcha por la vivienda' : 'Tractorada en Madrid',
+    texto: b === 'P'
+      ? 'Coloca 1 presencia en 3 de estas provincias: Madrid, Barcelona, Valencia, Málaga, Sevilla o Baleares. El medidor de Frente Amplio sube 1.'
+      : 'Coloca 1 presencia en 3 provincias de Interior. El medidor de Vox sube 1.',
+    contexto: b === 'P'
+      ? 'Los sindicatos de inquilinos llenan las calles: la vivienda es la primera preocupación de los españoles.'
+      : 'En febrero, cientos de tractores recorrieron Madrid de Colón al Ministerio de Agricultura contra el acuerdo con Mercosur y la nueva PAC.',
+    escena: b === 'P'
+      ? 'Una multitud con llaves en alto avanzando por una gran avenida, vista desde una azotea, con pancartas lisas rojas'
+      : 'Una columna de tractores por una gran avenida de una capital al amanecer, con banderolas lisas azules',
+    efectos: b === 'P' ? [colocar(3, { provs: URBANAS }, 1), socio('P', 1)] : [colocar(3, { zonas: ['INT'] }, 1), socio('C', 1)],
+  }), { noticia: true }),
+
   // —— Neutrales ——
+  { id: 56, nombre: 'Torre Pacheco', ops: 3, lado: 'N', retirar: true, noticia: true,
+    texto: 'Se retira toda la presencia de Murcia, el medidor de Vox sube 1 y el Clima baja 1. Tira un dado: con 1-3 el Progresista coloca 2 presencia en Murcia; con 4-6, el Conservador.',
+    contexto: 'En julio de 2025, tras la agresión a un vecino de 68 años, el pueblo murciano vivió varias noches de disturbios contra vecinos de origen magrebí.',
+    escena: 'Una calle de pueblo de noche con contenedores volcados, humo y destellos de sirenas, sin personas reconocibles',
+    efectos: [{ e: 'retirarTodo', provs: ['30'] }, socio('C', 1), clima(-1), { e: 'dado', tabla: [
+      { hasta: 3, efectos: [como('P', [colocar(2, { provs: ['30'] })])] },
+      { hasta: 6, efectos: [como('C', [colocar(2, { provs: ['30'] })])] },
+    ] }] },
+  { id: 57, nombre: 'La Vuelta, sin podio', ops: 2, lado: 'N', noticia: true,
+    texto: 'Las protestas propalestinas paran la carrera: los medidores de Frente Amplio y de Vox suben 1 y el Clima baja 1. Quien controle Madrid gana 1 PV.',
+    contexto: 'El 14 de septiembre de 2025 las protestas contra el equipo israelí obligaron a suspender en Madrid la última etapa de La Vuelta.',
+    escena: 'Bicicletas de carretera detenidas ante una pancarta lisa tendida en una carretera de sierra, con banderines dorados',
+    efectos: [socio('P', 1), socio('C', 1), clima(-1), { e: 'alQueControlaMas', provs: ['28'], efectos: [pv(1)] }] },
+  { id: 58, nombre: 'La flotilla a Gaza', ops: 2, lado: 'N', noticia: true,
+    texto: 'La izquierda se moviliza: el medidor de Frente Amplio sube 1, Podemos gana 1 de fuerza y el Progresista coloca 1 presencia en Barcelona. El Conservador lo tacha de postureo y gana 1 PV.',
+    contexto: 'En octubre de 2025 Israel interceptó la Global Sumud Flotilla; Ada Colau, hoy candidata de Frente Amplio, fue detenida a bordo.',
+    escena: 'Una flotilla de pequeños veleros en alta mar de noche, con los focos de buques grises a lo lejos',
+    efectos: [socio('P', 1), podemos(1, 0), como('P', [colocar(1, { provs: ['08'] })]), como('C', [pv(1)])] },
+  { id: 59, nombre: 'Incendios del verano', ops: 3, lado: 'N', retirar: true, noticia: true,
+    texto: 'Cada bloque pierde 1 presencia en 3 provincias de Interior o la Cornisa Norte. Tira un dado: con 1-3 se culpa al Gobierno y el Conservador gana 2 PV; con 4-6 se culpa a las comunidades y el Progresista gana 2 PV.',
+    contexto: 'En agosto de 2025 ardieron más de 400.000 hectáreas; el Gobierno y las comunidades del PP se acusaron mutuamente de llegar tarde.',
+    escena: 'Una ladera de monte ardiendo de noche con un hidroavión dorado soltando agua',
+    efectos: [{ e: 'retirar', n: 3, maxPor: 1, de: 'ambos', filtro: { zonas: ['INT', 'NOR'] } }, { e: 'dado', tabla: [
+      { hasta: 3, efectos: [como('C', [pv(2)])] },
+      { hasta: 6, efectos: [como('P', [pv(2)])] },
+    ] }] },
   { id: 41, nombre: 'Gurú de campaña', ops: 1, lado: 'N', retirar: true,
     texto: 'Fichas a un estratega: avanza 1 casilla en la Carrera Programática sin tirar.',
     contexto: 'Los consultores que han ganado elecciones cotizan al alza.',
@@ -279,17 +346,17 @@ const MAZO_1: Def[] = [
     contexto: 'Tres provincias que pueden cambiar de manos por un puñado de votos.',
     escena: 'Tres colinas de olivos con banderas lisas roja y azul disputándose las cumbres al amanecer',
     efectos: [{ e: 'batalla', filtro: { provs: ['18', '23', '04'] } }] },
-  { id: 47, nombre: 'La DANA, en el foco', ops: 3, lado: 'N', retirar: true,
+  { id: 47, nombre: 'La DANA, en el foco', ops: 3, lado: 'N', retirar: true, noticia: true,
     texto: 'Se retira toda la presencia de Valencia. Tira un dado: con 1-3 el Progresista coloca 2 presencia allí; con 4-6, el Conservador.',
-    contexto: 'La gestión de la riada de 2024 vuelve al debate.',
+    contexto: 'La riada del 29 de octubre de 2024 dejó más de doscientos muertos en Valencia. El president Mazón dimitió un año después.',
     escena: 'Un barrio embarrado tras una riada, con voluntarios anónimos con escobas y cubos al amanecer, luz dorada que asoma entre nubes',
     efectos: [{ e: 'retirarTodo', provs: ['46'] }, { e: 'dado', tabla: [
       { hasta: 3, efectos: [como('P', [colocar(2, { provs: ['46'] })])] },
       { hasta: 6, efectos: [como('C', [colocar(2, { provs: ['46'] })])] },
     ] }] },
-  { id: 48, nombre: 'El apagón', ops: 2, lado: 'N', retirar: true,
+  { id: 48, nombre: 'El apagón', ops: 2, lado: 'N', retirar: true, noticia: true,
     texto: 'Tira un dado: con 1-3 se culpa al Gobierno y el Conservador gana 2 PV; con 4-6 la respuesta convence y el Progresista gana 2 PV.',
-    contexto: 'El gran apagón eléctrico y la pregunta de quién responde.',
+    contexto: 'El 28 de abril de 2025 la península se quedó a oscuras durante horas. ¿Quién responde?',
     escena: 'Una ciudad a oscuras vista de noche, con una sola vela encendida en una ventana',
     efectos: [{ e: 'dado', tabla: [
       { hasta: 3, efectos: [como('C', [pv(2)])] },
@@ -300,9 +367,9 @@ const MAZO_1: Def[] = [
     contexto: 'Un vídeo manipulado corre por las redes antes de ser desmentido.',
     escena: 'Un teléfono móvil del que brota una nube de papelitos negros que oscurece el cielo',
     efectos: [retirar(2, undefined, 1), clima(-1)] },
-  { id: 50, nombre: 'Guerra arancelaria', ops: 2, lado: 'N',
+  { id: 50, nombre: 'Trump amenaza con aranceles', ops: 2, lado: 'N', noticia: true,
     texto: 'Efecto bandera: el Progresista, que gobierna, gana 1 PV. El campo exportador protesta: el Conservador coloca 2 presencia en Interior o Levante y Baleares (máx. 1 por provincia).',
-    contexto: 'Los aranceles de Estados Unidos golpean al campo y a la industria.',
+    contexto: 'Trump amenazó con castigar a España con aranceles por negarse al 5% de gasto en defensa que pedía la OTAN.',
     escena: 'Contenedores de mercancías apilados en un puerto con cajas de naranjas y de aceite, y una barrera de aduana dorada',
     efectos: [como('P', [pv(1)]), como('C', [colocar(2, { zonas: ['INT', 'LEV'] }, 1)])] },
   { id: 51, nombre: 'Mitin multitudinario', ops: 3, lado: 'N',
@@ -481,9 +548,9 @@ const MAZO_2: Def[] = [
   }), { retirar: true }),
 
   ...espejo(213, 253, 2, (b) => ({
-    nombre: b === 'P' ? 'Escudo social en Andalucía' : 'Andalucía azul',
+    nombre: b === 'P' ? 'El PSOE andaluz quiere revancha' : 'Andalucía azul',
     texto: 'Coloca 3 presencia en Andalucía (máx. 2 por provincia).',
-    contexto: b === 'P' ? 'El PSOE quiere recuperar su antiguo granero.' : 'El antiguo granero socialista, gobernado ahora por el PP.',
+    contexto: b === 'P' ? 'Tras tocar suelo con 28 escaños en las andaluzas de mayo, el PSOE sale a recuperar su antiguo granero.' : 'Moreno ganó las andaluzas de mayo con 53 escaños, a dos de la mayoría absoluta.',
     escena: `Un patio andaluz encalado con macetas y un toldo ${col(b, 'o')} desplegándose al sol`,
     efectos: [colocar(3, { zonas: ['AND'] }, 2)],
   })),
@@ -555,16 +622,16 @@ const MAZO_2: Def[] = [
   }), { transfuga: true }),
 
   ...espejo(222, 262, 3, (b) => ({
-    nombre: b === 'P' ? 'La hemeroteca de la corrupción' : 'Tribunales en campaña',
+    nombre: b === 'P' ? 'La hemeroteca de la Gürtel' : 'El fiscal general, condenado',
     texto: b === 'P'
-      ? 'Las causas judiciales del pasado de la oposición vuelven a los titulares: ganas 2 PV y el Clima baja 1.'
-      : 'Las investigaciones judiciales en el entorno del Gobierno copan los titulares: ganas 2 PV y el Clima baja 1.',
-    contexto: b === 'P' ? 'Las sentencias de financiación irregular que llegaron a los tribunales.' : 'Los sumarios abiertos marcan la agenda informativa.',
+      ? 'La sentencia que señaló al PP como partícipe a título lucrativo vuelve a los titulares: ganas 2 PV y el Clima baja 1.'
+      : 'La condena del fiscal general nombrado por el Gobierno vuelve a los titulares: ganas 2 PV y el Clima baja 1.',
+    contexto: b === 'P' ? 'En 2018 la Audiencia Nacional condenó al PP como partícipe a título lucrativo de la trama Gürtel; la sentencia desencadenó la moción de censura.' : 'En noviembre de 2025 el Supremo condenó al fiscal general del Estado a dos años de inhabilitación por revelación de secretos; dimitió días después.',
     escena: b === 'P'
       ? 'Una pila de periódicos viejos atados con cuerda junto a una lupa roja'
       : 'Un mazo de juez sobre un montón de sumarios atados con cintas azules',
     efectos: [pv(2), clima(-1)],
-  })),
+  }), { noticia: true }),
 
   ...espejo(223, 263, 2, (b) => ({
     nombre: b === 'P' ? 'Récord de afiliación' : 'La cesta de la compra',
@@ -616,7 +683,75 @@ const MAZO_2: Def[] = [
     efectos: [colocar(3, b === 'P' ? { zonas: ['CAT'] } : { provs: GALICIA }, 2)],
   })),
 
+  // —— Noticias reales, también en espejo ——
+  ...espejo(228, 268, 2, (b) => ({
+    nombre: b === 'P' ? 'El novio de Ayuso' : 'Begoña Gómez, al banquillo',
+    texto: `Ganas 1 PV y, hasta el final de la semana, las operaciones ${b === 'P' ? 'del Conservador' : 'del Progresista'} valen 1 PC menos (mín. 1).`,
+    contexto: b === 'P'
+      ? 'La pareja de la presidenta madrileña espera juicio por un presunto fraude fiscal de 350.000 euros.'
+      : 'En septiembre el juez Peinado envió a juicio con jurado a la esposa del presidente por malversación y tráfico de influencias. La Fiscalía había pedido el archivo.',
+    escena: b === 'P'
+      ? 'Un ático con terraza sobre una gran ciudad, con un sobre oficial azul abierto en la mesa y una luz roja'
+      : 'Un banquillo vacío en una sala de tribunal con nueve sillas de jurado, bajo una luz azul',
+    efectos: [pv(1), activar('menosOpsRival', 'turno')],
+  }), { noticia: true }),
+
+  ...espejo(229, 269, 2, (b) => ({
+    nombre: b === 'P' ? 'Las fotos del yate' : 'El Delcygate',
+    texto: `Ganas 1 PV y retiras 2 presencia ${RIVAL_ADJ[b]} de una sola provincia clave que controle ${RIVAL_TXT[b]}. El Clima baja 1.`,
+    contexto: b === 'P'
+      ? 'Vuelven a circular las fotos de los años noventa del candidato del PP con Marcial Dorado, condenado después por narcotráfico. Él siempre ha dicho que desconocía sus actividades.'
+      : 'La madrugada de enero de 2020 en que el entonces ministro Ábalos recibió en Barajas a la vicepresidenta venezolana, que tenía prohibida la entrada en la UE.',
+    escena: b === 'P'
+      ? 'Una vieja fotografía de bordes blancos de un yate en una ría gallega, sin personas, con una lupa roja encima'
+      : 'Una pista de aeropuerto de noche con un avión privado y unas maletas al pie de la escalerilla, bajo una luz azul',
+    efectos: [pv(1), retirar(2, { clave: true, controla: 'rival' }, 2, true), clima(-1)],
+  }), { noticia: true }),
+
+  ...espejo(230, 270, 2, (b) => ({
+    nombre: b === 'P' ? 'Regularización extraordinaria' : 'Prioridad nacional',
+    texto: b === 'P'
+      ? 'Ganas 1 PV, el humor de Podemos mejora 1 y el medidor de Vox sube 1.'
+      : 'Ganas 1 PV y colocas 1 presencia en 2 provincias de Levante y Baleares o de Andalucía.',
+    contexto: b === 'P'
+      ? 'El real decreto de abril, pactado con Podemos, abrió la regularización de unas 500.000 personas que ya vivían en España.'
+      : 'Vox exige al PP la «prioridad nacional» en el acceso a las ayudas como condición para sus pactos autonómicos.',
+    escena: b === 'P'
+      ? 'Una cola de sobres oficiales que se convierten en llaves al pasar por una ventanilla, con luz roja'
+      : 'Una ventanilla administrativa con una flecha azul pintada en el suelo y una fila de sillas vacías',
+    efectos: b === 'P' ? [pv(1), podemos(0, 1), socio('C', 1)] : [pv(1), colocar(2, { zonas: ['LEV', 'AND'] }, 1)],
+  }), { noticia: true }),
+
+  ...espejo(231, 271, 2, (b) => ({
+    nombre: b === 'P' ? 'Revuelta y el dinero de la DANA' : 'La sombra de los ERE',
+    texto: b === 'P'
+      ? 'Ganas 1 PV y retiras 2 presencia conservadora en Levante y Baleares (máx. 1 por provincia).'
+      : 'Ganas 1 PV y retiras 2 presencia progresista en Andalucía (máx. 1 por provincia).',
+    contexto: b === 'P'
+      ? 'Exdirigentes de Revuelta, la asociación juvenil del entorno de Vox, denunciaron ante la Fiscalía el destino de las donaciones para la DANA. Vox se desvinculó y también denunció.'
+      : 'La oposición rescata los ERE, la mayor causa de corrupción de la Junta socialista, aunque el Constitucional anuló en 2024 parte de las condenas.',
+    escena: b === 'P'
+      ? 'Una hucha de donativos rota sobre el barro, con monedas azules dispersas'
+      : 'Archivadores verdes y blancos amontonados en un sótano, con una lámpara roja colgando',
+    efectos: [pv(1), retirar(2, { zonas: [b === 'P' ? 'LEV' : 'AND'] }, 1)],
+  }), { noticia: true }),
+
   // —— Neutrales ——
+  { id: 276, nombre: 'Vito Quiles, micrófono en mano', ops: 2, lado: 'N', noticia: true,
+    texto: 'Un agitador digital acorrala a ministros por los pasillos: el Conservador retira 2 presencia progresista de provincias clave (máx. 1 por provincia), el medidor de Vox sube 1 y el Clima baja 1.',
+    contexto: 'El Congreso le retiró definitivamente la acreditación de prensa en septiembre por grabar en zonas restringidas e interrumpir ruedas de prensa.',
+    escena: 'Un micrófono y un móvil grabando que persiguen una sombra alargada por un pasillo de columnas',
+    efectos: [como('C', [retirar(2, { clave: true }, 1)]), socio('C', 1), clima(-1)] },
+  { id: 277, nombre: 'Huelga de médicos', ops: 2, lado: 'N', noticia: true,
+    texto: 'Los médicos paran contra el Estatuto Marco del Gobierno, pero también en los hospitales de las comunidades: el Conservador gana 1 PV y el Progresista retira 2 presencia conservadora de provincias clave (máx. 1 por provincia).',
+    contexto: 'Los sindicatos médicos paran una semana al mes contra el Estatuto Marco y piden la dimisión de la ministra de Sanidad, de Más Madrid.',
+    escena: 'Batas blancas colgadas vacías a lo largo del pasillo de un hospital, con un reloj dorado al fondo',
+    efectos: [como('C', [pv(1)]), como('P', [retirar(2, { clave: true }, 1)])] },
+  { id: 278, nombre: 'España se baja de Eurovisión', ops: 1, lado: 'N', noticia: true,
+    texto: 'La retirada divide a la audiencia: los medidores de Frente Amplio y de Vox suben 1. Después, cada bando tira un dado y el mayor gana 1 PV.',
+    contexto: 'RTVE decidió no participar en Eurovisión 2026 ni emitirlo por la presencia de Israel; el Gobierno lo aplaudió.',
+    escena: 'Un gran escenario de festival con un micrófono solitario y los focos apagados',
+    efectos: [socio('P', 1), socio('C', 1), { e: 'duelo', pv: 1 }] },
   { id: 281, nombre: 'Batalla por una provincia bisagra', ops: 3, lado: 'N', batalla: true,
     texto: 'Batalla en una provincia de Fidelidad 2 o menos con presencia rival: tira un dado y resta 1 por cada vecina que controle el rival. Con 4 o más, su presencia allí pasa a ser tuya y ganas 2 PV. Suma 2 a tu Exigencia.',
     contexto: 'Una provincia donde el último escaño baila por unos cientos de votos.',
@@ -694,7 +829,7 @@ const MAZO_2: Def[] = [
     efectos: [{ e: 'fugaNacionalista', pct: 0.15 }] },
   { id: 296, nombre: 'Debate a siete en RTVE', ops: 2, lado: 'N',
     texto: 'Los socios ganan foco: los medidores de Vox y de Frente Amplio suben 1 y Podemos gana 1 de fuerza. Quien controle más provincias clave de Madrid y Centro gana 1 PV.',
-    contexto: 'Portavoces de todos los grupos con representación.',
+    contexto: 'Como en 2023, RTVE sienta a los portavoces de siete partidos en el mismo plató.',
     escena: 'Siete atriles de colores en semicírculo en un plató, con focos dorados',
     efectos: [socio('P', 1), socio('C', 1), podemos(1, 0), { e: 'alQueControlaMas', provs: ['28', '45', '06'], efectos: [pv(1)] }] },
   { id: 297, nombre: 'Campaña en redes', ops: 2, lado: 'N',
@@ -704,12 +839,12 @@ const MAZO_2: Def[] = [
     efectos: [colocar(2, { minEscanos: 8 }, 1)] },
   { id: 298, nombre: 'Junts marca distancias', ops: 2, lado: 'N',
     texto: 'Junts se mueve 1 hacia la neutralidad y crece un 10% en Cataluña.',
-    contexto: 'Ni con unos ni con otros.',
+    contexto: 'Junts rompió con el PSOE y vota caso a caso: ni con unos ni con otros.',
     escena: 'Una barca sola alejándose de dos muelles, uno rojo y otro azul, en una bahía mediterránea',
     efectos: [{ e: 'afinidadNeutral', partido: 'JUNTS' }, { e: 'regional', partido: 'JUNTS', pct: 0.1 }] },
-  { id: 299, nombre: 'Debate migratorio', ops: 2, lado: 'N',
+  { id: 299, nombre: 'Cayucos rumbo a El Hierro', ops: 2, lado: 'N', noticia: true,
     texto: 'El medidor de Vox sube 1 y colocas 2 presencia en Canarias, Ceuta o Melilla (máx. 1 por provincia).',
-    contexto: 'La acogida de menores migrantes enfrenta a las administraciones.',
+    contexto: 'La ruta atlántica sigue llevando cayucos a Canarias y la acogida de menores migrantes enfrenta a las administraciones.',
     escena: 'Un faro iluminando el mar de noche frente a una costa volcánica, con un pequeño puerto',
     efectos: [socio('C', 1), colocar(2, { zonas: ['CAN'] }, 1)] },
 
@@ -721,12 +856,12 @@ const MAZO_2: Def[] = [
     efectos: [socio('P', -1), podemos(1, 0), socio('C', 1)] },
   { id: 406, nombre: 'Podemos tiende la mano', ops: 2, lado: 'W',
     texto: 'El humor de Podemos mejora 2, pero pierde 1 de fuerza: parte de su electorado vuelve al PSOE.',
-    contexto: '«Lo primero es que no gobiernen PP y Vox».',
+    contexto: 'Podemos pactó con el PSOE la regularización extraordinaria: «lo primero es que no gobiernen PP y Vox».',
     escena: 'Una mano morada abierta sobre una mesa de negociación vacía, con una silla roja enfrente',
     efectos: [podemos(-1, 2)] },
-  { id: 407, nombre: 'Guerra en redes', ops: 3, lado: 'W',
+  { id: 407, nombre: 'Canal Red, a pleno rendimiento', ops: 3, lado: 'W',
     texto: 'Podemos dispara contra todos: el Clima baja 1 y cada bloque retira 2 presencia rival (máx. 1 por provincia), empezando por quien va por detrás en la Ventaja.',
-    contexto: 'Un hilo viral contra «el bipartidismo» incendia la campaña.',
+    contexto: 'La televisión impulsada por Pablo Iglesias dispara contra «el bipartidismo», contra el PSOE y contra la derecha.',
     escena: 'Una tormenta de notificaciones moradas cayendo sobre dos sedes de campaña, una roja y otra azul',
     efectos: [clima(-1), { e: 'aCadaBloque', efectos: [retirar(2, undefined, 1)] }] },
   { id: 408, nombre: 'Asambleas moradas', ops: 2, lado: 'W',

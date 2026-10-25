@@ -216,6 +216,8 @@ export interface Carta {
   escena: string;
   /** carta pareja del otro bloque (misma potencia) */
   pareja?: number;
+  /** basada en una noticia real: el plató la comenta cuando se juega */
+  noticia?: boolean;
 }
 
 export type Escenario = 'abierto' | 'realista';

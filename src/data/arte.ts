@@ -2,8 +2,8 @@
 // (por ejemplo, la generación de imágenes de ChatGPT). Todas comparten el mismo estilo para que la baraja sea coherente.
 import type { Carta, LadoCarta } from '../engine/tipos';
 
-/** Carpeta (junto al index.html) donde van las imágenes: cartas/<id>.webp, en formato 4:3. */
-export const CARPETA_IMAGENES = 'cartas';
+/** Carpeta donde van las imágenes: <id>.webp (o .png/.jpg), en formato 4:3. La interfaz las recoge al compilar. */
+export const CARPETA_IMAGENES = 'src/assets/cartas';
 export const rutaImagen = (id: number) => `${CARPETA_IMAGENES}/${id}.webp`;
 
 export const ESTILO_ARTE = [

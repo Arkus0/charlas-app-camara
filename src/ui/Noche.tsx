@@ -1,4 +1,7 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { PLATO } from '../data/plato';
+import { especialFinal } from '../narrativa/plato';
+import { Plato } from './Plato';
 import { LIDER, ORDEN_HEMICICLO, PARTIDOS, NOMBRE_BANDO } from '../data/partidos';
 import { PROVINCIAS } from '../data/provincias';
 import { proyectar } from '../engine/electoral';
@@ -7,6 +10,8 @@ import { Hemiciclo } from './Hemiciclo';
 
 export function Noche({ e, humano, onNueva, onTablero }: { e: Estado; humano: Bando | null; onNueva: () => void; onTablero: () => void }) {
   const r = useMemo(() => proyectar(PROVINCIAS, e), [e]);
+  const especial = useMemo(() => especialFinal(e), [e]);
+  const [verEspecial, setVerEspecial] = useState(true);
   const g = e.ganador!;
   const votosTot = Object.entries(r.votos).reduce((a, [k, v]) => a + (k === 'BLANCO' ? 0 : v ?? 0), 0);
   const titular = g.bando === 'C' ? 'Feijóo, a la Moncloa' : g.bando === 'P' ? 'Sánchez sigue en la Moncloa' : 'Empate';
@@ -14,7 +19,7 @@ export function Noche({ e, humano, onNueva, onTablero }: { e: Estado; humano: Ba
   const porVotos = ORDEN_HEMICICLO.filter((k) => (r.escanos[k] ?? 0) > 0).sort((a, b) => (r.votos[b] ?? 0) - (r.votos[a] ?? 0));
   return (
     <div className="noche">
-      <span className="etiqueta">Domingo 29 de noviembre de 2026 · escrutinio al 100%</span>
+      <span className="etiqueta">{e.turno >= 8 && !/Ruptura|Vuelco|Asalto|Crisis/.test(g.motivo) ? 'Domingo 29 de noviembre de 2026 · escrutinio al 100%' : `Semana ${e.turno} · la campaña termina antes de tiempo · proyección de escaños`}</span>
       <h1 className="titular" style={{ color: g.bando === 'P' ? 'var(--prog)' : g.bando === 'C' ? 'var(--cons)' : 'var(--tinta)' }}>{titular}</h1>
       <p className="motivo"><b>{resultado}.</b> {g.motivo}.</p>
       <Hemiciclo escanos={r.escanos} className="hemiciclo-grande" />
@@ -44,7 +49,9 @@ export function Noche({ e, humano, onNueva, onTablero }: { e: Estado; humano: Ba
       <div className="acciones-menu">
         <button className="boton principal" type="button" onClick={onNueva}>Nueva partida</button>
         <button className="boton" type="button" onClick={onTablero}>Ver el tablero final</button>
+        <button className="boton" type="button" onClick={() => setVerEspecial(true)}>Volver a ver el {PLATO.especial.toLowerCase()}</button>
       </div>
+      {verEspecial && <Plato segmento={especial} onCerrar={() => setVerEspecial(false)} textoCerrar="Ver el escrutinio" />}
     </div>
   );
 }

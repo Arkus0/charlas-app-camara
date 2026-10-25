@@ -20,7 +20,7 @@ function Opcion<T extends string>({ valor, actual, onElegir, titulo, texto }: { 
 }
 
 export function Menu({ inicial, hayGuardada, onEmpezar, onContinuar }: Props) {
-  const [c, setC] = useState<Config>(inicial);
+  const [c, setC] = useState<Config>({ ...inicial, escenario: 'abierto' });
   const [ayuda, setAyuda] = useState(false);
   const m = MEDIA_NACIONAL;
   return (
@@ -58,13 +58,7 @@ export function Menu({ inicial, hayGuardada, onEmpezar, onContinuar }: Props) {
               </div>
             </>
           )}
-          <div className="grupo">
-            <span className="etiqueta">Escenario</span>
-            <div className="selector">
-              <Opcion valor="abierto" actual={c.escenario} onElegir={(escenario) => setC({ ...c, escenario })} titulo="Campaña abierta" texto="Las encuestas se desplazan hasta un empate técnico. Partida equilibrada." />
-              <Opcion valor="realista" actual={c.escenario} onElegir={(escenario) => setC({ ...c, escenario })} titulo="Encuestas de octubre" texto={`Tal cual: PP ${m.PP} · PSOE ${m.PSOE} · Vox ${m.VOX} · FA ${m.SUMAR} · Podemos ${m.PODEMOS}. El Progresista debe remontar.`} />
-            </div>
-          </div>
+          <p className="fuente">Media de encuestas de octubre: PP {m.PP} · PSOE {m.PSOE} · Vox {m.VOX} · FA {m.SUMAR} · Podemos {m.PODEMOS}. Para que ningún bloque parta con ventaja, la partida arranca recalibrada a un empate técnico: los dos bloques ganan la mitad de las partidas entre IA.</p>
         </div>
         <div className="acciones-menu">
           <button className="boton principal" type="button" onClick={() => onEmpezar(c)}>Disolver las Cortes</button>

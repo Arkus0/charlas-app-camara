@@ -2,6 +2,8 @@ import { CARRERA, FECHAS, HITOS, rondasDe, zonaVetada } from '../engine/reglas';
 import { fmtVentaja, HUMOR_PODEMOS, NOMBRES_CLIMA } from '../engine/motor';
 import { ZONAS } from '../data/provincias';
 import { CORTO_BANDO } from '../data/partidos';
+import { CARTAS } from '../data/cartas';
+import { PLATO } from '../data/plato';
 import type { Estado, ZonaId } from '../engine/tipos';
 
 const COLOR_CLIMA: Record<number, string> = { 5: '#52c08a', 4: '#c8c24a', 3: '#e8a33c', 2: '#e5603f', 1: '#9e1f2b' };
@@ -12,7 +14,7 @@ function Medidor({ valor, min, max }: { valor: number; min: number; max: number 
   return <span className="medidor" aria-label={`${valor > 0 ? '+' : ''}${valor}`}>{puntos}</span>;
 }
 
-export function Marcadores({ e, onAyuda, onMenu }: { e: Estado; onAyuda: () => void; onMenu: () => void }) {
+export function Marcadores({ e, onAyuda, onMenu, onPlato }: { e: Estado; onAyuda: () => void; onMenu: () => void; onPlato?: () => void }) {
   const vetadas = (['CAT', 'NOR', 'MAD'] as ZonaId[]).filter((z) => zonaVetada(e, z));
   const pctVentaja = 50 + (e.ventaja / 20) * 50;
   const ronda = e.fase === 'portada' ? 'Portada' : e.fase === 'preparacion' ? 'Preparación' : `Ronda ${e.ronda} de ${e.enJuego ? rondasDe(e, e.enJuego) : rondasDe(e, 'P')}`;
@@ -25,6 +27,7 @@ export function Marcadores({ e, onAyuda, onMenu }: { e: Estado; onAyuda: () => v
         <span style={{ display: 'flex', gap: 4 }}>
           <button className="boton pequeno" onClick={onAyuda} type="button">Reglas</button>
           <button className="boton pequeno" onClick={onMenu} type="button">Menú</button>
+          {onPlato && <button className="boton pequeno" onClick={onPlato} type="button" title={`Volver a ver ${PLATO.programa}`}>Plató</button>}
         </span>
       </div>
       <div className="marcador caja">
@@ -75,6 +78,7 @@ export function Marcadores({ e, onAyuda, onMenu }: { e: Estado; onAyuda: () => v
         <span className="hito fila-medidor"><b>Fuerza</b><Medidor valor={e.podemos.fuerza} min={-3} max={3} /></span>
         <span className="hito fila-medidor"><b>Humor</b><Medidor valor={e.podemos.humor} min={-3} max={3} /></span>
         <span className="hito">{HUMOR_PODEMOS[e.podemos.humor]}: {e.podemos.humor >= 1 ? 'sí a Sánchez' : e.podemos.humor === 0 ? 'abstención' : 'no a Sánchez'}</span>
+        {e.agendaActual !== null && <span className="hito agenda" title={CARTAS[e.agendaActual].texto}>Agenda: «{CARTAS[e.agendaActual].nombre}»</span>}
       </div>
     </header>
   );

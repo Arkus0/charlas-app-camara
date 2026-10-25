@@ -104,6 +104,8 @@ interface Analisis {
   listas: number | null;
   racha: { bando: Bando | null; n: number };
   deltaEsc: Record<string, number>;
+  /** cartas basadas en noticias reales que se han jugado como evento esta semana */
+  noticias: number[];
 }
 
 function bloqueDe(v: number): Bando | null {
@@ -164,6 +166,7 @@ function analizar(e: Estado, t: number): Analisis | null {
     atascos: s.filter((x): x is Extract<Suceso, { s: 'atasco' }> => x.s === 'atasco'),
     negocia: s.filter((x): x is Extract<Suceso, { s: 'negocia' }> => x.s === 'negocia'),
     listas, racha, deltaEsc,
+    noticias: [...new Set(s.flatMap((x) => (x.s === 'carta' && x.uso === 'evento') || (x.s === 'portada' && !x.anulada) ? [x.carta] : []))].filter((id) => CARTAS[id]?.noticia),
   };
 }
 
@@ -376,6 +379,52 @@ function titular(a: Analisis, el: ReturnType<typeof selector>): { rotulo: string
   };
 }
 
+/** La noticia real que ha marcado la semana (si se ha jugado alguna). */
+function noticiaPrincipal(a: Analisis): number | null {
+  // primero las de un bloque (son las que más duelen), después las neutrales
+  return a.noticias.find((id) => CARTAS[id].lado === 'P' || CARTAS[id].lado === 'C') ?? a.noticias[0] ?? null;
+}
+
+function noticiaSemana(a: Analisis, el: ReturnType<typeof selector>): string {
+  const id = noticiaPrincipal(a);
+  if (id === null) return '';
+  const c = CARTAS[id];
+  return ' ' + el('not' + id, [
+    `Y la semana ha tenido nombre propio: «${c.nombre}». ${c.contexto}`,
+    `Con una noticia que lo ha tapado casi todo: «${c.nombre}». ${c.contexto}`,
+    `La conversación de estos días ha girado en torno a «${c.nombre}». ${c.contexto}`,
+  ]);
+}
+
+/** Lo que cada mirada dice de la noticia de la semana: ataca si le favorece, se defiende si no. */
+function replicaNoticia(a: Analisis, b: Bando, el: ReturnType<typeof selector>): string | null {
+  const id = noticiaPrincipal(a);
+  if (id === null) return null;
+  const c = CARTAS[id];
+  const rv = RIVAL[b];
+  if (c.lado === b) {
+    return el('rn+' + id + b, [
+      `Y lo de «${c.nombre}» le hace mucho daño ${V[rv].a}. Eso no se borra en una semana.`,
+      `Lo de «${c.nombre}» es demoledor para ${V[rv].partido}, y en ${V[rv].sede} lo saben.`,
+      `Con «${c.nombre}» en las portadas, ${V[rv].bloque} ha estado toda la semana a la defensiva.`,
+    ]);
+  }
+  if (c.lado === rv) {
+    const judicial = /juez|jueces|juicio|Supremo|Audiencia|Fiscal|condena|banquillo|juzgado/i.test(c.contexto);
+    return el('rn-' + id + b, [
+      judicial
+        ? `Sobre «${c.nombre}»: que lo resuelvan los tribunales, no los platós. A los votantes les preocupa la vivienda y llegar a fin de mes.`
+        : `Sobre «${c.nombre}»: es una campaña de desgaste y poco más. A los votantes les preocupa la vivienda y llegar a fin de mes.`,
+      `Lo de «${c.nombre}» hace ruido, no lo niego. Pero cuidado con sobreactuar: el votante castiga el exceso.`,
+      `«${c.nombre}» es el argumento ${V[rv].de} para no hablar de lo suyo.`,
+    ]);
+  }
+  return el('rn0' + id + b, [
+    `Y lo de «${c.nombre}» no beneficia a nadie: es de esas cosas que solo alimentan la crispación.`,
+    `Con «${c.nombre}» todos han intentado sacar tajada. No sé si alguno lo ha conseguido.`,
+  ]);
+}
+
 // ————————————————————————————————————— los números
 function demoscopa(a: Analisis, el: ReturnType<typeof selector>): string {
   const partes: string[] = [];
@@ -481,6 +530,9 @@ function comentarista(a: Analisis, b: Bando, el: ReturnType<typeof selector>): s
     const r = motivosAFavor(a, b, el);
     if (r.length) partes.push(r[0]);
   }
+  // la noticia de la semana, vista desde su lado
+  const rn = replicaNoticia(a, b, el);
+  if (rn) partes.push(rn);
   // la pulla al socio del rival o una mirada a la remontada
   if (a.prev) {
     const socRival = a.foto.socio[rv] - a.prev.socio[rv];
@@ -621,7 +673,7 @@ export function cronicaSemana(e: Estado, t: number): Segmento | null {
   const p = PLATO.personajes;
   const intervenciones: Intervencion[] = [
     { quien: 'pres', texto: apertura(a, el) },
-    { quien: 'pres', texto: tit.texto + ' ' + el('pasa', [`${p.demo.nombre}, ¿qué dicen los números?`, `${p.demo.nombre}, cuéntanos.`, `Empezamos contigo, ${p.demo.nombre}.`]) },
+    { quien: 'pres', texto: tit.texto + noticiaSemana(a, el) + ' ' + el('pasa', [`${p.demo.nombre}, ¿qué dicen los números?`, `${p.demo.nombre}, cuéntanos.`, `Empezamos contigo, ${p.demo.nombre}.`]) },
     { quien: 'demo', texto: demoscopa(a, el) },
     { quien: voz(orden[0]), texto: comentarista(a, orden[0], el) },
     { quien: voz(orden[1]), texto: comentarista(a, orden[1], el) },
@@ -724,7 +776,7 @@ export function especialFinal(e: Estado): Segmento {
   intervenciones.push({ quien: 'pres', texto: `${tit} ${p.demo.nombre}, los datos.` });
 
   // los números
-  const partes: string[] = [`Resultado: ${escanosTxt({ ...inicio, escanos: r.escanos } as FotoTurno)}.`];
+  const partes: string[] = [`${temprano ? 'Así estaba la proyección cuando todo saltó por los aires' : 'Resultado'}: ${escanosTxt({ ...inicio, escanos: r.escanos } as FotoTurno)}.`];
   partes.push(`${V.C.pareja} suman ${r.bloque.C}; ${V.P.pareja}, ${r.bloque.P}.`);
   if (inicio) {
     const dPP = Math.round((r.escanos.PP ?? 0) - (inicio.escanos.PP ?? 0));
@@ -759,7 +811,9 @@ export function especialFinal(e: Estado): Segmento {
   }
 
   // el análisis
-  const ana: string[] = [papelDePodemos(r, e.podemos.humor)];
+  const ana: string[] = [temprano
+    ? el('esp-podt', ['Podemos se queda sin su noche: la campaña ha terminado antes de que sus escaños pudieran decidir nada.', 'El gran damnificado es Podemos, que soñaba con tener la llave y ya no podrá usarla.'])
+    : papelDePodemos(r, e.podemos.humor)];
   if (r.vetoVox) ana.push('El peso de Vox ha cerrado al PP la puerta del PNV, Junts y Coalición Canaria.');
   const regionales = (Object.keys(e.afinidad) as RegionalId[]).filter((k) => (r.escanos[k] ?? 0) >= 3);
   if (regionales.length) {
@@ -772,7 +826,7 @@ export function especialFinal(e: Estado): Segmento {
   intervenciones.push({ quien: 'poli', texto: ana.join(' ') });
 
   intervenciones.push({ quien: 'pres', texto: el('esp-fin', [
-    `Esto ha sido ${PLATO.programa}. Gracias por acompañarnos estas ocho semanas. Buenas noches.`,
+    `Esto ha sido ${PLATO.programa}. Gracias por acompañarnos ${temprano ? 'en una campaña que nadie olvidará' : 'estas ocho semanas'}. Buenas noches.`,
     `Se cierra la campaña y se abre otra historia. Gracias por estar con nosotros. Buenas noches.`,
   ]) });
 

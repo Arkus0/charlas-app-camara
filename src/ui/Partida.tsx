@@ -11,10 +11,12 @@ import type { Config } from './App';
 import { Ayuda } from './Ayuda';
 import { Carta, Dorso } from './Carta';
 import { Decision } from './Decision';
-import { Afinidades, Escrutinio, Registro } from './Lateral';
+import { Afinidades, EnVigor, Escrutinio, Registro } from './Lateral';
 import { Mapa } from './Mapa';
 import { Marcadores } from './Marcadores';
 import { Noche } from './Noche';
+import { Plato } from './Plato';
+import { cronicaSemana } from '../narrativa/plato';
 
 interface Props {
   config: Config;
@@ -26,6 +28,12 @@ interface Props {
 
 const USO_TXT: Record<string, string> = { evento: 'como evento', ops: 'por sus PC', carrera: 'en la Carrera' };
 
+/** Última semana cerrada con crónica de plató (la 8 se cuenta en el especial de la noche electoral). */
+function semanaCerrada(e: Estado): number {
+  const t = e.historia.length ? e.historia[e.historia.length - 1].turno : 0;
+  return t >= 1 && t <= 7 ? t : 0;
+}
+
 export function Partida({ config, estado, onEstado, onMenu, onNueva }: Props) {
   const [sel, setSel] = useState<number | null>(null);
   const [vista, setVista] = useState<Bando>(config.modo === 'ia' ? config.humano : 'P');
@@ -34,6 +42,18 @@ export function Partida({ config, estado, onEstado, onMenu, onNueva }: Props) {
   const [ayuda, setAyuda] = useState(false);
   const [verTablero, setVerTablero] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // el plató: se conecta solo al cerrar cada semana, y se puede volver a ver
+  const [platoVisto, setPlatoVisto] = useState(() => semanaCerrada(estado));
+  const [plato, setPlato] = useState<number | null>(null);
+  useEffect(() => {
+    const t = semanaCerrada(estado);
+    if (!estado.ganador && t > platoVisto) {
+      setPlatoVisto(t);
+      setPlato(t);
+    }
+  }, [estado, platoVisto]);
+  const segmento = useMemo(() => (plato !== null ? cronicaSemana(estado, plato) : null), [estado, plato]);
+  const semanasConPlato = estado.historia.filter((h) => h.turno >= 1 && h.turno <= 7 && (h.turno < estado.turno || semanaCerrada(estado) === h.turno)).map((h) => h.turno);
 
   const humano = useCallback((b: Bando) => config.modo === 'dos' || b === config.humano, [config]);
   const proy = useMemo(() => proyectar(PROVINCIAS, estado), [estado]);
@@ -52,15 +72,15 @@ export function Partida({ config, estado, onEstado, onMenu, onNueva }: Props) {
   // turno de la IA
   useEffect(() => {
     const d = estado.pendiente;
-    if (!d || estado.ganador || humano(d.bando)) return;
+    if (!d || estado.ganador || humano(d.bando) || plato !== null) return;
     const rapido = typeof location !== 'undefined' && location.hash === '#rapido';
     const espera = rapido ? 0 : d.tipo === 'carta' ? 850 : d.tipo === 'provincia' ? 360 : 550;
     const t = setTimeout(() => aplicar(decidirIA(estado, config.nivel)), espera);
     return () => clearTimeout(t);
-  }, [estado, humano, aplicar, config.nivel]);
+  }, [estado, humano, aplicar, config.nivel, plato]);
 
   const d = estado.pendiente;
-  const cortina = config.modo === 'dos' && !!d && !estado.ganador && d.bando !== vista;
+  const cortina = config.modo === 'dos' && !!d && !estado.ganador && d.bando !== vista && plato === null;
   const decideYo = !!d && humano(d.bando) && d.bando === vista && !cortina;
   const opcionesMapa = decideYo && d!.tipo === 'provincia' ? new Set(d!.opciones) : null;
   const cartasElegibles = decideYo && d!.tipo === 'carta' ? new Set(d!.opciones) : null;
@@ -78,7 +98,7 @@ export function Partida({ config, estado, onEstado, onMenu, onNueva }: Props) {
 
   return (
     <div className="partida">
-      <Marcadores e={estado} onAyuda={() => setAyuda(true)} onMenu={onMenu} />
+      <Marcadores e={estado} onAyuda={() => setAyuda(true)} onMenu={onMenu} onPlato={semanasConPlato.length ? () => setPlato(semanasConPlato[semanasConPlato.length - 1]) : undefined} />
       <div className="centro">
         <section className="caja zona-mapa" aria-label="Tablero">
           <Mapa estado={estado} opciones={opcionesMapa} onElegir={onElegirProv} onHover={onHoverProv} />
@@ -101,6 +121,7 @@ export function Partida({ config, estado, onEstado, onMenu, onNueva }: Props) {
         <aside className="lateral">
           <Escrutinio r={proy} />
           <Afinidades e={estado} r={proy} />
+          <EnVigor e={estado} onHover={setCartaHover} />
           <Registro log={estado.log} />
         </aside>
       </div>
@@ -143,7 +164,7 @@ export function Partida({ config, estado, onEstado, onMenu, onNueva }: Props) {
             </>
           )}
         </section>
-        <Decision e={estado} humano={(b) => humano(b) && (config.modo === 'ia' || b === vista)} seleccion={sel} onResponder={aplicar} onSeleccion={setSel} />
+        <Decision e={estado} humano={(b) => humano(b) && (config.modo === 'ia' || b === vista)} seleccion={sel} onResponder={aplicar} onSeleccion={setSel} onHover={setCartaHover} />
       </div>
       {error && <div className="velo" onClick={() => setError(null)}><div className="caja dialogo"><h2>Jugada no válida</h2><p>{error}</p><button className="boton" type="button">Seguir</button></div></div>}
       {cortina && d && (
@@ -157,6 +178,15 @@ export function Partida({ config, estado, onEstado, onMenu, onNueva }: Props) {
         </div>
       )}
       {ayuda && <Ayuda onCerrar={() => setAyuda(false)} />}
+      {segmento && plato !== null && (
+        <Plato
+          segmento={segmento}
+          directo={plato === semanaCerrada(estado)}
+          onCerrar={() => setPlato(null)}
+          onAnterior={semanasConPlato.includes(plato - 1) ? () => setPlato(plato - 1) : undefined}
+          onSiguiente={semanasConPlato.includes(plato + 1) ? () => setPlato(plato + 1) : undefined}
+        />
+      )}
       {hover && <FichaProvincia id={hover.id} x={hover.x} y={hover.y} e={estado} escanos={proy.porProvincia[hover.id]} />}
     </div>
   );
@@ -165,7 +195,8 @@ export function Partida({ config, estado, onEstado, onMenu, onNueva }: Props) {
 function FichaProvincia({ id, x, y, e, escanos }: { id: string; x: number; y: number; e: Estado; escanos: Partial<Record<PartidoId, number>> }) {
   const p = PROV[id];
   const pr = e.presencia[id];
-  const ctrl = controlDe(p, pr);
+  const morado = e.morado[id] ?? 0;
+  const ctrl = controlDe(p, pr, morado);
   const v = votosProvincia(p, e);
   const tot = Object.values(v).reduce((a, b) => a + (b ?? 0), 0);
   const filas = (Object.entries(v) as [PartidoId, number][]).filter(([k, n]) => k !== 'BLANCO' && k !== 'OTROS' && n / tot >= 0.02).sort((a, b) => b[1] - a[1]).slice(0, 7);
@@ -175,7 +206,7 @@ function FichaProvincia({ id, x, y, e, escanos }: { id: string; x: number; y: nu
     <div className="ficha-prov" style={{ position: 'fixed', left: izq, top: Math.max(8, arr) }}>
       <h4>{p.nombre}</h4>
       <div className="fila"><span className="etiqueta">{ZONAS[p.zona].nombre}</span><span className="dato">{p.escanos} escaños</span></div>
-      <div className="fila"><span>Fidelidad {p.fidelidad}{p.clave ? ' · clave' : ''}{p.feudo ? ` · feudo ${CORTO_BANDO[p.feudo].toLowerCase()}` : ''}</span><span>{ctrl === -1 ? <b className="p">Control progresista</b> : ctrl === 1 ? <b className="c">Control conservador</b> : 'Sin control'}</span></div>
+      <div className="fila"><span>Fidelidad {p.fidelidad + morado}{morado ? ` (${morado} morado${morado > 1 ? 's' : ''})` : ''}{p.clave ? ' · clave' : ''}{p.feudo ? ` · feudo ${CORTO_BANDO[p.feudo].toLowerCase()}` : ''}</span><span>{ctrl === -1 ? <b className="p">Control progresista</b> : ctrl === 1 ? <b className="c">Control conservador</b> : 'Sin control'}</span></div>
       <div className="fila"><span>Presencia <b className="p">{pr.P}</b> · <b className="c">{pr.C}</b></span></div>
       <div className="barras-voto">
         {filas.map(([k, n]) => (
