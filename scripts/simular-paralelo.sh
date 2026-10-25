@@ -1,10 +1,22 @@
 #!/usr/bin/env bash
 # Lanza N simulaciones en 4 procesos: scripts/simular-paralelo.sh 100 normal normal [semillaInicial]
+# (RITMO y SESGO se pasan a scripts/simular.ts)
 N=${1:-40}; P=${2:-normal}; C=${3:-normal}; S0=${4:-1}; POR=$(( (N + 3) / 4 ))
-for i in 0 1 2 3; do npx tsx scripts/simular.ts $POR $P $C $(( S0 + i * POR )) > /tmp/sim_$i.json & done
+TMP=$(mktemp -d)
+for i in 0 1 2 3; do npx tsx scripts/simular.ts $POR $P $C $(( S0 + i * POR )) > "$TMP/sim_$i.json" & done
 wait
 node -e '
-const fs=require("fs"); const r=[0,1,2,3].map(i=>JSON.parse(fs.readFileSync("/tmp/sim_"+i+".json","utf8")));
-const t={partidas:0,P:0,C:0,empate:0,turno:0,ventaja:0,esc:0,motivos:{},pinza:{tejida:0,abstencion:0,apoyo:0},ms:0};
-for(const x of r){t.partidas+=x.partidas;t.P+=x.victorias.P;t.C+=x.victorias.C;t.empate+=x.victorias.empate;t.turno+=x.turnoMedio*x.partidas;t.ventaja+=x.ventajaMedia*x.partidas;t.esc+=x.escanosPPVoxMedios*x.partidas;for(const[k,v]of Object.entries(x.motivos))t.motivos[k]=(t.motivos[k]||0)+v;if(x.pinza)for(const k in t.pinza)t.pinza[k]+=x.pinza[k];t.ms+=x.msPorPartida*x.partidas;}
-console.log(JSON.stringify({partidas:t.partidas,pctProgresista:+(100*t.P/t.partidas).toFixed(1),P:t.P,C:t.C,empate:t.empate,turnoMedio:+(t.turno/t.partidas).toFixed(2),ventajaMedia:+(t.ventaja/t.partidas).toFixed(2),escanosPPVox:+(t.esc/t.partidas).toFixed(1),msPorPartida:Math.round(t.ms/t.partidas),pinza:t.pinza,motivos:t.motivos},null,1));'
+const fs=require("fs"); const dir=process.argv[1];
+const r=[0,1,2,3].map(i=>JSON.parse(fs.readFileSync(dir+"/sim_"+i+".json","utf8")));
+const n=r.reduce((a,x)=>a+x.partidas,0);
+const media=(k)=>+(r.reduce((a,x)=>a+x[k]*x.partidas,0)/n).toFixed(1);
+const suma=(f)=>{const t={};for(const x of r)for(const[k,v]of Object.entries(f(x)))t[k]=(t[k]||0)+v;return t;};
+const v=suma(x=>x.victorias);
+const modos=suma(x=>Object.fromEntries(Object.entries(x.modos).map(([k,p])=>[k,p*x.partidas/n])));
+console.log(JSON.stringify({partidas:n,nivel:r[0].nivel,ritmo:r[0].ritmo,victorias:v,pctProgresista:+(100*v.P/n).toFixed(1),
+  anticipadasPct:media("anticipadasPct"),decisionesPorJugador:media("decisionesPorJugador"),accionesPorJugador:media("accionesPorJugador"),
+  modos:Object.fromEntries(Object.entries(modos).map(([k,p])=>[k,+p.toFixed(1)])),partidasConCartaAjenaPct:media("partidasConCartaAjenaPct"),
+  maquinariaPorPartida:{P:+(r.reduce((a,x)=>a+x.maquinariaPorPartida.P*x.partidas,0)/n).toFixed(2),C:+(r.reduce((a,x)=>a+x.maquinariaPorPartida.C*x.partidas,0)/n).toFixed(2)},
+  ventajaMedia:media("ventajaMedia"),escanosPPVox:media("escanosPPVox"),escanosPSOEFA:media("escanosPSOEFA"),
+  msPorDecision:media("msPorDecision"),msMax:Math.max(...r.map(x=>x.msMax)),motivos:suma(x=>x.motivos)},null,1));' "$TMP"
+rm -rf "$TMP"

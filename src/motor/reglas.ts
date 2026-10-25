@@ -99,9 +99,9 @@ export function objetivosAtaque(e: Pick<Estado, 'presencia' | 'clima' | 'efectos
 /** El dado de ataque: más estable que un d6 para que una acción fallida no sea una acción perdida. */
 export const DADO_ATAQUE = [-2, -1, 0, 0, 1, 2];
 
-/** Lo que suma un ataque antes del dado. */
+/** Lo que suma un ataque antes del dado: PC + vecinas que controlas + 1 − Fidelidad (+1 con Datos 2). */
 export function baseAtaque(e: Pick<Estado, 'presencia' | 'morado' | 'maquinaria'>, b: Bando, id: string, pc: number): number {
-  return pc + vecinasControladas(e, id, b) - fidelidadEf(e, id) + (tiene(e as Estado, b, 'datos', 2) ? 1 : 0);
+  return pc + vecinasControladas(e, id, b) + 1 - fidelidadEf(e, id) + (tiene(e as Estado, b, 'datos', 2) ? 1 : 0);
 }
 
 // —— negociación ——

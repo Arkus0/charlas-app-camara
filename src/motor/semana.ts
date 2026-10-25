@@ -3,7 +3,7 @@ import { CARTAS } from '../data/mazos';
 import { PROVINCIAS, ZONAS } from '../data/provincias';
 import { RIVAL, type Bando } from './base';
 import { proyectar } from './electoral';
-import { dominante, duenoTema, estaEnAgenda, NOMBRE_TEMA, temaPropio, TEMAS } from './agenda';
+import { dominante, duenoTema, enAgenda, estaEnAgenda, NOMBRE_TEMA, temaPropio, TEMAS } from './agenda';
 import { tiene } from './maquinaria';
 import { anadirFase, robar } from './baraja';
 import {
@@ -17,6 +17,10 @@ import { accionesSemana, FECHAS, HITOS, lider, puntuarCIS, puntuarZona, tamanoMa
 import type { Estado, Respuesta, Tema } from './tipos';
 
 const d6 = (e: Estado) => 1 + Math.floor(aleatorio(e) * 6);
+
+/** PV de la Agenda al cerrar la semana: el tema dominante y el segundo en agenda. */
+export const PV_DOMINANTE = 2;
+export const PV_SEGUNDO = 1;
 
 /** PV máximos de cada debate televisado. */
 export const TOPE_DEBATE = { cara: 3, cuatro: 2 } as const;
@@ -175,15 +179,23 @@ export const pasosSemana: Record<string, Paso<Estado, Respuesta>> = {
       if (neto) pv(e, 'C', neto);
     }
     if (e.ganador) return true;
-    // el tema dominante
-    const d = dominante(e);
+    // la Agenda: el tema dominante da 2 PV a su dueño y el segundo en agenda, 1
+    const [d, segundo] = enAgenda(e);
     if (d) {
       const dueno = duenoTema(e, d);
       suceso(e, { s: 'dominante', tema: d, dueno });
       log(e, `Tema de la semana: ${NOMBRE_TEMA[d]}${dueno ? ` (favorece al ${N(dueno)})` : ''}`, 'agenda', dueno);
-      if (dueno) pv(e, dueno, 1 + (tiene(e, dueno, 'medios', 2) ? 1 : 0));
+      if (dueno) pv(e, dueno, PV_DOMINANTE + (tiene(e, dueno, 'medios', 2) ? 1 : 0));
       if (d === 'COR') cambiarClima(e, -1);
       if (e.ganador) return true;
+    }
+    if (segundo) {
+      const dueno = duenoTema(e, segundo);
+      if (dueno) {
+        log(e, `También en agenda: ${NOMBRE_TEMA[segundo]} (favorece al ${N(dueno)})`, 'agenda', dueno);
+        pv(e, dueno, PV_SEGUNDO);
+        if (e.ganador) return true;
+      }
     }
     // cierre de listas: Podemos va en solitario y decide su estrategia
     if (e.semana === 3) {
