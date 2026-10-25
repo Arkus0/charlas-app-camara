@@ -9,6 +9,9 @@ import type { DatoSuceso, EntradaLog, Estado, Rama, Tema } from './tipos';
 
 export const N = (b: Bando) => CORTO_BANDO[b];
 
+/** El nombre de una carta entre comillas (sin anidarlas si ya las lleva). */
+export const citar = (nombre: string) => (nombre.includes('«') ? nombre : `«${nombre}»`);
+
 export const NOMBRES_CLIMA: Record<number, string> = { 5: 'Sereno', 4: 'Tenso', 3: 'Bronco', 2: 'Guerra sucia', 1: 'Ruptura' };
 
 export const HUMOR_PODEMOS: Record<number, string> = {

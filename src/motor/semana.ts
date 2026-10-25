@@ -7,7 +7,7 @@ import { dominante, duenoTema, enAgenda, estaEnAgenda, NOMBRE_TEMA, temaPropio, 
 import { tiene } from './maquinaria';
 import { anadirFase, robar } from './baraja';
 import {
-  calentar, cambiarClima, cambiarPodemos, cambiarSocio, fotoSemana, log, N, pv, suceso, terminar,
+  calentar, cambiarClima, cambiarPodemos, cambiarSocio, citar, fotoSemana, log, N, pv, suceso, terminar,
 } from './cambios';
 import { opcionesAccion, resolverAccion } from './acciones';
 import { tareaEfectos } from './efectos';
@@ -63,7 +63,7 @@ export const pasosSemana: Record<string, Paso<Estado, Respuesta>> = {
     const c = CARTAS[id];
     e.noticia = id;
     e.retiradas.push(id);
-    log(e, `Noticia de la semana: «${c.nombre}»`, 'fase');
+    log(e, `Noticia de la semana: ${citar(c.nombre)}`, 'fase');
     suceso(e, { s: 'noticia', carta: id });
     calentar(e, c.tema, 2);
     if (c.efectos.length) encolar(e, tareaEfectos(c.efectos, { yo: lider(e), carta: id }));
@@ -77,7 +77,7 @@ export const pasosSemana: Record<string, Paso<Estado, Respuesta>> = {
     const l = lider(e);
     e.agendaPodemos = id;
     e.retiradas.push(id);
-    log(e, `Agenda de Podemos: «${c.nombre}» (lo sufre quien va primero: el ${N(l)})`, 'fase');
+    log(e, `Agenda de Podemos: ${citar(c.nombre)} (lo sufre quien va primero: el ${N(l)})`, 'fase');
     suceso(e, { s: 'agendaPodemos', carta: id, lider: l });
     calentar(e, c.tema, 1);
     if (c.efectos.length) encolar(e, tareaEfectos(c.efectos, { yo: l, carta: id }));
@@ -145,7 +145,7 @@ export const pasosSemana: Record<string, Paso<Estado, Respuesta>> = {
         if (i >= 0) e.manos[b].splice(i, 1);
         e.descartes[b].push(carta);
       }
-      log(e, `${N(b)}: ${carta !== null ? `«${CARTAS[carta].nombre}»` : 'sin carta'}, habla de ${NOMBRE_TEMA[tema]} · dado ${dado} → ${total[b]}`, 'dado', b);
+      log(e, `${N(b)}: ${carta !== null ? citar(CARTAS[carta].nombre) : 'sin carta'}, habla de ${NOMBRE_TEMA[tema]} · dado ${dado} → ${total[b]}`, 'dado', b);
     }
     const dif = Math.abs(total.P - total.C);
     const ganador: Bando | null = dif === 0 ? null : total.P > total.C ? 'P' : 'C';

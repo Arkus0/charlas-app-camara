@@ -1,26 +1,30 @@
 # 176 · La Batalla del 29N
 
-Juego de estrategia por cartas, al estilo de *Twilight Struggle*, sobre las elecciones generales anticipadas del **29 de noviembre de 2026**. Dos bloques (Progresista: PSOE y Frente Amplio; Conservador: PP y Vox) se disputan las 52 circunscripciones durante las ocho semanas de precampaña y campaña. La noche electoral se reparten los escaños con D'Hondt y se vota la investidura.
+Juego de estrategia por cartas **para el móvil** sobre las elecciones generales anticipadas del **29 de noviembre de 2026**. Dos bloques (Progresista: PSOE y Frente Amplio; Conservador: PP y Vox) se disputan las 52 circunscripciones durante las ocho semanas de precampaña y campaña. La noche electoral se reparten los escaños con D'Hondt y se vota la investidura. Una partida contra la IA dura entre 10 y 20 minutos.
 
-- **Todas las mecánicas de Twilight Struggle** traducidas a la campaña: efectos en vigor, guerras (batallas), Quagmire (guerra interna), crisis de los misiles (crisis institucional), carta China (El Voto Útil), Europa (Asalto a la Moncloa), Defectors, UN Intervention…
-- **222 cartas** en tres mazos más la Agenda de Podemos. Cada carta de un bloque tiene su **pareja espejo** en el otro (75 y 75, los mismos PC), y muchas son **noticias reales verificadas**: caso Koldo y caso Kitchen, «la fontanera» y caso Montoro, Torre Pacheco, la flotilla, La Vuelta, Vito Quiles…
-- **Podemos es el caos**: va por libre, su fuerza resta votos sobre todo a la izquierda, su humor decide si apoya a Sánchez, sus cartas moradas se activan siempre y cada semana su Agenda golpea a quien va primero. Y un buen jugador conservador puede tejer **la pinza** para que se abstenga con Feijóo o, en el caso extremo, le vote.
-- **El plató**: al cerrar cada semana, presentador y tertulianos cuentan la campaña como una historia; la noche electoral tiene su especial.
-- Contra la IA (fácil, normal, difícil) o a dos jugadores en el mismo PC.
+- **Se juega con una mano**: tocas una carta, eliges cómo jugarla (evento, implantarte en una zona, atacar una provincia, negociar, marcar la agenda o subir tu Maquinaria) y antes de confirmar ves la **previsión** de escaños. Una jugada, un toque de confirmar.
+- **Jugadas alternas**: 3 por semana (4 desde la semana 4); empieza quien va por delante y el que va detrás cierra la semana antes de la encuesta.
+- **La Agenda**, el dilema central: siete temas con calor. Jugar una carta calienta su tema, los dos más calientes dan PC y al cerrar la semana el dominante da PV a su dueño. Tus mejores cartas pueden ser de un tema del rival: si las juegas, le haces la campaña.
+- **Maquinaria de campaña**: tres ramas (Calle, Medios, Datos) que se suben descartando cartas.
+- **Podemos es el caos**: va por libre, su fuerza resta votos sobre todo a la izquierda, su humor decide si apoya a Sánchez y cada semana su Agenda golpea a quien va primero. Un buen jugador conservador puede tejer **la pinza** para que se abstenga con Feijóo.
+- **Noticias reales verificadas**: caso Koldo y caso Kitchen, «la fontanera» y caso Montoro, Torre Pacheco, la flotilla, el apagón, la DANA, Vito Quiles… Cada carta de un bloque tiene su **pareja espejo** en el otro, con la misma fuerza y el tema espejo.
+- **El plató**: al cerrar cada semana, presentador y tertulianos cuentan la campaña en tres intervenciones; la noche electoral tiene su especial.
+- Contra la IA (fácil, normal, difícil). El modo online por turnos está en camino.
 - Proyección de escaños en directo con datos reales: la media de 16 encuestadoras de octubre de 2026 repartida por provincias.
 
-El reglamento completo y el listado de cartas están en [`docs/REGLAMENTO.md`](docs/REGLAMENTO.md). Los prompts para generar la ilustración de cada carta (con un estilo común) están en [`docs/PROMPTS_IMAGENES.md`](docs/PROMPTS_IMAGENES.md): guarda las imágenes en `src/assets/cartas/<id>.webp` y aparecerán solas al compilar.
+El reglamento y el listado de cartas están en [`docs/REGLAMENTO.md`](docs/REGLAMENTO.md). Los prompts para generar la ilustración de cada carta (con un estilo común) están en [`docs/PROMPTS_IMAGENES.md`](docs/PROMPTS_IMAGENES.md): guarda las imágenes en `src/assets/cartas/<id>.webp` y aparecerán solas al compilar.
 
 ## Uso
 
 ```bash
 npm install
 npm run dev        # servidor de desarrollo (Vite)
-npm test           # pruebas: D'Hondt (reproduce el 23J), motor, cada carta y 200 partidas al azar
+npm test           # pruebas: D'Hondt (reproduce el 23J), cada carta, la vista sin fugas, la IA y 200 partidas al azar
 npm run build      # genera dist/index.html, un único archivo jugable sin servidor
 npm run simulate -- 20 normal normal   # partidas IA contra IA para medir el equilibrio
 scripts/simular-paralelo.sh 80         # lo mismo, en 4 procesos
-node scripts/prueba-ui.cjs capturas    # (tras el build) juega una partida completa en el navegador
+node scripts/prueba-movil.cjs capturas # (tras el build, con Playwright) juega una partida completa a toques en un iPhone emulado
+npm run cartas                         # imprime el listado de cartas en Markdown
 npx tsx scripts/prompts-imagenes.ts    # regenera docs/PROMPTS_IMAGENES.md
 ```
 
@@ -28,12 +32,12 @@ npx tsx scripts/prompts-imagenes.ts    # regenera docs/PROMPTS_IMAGENES.md
 
 | Carpeta | Contenido |
 |---|---|
-| `src/engine` | Motor puro y serializable: tipos, reglas, modelo electoral (D'Hondt e investidura) y máquina de tareas y decisiones |
-| `src/data` | Circunscripciones, partidos y candidaturas, cartas, estilo de las ilustraciones, personajes del plató y `base.json` (voto de partida) |
+| `src/motor` | Motor puro y serializable: núcleo de tareas y decisiones, reglas, Agenda, Maquinaria, semana, efectos de las cartas, modelo electoral (D'Hondt e investidura), la vista de cada jugador y la previsión de jugadas |
+| `src/data` | Circunscripciones, partidos y candidaturas, mazos (`mazos/`), mapa, estilo de las ilustraciones, personajes del plató y `base.json` (voto de partida) |
+| `src/ia` | IA: simula cada jugada candidata sobre una copia en la que baraja lo que no ve y valora por escaños, PV esperados y Maquinaria. Corre en un Web Worker |
 | `src/narrativa` | El plató: crónica semanal y especial de la noche electoral a partir de lo que ha pasado en la partida |
-| `src/ai` | IA: evaluación de posiciones por escaños proyectados y política voraz con simulación |
-| `src/ui` | Interfaz en React: mapa, marcadores, mano, escrutinio y noche electoral |
-| `scripts` | Generación de datos, simulaciones, listado de cartas y prueba de interfaz |
+| `src/app` | Interfaz móvil en React: mapa por zonas, mano, hoja de jugada con previsión, hojas de zona, Congreso, Agenda y Maquinaria, momentos del rival, debates y noche electoral |
+| `scripts` | Generación de datos y mapa, simulaciones, listado de cartas, prompts de imagen y prueba en móvil |
 | `data/fuentes` | Datos de origen (resultados de 2023, encuestas, geografía) |
 
 ## Datos

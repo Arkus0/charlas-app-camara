@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Juego de estrategia por cartas estilo Twilight Struggle sobre las elecciones generales del 29N de 2026.",
+  "description": "Juego de estrategia por cartas para el móvil sobre las elecciones generales del 29N de 2026.",
   "scripts": {
     "predev": "node scripts/preparar-ilustraciones.mjs",
     "dev": "vite",

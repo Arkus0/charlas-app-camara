@@ -25,7 +25,7 @@ interface Parametros {
 }
 
 const PARAMETROS: Record<Nivel, Parametros> = {
-  facil: { tope: 40, muestras: 1, replica: 0 },
+  facil: { tope: 30, muestras: 1, replica: 0 },
   normal: { tope: 90, muestras: 2, replica: 0 },
   dificil: { tope: 150, muestras: 3, replica: 8 },
 };
@@ -163,8 +163,11 @@ function trasRespuestaRival(e: Estado, b: Bando, base: Base, azar: { rng: number
 
 function elegirConRuido<T>(ordenadas: { r: T; v: number }[], nivel: Nivel, azar: { rng: number }): T {
   if (nivel === 'facil') {
-    if (aleatorio(azar) < 0.2) return ordenadas[Math.floor(aleatorio(azar) * Math.min(12, ordenadas.length))].r;
-    return ordenadas[Math.floor(aleatorio(azar) * Math.min(4, ordenadas.length))].r;
+    // juega como un aficionado: a menudo cualquier jugada que no pierda, y si no, una de las diez mejores
+    const sanas = ordenadas.filter((x) => x.v > -1000);
+    const pool = sanas.length ? sanas : ordenadas;
+    if (aleatorio(azar) < 0.55) return pool[Math.floor(aleatorio(azar) * pool.length)].r;
+    return pool[Math.floor(aleatorio(azar) * Math.min(10, pool.length))].r;
   }
   if (nivel === 'normal' && ordenadas.length > 1 && aleatorio(azar) < 0.15) return ordenadas[1].r;
   return ordenadas[0].r;

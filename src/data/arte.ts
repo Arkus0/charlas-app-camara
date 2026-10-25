@@ -1,6 +1,6 @@
 // Ilustraciones de las cartas: ruta de la imagen y prompt para generarla con un modelo de imagen
 // (por ejemplo, la generación de imágenes de ChatGPT). Todas comparten el mismo estilo para que la baraja sea coherente.
-import type { Carta, LadoCarta } from '../engine/tipos';
+import type { Carta, MazoId } from '../motor/tipos';
 
 /** Carpeta donde van las imágenes: <id>.webp (o .png/.jpg), en formato 4:3. La interfaz las recoge al compilar. */
 export const CARPETA_IMAGENES = 'src/assets/cartas';
@@ -15,15 +15,13 @@ export const ESTILO_ARTE = [
   'sin banderas oficiales ni escudos, y sin ningún texto, letra o número legible.',
 ].join(' ');
 
-const COLOR_LADO: Record<LadoCarta, string> = {
+const COLOR_MAZO: Record<MazoId, string> = {
   P: 'Color dominante: rojo #e5483f (carta del bloque progresista).',
   C: 'Color dominante: azul #3a86e8 (carta del bloque conservador).',
-  N: 'Color dominante: dorado #e8b64a (carta neutral), con toques de rojo y azul equilibrados.',
-  E: 'Color dominante: papel crudo #f3f1ea con barras rojas y azules equilibradas (carta de Encuesta).',
-  W: 'Color dominante: morado #8e44c4 (comodín de Podemos), con rojo y azul en segundo plano.',
-  A: 'Color dominante: morado #8e44c4 sobre azul noche (Agenda de Podemos), con un marco morado más grueso.',
+  actualidad: 'Color dominante: dorado #e8b64a (noticia neutral), con toques de rojo y azul equilibrados.',
+  podemos: 'Color dominante: morado #8e44c4 sobre azul noche (Agenda de Podemos), con un marco morado más grueso.',
 };
 
 export function promptImagen(c: Carta): string {
-  return `${ESTILO_ARTE}\n\nEscena: ${c.escena}.\n${COLOR_LADO[c.lado]}`;
+  return `${ESTILO_ARTE}\n\nEscena: ${c.escena}.\n${COLOR_MAZO[c.mazo]}`;
 }

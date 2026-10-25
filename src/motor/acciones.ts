@@ -8,7 +8,8 @@ import { REGIONALES } from './electoral';
 import { NOMBRE_TEMA, TEMAS, DUENO_TEMA } from './agenda';
 import { NOMBRE_RAMA, puedeSubir, PV_RAMA_COMPLETA, RAMAS, tiene } from './maquinaria';
 import { soltarCarta } from './baraja';
-import { calentar, cambiarClima, cambiarPodemos, cambiarPresencia, log, moverAfinidad, N, pv, subirMaquinaria, suceso } from './cambios';
+import { calentar, cambiarClima, cambiarPodemos, cambiarPresencia, citar, log, moverAfinidad, N, pv, subirMaquinaria, suceso } from './cambios';
+export { citar };
 import { encolar } from './nucleo';
 import { aleatorio } from './rng';
 import { candidatas, tareaEfectos, validarReparto, provinciasDestino } from './efectos';
@@ -171,7 +172,7 @@ function nombreDestino(modo: Modo, destino?: string): string {
 export function resolverAccion(e: Estado, b: Bando, r: Extract<Respuesta, { tipo: 'accion' }>, gratis: boolean) {
   const c = typeof r.carta === 'number' ? CARTAS[r.carta] : null;
   const pc = pcAccion(e, b, r.carta, r.modo, r.destino);
-  const quien = c ? `«${c.nombre}»` : r.carta === 'pegada' ? 'la pegada de carteles' : 'una acción básica';
+  const quien = c ? citar(c.nombre) : r.carta === 'pegada' ? 'la pegada de carteles' : 'una acción básica';
   const dest = nombreDestino(r.modo, r.destino);
   log(e, `El ${N(b)} juega ${quien} ${NOMBRE_JUGADA[r.modo]}${dest ? `: ${dest}` : ''}${r.modo !== 'evento' && r.modo !== 'maquinaria' ? ` (${pc} PC)` : ''}`, 'jugada', b);
   suceso(e, { s: 'jugada', bando: b, carta: r.carta, modo: r.modo, destino: r.destino, pc });

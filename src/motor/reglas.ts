@@ -11,7 +11,8 @@ import type { Cond, Estado, Filtro, TipoEfectoActivo } from './tipos';
 export { CESIONES_CARAS };
 
 export const ZONA_IDS = Object.keys(ZONAS) as ZonaId[];
-export const TOPE_VENTAJA = 20;
+/** Con la Ventaja en este tope hay vuelco y la partida termina. */
+export const TOPE_VENTAJA = 25;
 export const TOPE_ENCUESTA = 5;
 export const MAX_POR_PROVINCIA = 2; // presencia por provincia en una misma acción de Implantar
 

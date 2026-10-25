@@ -17,7 +17,7 @@ import type { Decision, Estado, Respuesta, Tema } from './tipos';
 export const VERSION_MOTOR = 1;
 
 /** pp de partida hacia el Conservador: las encuestas de octubre se acercan a un empate técnico (calibrado con la IA). */
-export const SESGO_INICIAL = -4.7;
+export const SESGO_INICIAL = -5.0;
 
 export interface OpcionesPartida {
   /** acciones seguidas por turno (1 contra la IA; 1 o 2 online) */

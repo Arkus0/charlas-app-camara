@@ -7,7 +7,7 @@ import { RIVAL, type Bando, type RegionalId } from './base';
 import { REGIONALES } from './electoral';
 import { decidir, encolar, type Paso, type Tarea } from './nucleo';
 import {
-  calentar, cambiarClima, cambiarPodemos, cambiarPresencia, cambiarSocio, log, moverAfinidad, N, pv, salpicar, suceso,
+  calentar, cambiarClima, cambiarPodemos, cambiarPresencia, cambiarSocio, citar, log, moverAfinidad, N, pv, salpicar, suceso,
 } from './cambios';
 import { robar } from './baraja';
 import { aleatorio } from './rng';
@@ -236,7 +236,7 @@ function aplicar(e: Estado, ef: Efecto, ctx: Contexto): boolean {
       const i = Math.floor(aleatorio(e) * mano.length);
       const [id] = mano.splice(i, 1);
       e.descartes[rv].push(id);
-      log(e, `El ${N(rv)} pierde una carta: «${CARTAS[id].nombre}»`, undefined, rv);
+      log(e, `El ${N(rv)} pierde una carta: ${citar(CARTAS[id].nombre)}`, undefined, rv);
       return false;
     }
     case 'activar':
@@ -295,7 +295,7 @@ export const pasosEfectos: Record<string, Paso<Estado, Respuesta>> = {
   elegir(e, t, r) {
     if (!r) {
       const c = CARTAS[t.ctx.carta];
-      return decidir(e, { tipo: 'opcion', bando: t.quien, texto: c ? `«${c.nombre}»: elige` : 'Elige', opciones: t.opciones.map((o: { texto: string }) => o.texto), carta: t.ctx.carta });
+      return decidir(e, { tipo: 'opcion', bando: t.quien, texto: c ? `${citar(c.nombre)}: elige` : 'Elige', opciones: t.opciones.map((o: { texto: string }) => o.texto), carta: t.ctx.carta });
     }
     if (r.tipo !== 'opcion') throw new Error('Se esperaba una opción');
     const o = t.opciones[r.i];

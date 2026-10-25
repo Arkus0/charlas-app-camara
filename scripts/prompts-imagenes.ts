@@ -1,10 +1,10 @@
 // Genera docs/PROMPTS_IMAGENES.md con un prompt por carta: npx tsx scripts/prompts-imagenes.ts
 import { writeFileSync } from 'node:fs';
-import { CARTAS_LISTA } from '../src/data/cartas';
+import { CARTAS_LISTA, idArte } from '../src/data/mazos';
+import type { MazoId } from '../src/motor/tipos';
 import { ESTILO_ARTE, promptImagen, rutaImagen } from '../src/data/arte';
 
-const LADO: Record<string, string> = { P: 'Progresista', C: 'Conservador', N: 'Neutral', E: 'Encuesta', W: 'Comodín de Podemos', A: 'Agenda de Podemos' };
-const MAZO: Record<number, string> = { 0: 'Especial', 1: 'Mazo I · Precampaña', 2: 'Mazo II · Campaña', 3: 'Mazo III · Recta final', 4: 'Agenda de Podemos' };
+const MAZO: Record<MazoId, string> = { P: 'Mazo progresista', C: 'Mazo conservador', actualidad: 'Actualidad', podemos: 'Agenda de Podemos' };
 
 const l: string[] = [];
 l.push('# Prompts de imagen de las cartas');
@@ -23,15 +23,18 @@ l.push('');
 l.push('```');
 l.push(ESTILO_ARTE);
 l.push('```');
-for (const m of [0, 1, 2, 3, 4]) {
-  const cs = CARTAS_LISTA.filter((c) => c.mazo === m);
+// las copias de una carta común (en los dos mazos) comparten ilustración: un solo prompt
+const conArte = CARTAS_LISTA.filter((c) => idArte(c) === c.id);
+for (const m of ['P', 'C', 'actualidad', 'podemos'] as MazoId[]) {
+  const cs = conArte.filter((c) => c.mazo === m);
   l.push('');
-  l.push(`## ${MAZO[m]} (${cs.length} cartas)`);
+  l.push(`## ${MAZO[m]} (${cs.length} ilustraciones)`);
   for (const c of cs) {
+    const copias = CARTAS_LISTA.filter((x) => x.arte === c.id).map((x) => x.id);
     l.push('');
     l.push(`### ${c.id} · ${c.nombre}`);
     l.push('');
-    l.push(`${LADO[c.lado]}${c.pareja !== undefined ? ` · pareja de la ${c.pareja}` : ''} · archivo \`${rutaImagen(c.id)}\``);
+    l.push(`${MAZO[m]}${c.pareja !== undefined ? ` · pareja de la ${c.pareja}` : ''}${copias.length ? ` · también la usa la ${copias.join(', ')}` : ''} · archivo \`${rutaImagen(c.id)}\``);
     l.push('');
     l.push('```');
     l.push(promptImagen(c));
@@ -39,4 +42,4 @@ for (const m of [0, 1, 2, 3, 4]) {
   }
 }
 writeFileSync(new URL('../docs/PROMPTS_IMAGENES.md', import.meta.url), l.join('\n') + '\n');
-console.log(`docs/PROMPTS_IMAGENES.md: ${CARTAS_LISTA.length} prompts`);
+console.log(`docs/PROMPTS_IMAGENES.md: ${conArte.length} prompts`);

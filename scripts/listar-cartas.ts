@@ -1,16 +1,24 @@
 // Imprime el listado de cartas en Markdown (se pega al final de docs/REGLAMENTO.md): npx tsx scripts/listar-cartas.ts
-import { CARTAS_LISTA } from '../src/data/cartas';
+import { CARTAS_LISTA } from '../src/data/mazos';
+import { CORTO_TEMA, DUENO_TEMA } from '../src/motor/agenda';
+import type { Carta, MazoId } from '../src/motor/tipos';
 
-const LADO: Record<string, string> = { P: 'Progresista', C: 'Conservador', N: 'Neutral', E: 'Encuesta', W: 'Comodín de Podemos', A: 'Agenda de Podemos' };
-const MAZO: Record<number, string> = { 0: 'Especial', 1: 'Mazo I · Precampaña (semana 1)', 2: 'Mazo II · Campaña (semana 4)', 3: 'Mazo III · Recta final (semana 7)', 4: 'Agenda de Podemos (una por semana)' };
+const MAZO: Record<MazoId, string> = { P: 'Mazo progresista', C: 'Mazo conservador', actualidad: 'Actualidad (una noticia por semana)', podemos: 'Agenda de Podemos (una por semana)' };
+const FASE: Record<number, string> = { 1: 'semanas 1-3', 2: 'desde la 4', 3: 'desde la 7' };
 const esc = (s: string) => s.replace(/\|/g, '\\|');
-for (const m of [0, 1, 2, 3, 4]) {
-  const cs = CARTAS_LISTA.filter((c) => c.mazo === m);
+const ajena = (c: Carta) => (c.mazo === 'P' || c.mazo === 'C') && DUENO_TEMA[c.tema] !== c.mazo;
+
+for (const m of ['P', 'C', 'actualidad', 'podemos'] as MazoId[]) {
+  const cs = CARTAS_LISTA.filter((c) => c.mazo === m).sort((a, b) => a.fase - b.fase || a.id - b.id);
+  const bloque = m === 'P' || m === 'C';
   console.log(`\n### ${MAZO[m]} (${cs.length} cartas)\n`);
-  console.log('| Carta | PC | Evento | Efecto |');
-  console.log('|---|---|---|---|');
-  for (const c of cs) console.log(`| ${esc(c.nombre)}${c.retirar ? ' *' : ''}${c.noticia ? ' · noticia' : ''} | ${c.lado === 'E' || c.lado === 'A' ? '—' : c.ops} | ${LADO[c.lado]} | ${esc(c.texto)} |`);
+  console.log(bloque ? '| Carta | Fuerza | Tema | Entra | Efecto |\n|---|---|---|---|---|' : '| Carta | Tema | Efecto |\n|---|---|---|');
+  for (const c of cs) {
+    const nombre = `${esc(c.nombre)}${c.retirar ? ' *' : ''}${c.noticia ? ' · noticia' : ''}`;
+    const tema = `${CORTO_TEMA[c.tema]}${ajena(c) ? ' ⚠' : ''}`;
+    console.log(bloque ? `| ${nombre} | ${c.fuerza} | ${tema} | ${FASE[c.fase]} | ${esc(c.texto)} |` : `| ${nombre} | ${tema} | ${esc(c.texto)} |`);
+  }
 }
-const ops = (l: string) => CARTAS_LISTA.filter((c) => c.lado === l).reduce((a, c) => a + c.ops, 0);
-const n = (l: string) => CARTAS_LISTA.filter((c) => c.lado === l).length;
-console.log(`\nResumen: ${n('P')} progresistas (${ops('P')} PC), ${n('C')} conservadoras (${ops('C')} PC), ${n('W')} comodines de Podemos (${ops('W')} PC), ${n('N')} neutrales, ${n('E')} encuestas y ${n('A')} cartas de la Agenda de Podemos. * = se retira tras jugar el evento. «noticia» = basada en un hecho real.`);
+const n = (m: MazoId) => CARTAS_LISTA.filter((c) => c.mazo === m).length;
+const nAjenas = (m: MazoId) => CARTAS_LISTA.filter((c) => c.mazo === m && ajena(c)).length;
+console.log(`\nResumen: ${n('P')} cartas progresistas (${nAjenas('P')} de tema rival o de corrupción), ${n('C')} conservadoras (${nAjenas('C')}), ${n('actualidad')} noticias de Actualidad y ${n('podemos')} cartas de la Agenda de Podemos. ⚠ = tema del rival o corrupción: al jugarla calientas un tema que no es tuyo. * = se retira tras jugar el evento. «noticia» = basada en un hecho real.`);

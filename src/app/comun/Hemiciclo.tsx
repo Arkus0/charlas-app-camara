@@ -1,6 +1,6 @@
 import { memo } from 'react';
-import { ORDEN_HEMICICLO, PARTIDOS } from '../data/partidos';
-import type { PartidoId, Votos } from '../engine/tipos';
+import { ORDEN_HEMICICLO, PARTIDOS } from '../../data/partidos';
+import type { PartidoId, Votos } from '../../motor/base';
 
 const FILAS = 10;
 const R0 = 0.36;
