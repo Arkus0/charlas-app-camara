@@ -420,3 +420,5 @@ div.fila { cursor: default; }
   body { background: radial-gradient(ellipse at 50% 30%, #13213a, #070c16 70%); }
   .pantalla { border-left: 1px solid var(--linea); border-right: 1px solid var(--linea); }
 }
+.aviso-version { position: fixed; left: 50%; bottom: max(12px, env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 60; min-height: 44px; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--oro); background: var(--tablero-2); color: var(--tinta); font-size: 14px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45); white-space: nowrap; cursor: pointer; }
+.aviso-version b { color: var(--oro); }

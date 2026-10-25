@@ -1,21 +1,51 @@
-// Prueba de la interfaz móvil: juega una partida completa contra la IA en un móvil emulado, a toques.
+// Prueba de la PWA en un móvil emulado: la sirve como Vercel (con sus cabeceras y su CSP), comprueba que el service
+// worker se instala y que el juego abre sin conexión, y juega una partida completa contra la IA a toques.
 // Comprueba que no hay errores, que nada desborda en horizontal y que los botones miden al menos 44 px.
 // Uso: npm run build && node scripts/prueba-movil.cjs [carpeta-capturas] [dispositivo]
 const { chromium, devices } = require('playwright');
+const http = require('http');
 const path = require('path');
 const fs = require('fs');
+
+const TIPOS = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp', '.woff2': 'font/woff2', '.woff': 'font/woff' };
+
+/** Un servidor estático de dist/ con las cabeceras globales de vercel.json. */
+function servir(raiz) {
+  const vercel = JSON.parse(fs.readFileSync('vercel.json', 'utf8'));
+  const globales = vercel.headers.find((h) => h.source === '/(.*)').headers;
+  const srv = http.createServer((req, res) => {
+    const url = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+    let archivo = path.join(raiz, url === '/' ? 'index.html' : url);
+    if (!archivo.startsWith(raiz) || !fs.existsSync(archivo) || fs.statSync(archivo).isDirectory()) archivo = path.join(raiz, 'index.html');
+    for (const h of globales) res.setHeader(h.key, h.value);
+    res.setHeader('Content-Type', TIPOS[path.extname(archivo)] || 'application/octet-stream');
+    fs.createReadStream(archivo).pipe(res);
+  });
+  return new Promise((ok) => srv.listen(0, '127.0.0.1', () => ok(srv)));
+}
 
 (async () => {
   const dir = process.argv[2] || 'capturas-movil';
   const dispositivo = process.argv[3] || 'iPhone 13';
   fs.mkdirSync(dir, { recursive: true });
+  const srv = await servir(path.resolve('dist'));
+  const base = `http://127.0.0.1:${srv.address().port}/`;
   const b = await chromium.launch();
   const ctx = await b.newContext({ ...devices[dispositivo] });
   const p = await ctx.newPage();
   const errores = [];
   p.on('pageerror', (e) => errores.push(String(e)));
   p.on('console', (m) => { if (m.type() === 'error') errores.push(m.text()); });
-  await p.goto('file://' + path.resolve('dist/index.html') + '#rapido');
+  await p.goto(base + '#rapido');
+  // la PWA: el service worker se instala y, sin conexión, el juego vuelve a abrir
+  const sw = await p.evaluate(async () => {
+    const r = await Promise.race([navigator.serviceWorker.ready, new Promise((ok) => setTimeout(() => ok(null), 10000))]);
+    return !!(r && r.active);
+  });
+  await ctx.setOffline(true);
+  await p.reload();
+  const sinConexion = await p.locator('[data-testid=empezar]').waitFor({ state: 'visible', timeout: 8000 }).then(() => true, () => false);
+  await ctx.setOffline(false);
   const foto = async (nombre) => { await p.waitForTimeout(250); await p.screenshot({ path: `${dir}/${nombre}.png` }); };
   const toca = async (sel) => { const el = await p.$(sel); if (!el) return false; try { await el.tap({ timeout: 1500 }); return true; } catch { return false; } };
   const pequenos = new Set();
@@ -86,8 +116,9 @@ const fs = require('fs');
   const fin = await p.$('[data-testid=noche]');
   desborda = (await medir()) || desborda;
   await p.screenshot({ path: `${dir}/noche.png`, fullPage: true });
-  const res = { dispositivo, terminada: !!fin, segundos: Math.round((Date.now() - t0) / 1000), jugadas, capturas: [...hechas], desbordaEnHorizontal: desborda, botonesPequenos: [...pequenos], errores };
+  const res = { dispositivo, serviceWorker: sw, abreSinConexion: sinConexion, terminada: !!fin, segundos: Math.round((Date.now() - t0) / 1000), jugadas, capturas: [...hechas], desbordaEnHorizontal: desborda, botonesPequenos: [...pequenos], errores };
   console.log(JSON.stringify(res, null, 1));
   await b.close();
-  process.exit(fin && errores.length === 0 && !desborda && pequenos.size === 0 ? 0 : 1);
+  srv.close();
+  process.exit(sw && sinConexion && fin && errores.length === 0 && !desborda && pequenos.size === 0 ? 0 : 1);
 })();

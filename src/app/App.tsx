@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import { cargarLocal, guardarLocal, nuevaLocal, usePartidaLocal, type ConfigLocal, type Guardada } from './local';
 import { Menu } from './Menu';
 import { Partida } from './partida/Partida';
+import { useVersionNueva } from './pwa';
 
 const CONFIG_INICIAL: ConfigLocal = { humano: 'P', nivel: 'normal' };
 
@@ -11,7 +12,26 @@ function PartidaLocal({ inicial, onSalir, onRevancha }: { inicial: Guardada; onS
   return <Partida {...p} v={p.vista} onSalir={onSalir} onRevancha={onRevancha} />;
 }
 
+function AvisoVersion() {
+  const [hay, actualizar] = useVersionNueva();
+  if (!hay) return null;
+  return (
+    <button type="button" className="aviso-version" onClick={actualizar}>
+      Hay una versión nueva · <b>Actualizar</b>
+    </button>
+  );
+}
+
 export function App() {
+  return (
+    <>
+      <Pantallas />
+      <AvisoVersion />
+    </>
+  );
+}
+
+function Pantallas() {
   const [guardada, setGuardada] = useState<Guardada | null>(() => cargarLocal());
   const [jugando, setJugando] = useState(false);
   const [clave, setClave] = useState(0);

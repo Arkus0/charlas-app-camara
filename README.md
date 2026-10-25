@@ -20,10 +20,12 @@ El reglamento y el listado de cartas están en [`docs/REGLAMENTO.md`](docs/REGLA
 npm install
 npm run dev        # servidor de desarrollo (Vite)
 npm test           # pruebas: D'Hondt (reproduce el 23J), cada carta, la vista sin fugas, la IA y 200 partidas al azar
-npm run build      # genera dist/index.html, un único archivo jugable sin servidor
+npm run build      # genera dist/: la PWA que se publica en Vercel (se instala en el móvil y funciona sin conexión)
+npm run build:artefacto   # dist-artefacto/index.html, un único archivo jugable sin servidor
 npm run simulate -- 20 normal normal   # partidas IA contra IA para medir el equilibrio
 scripts/simular-paralelo.sh 80         # lo mismo, en 4 procesos
-node scripts/prueba-movil.cjs capturas # (tras el build, con Playwright) juega una partida completa a toques en un iPhone emulado
+node scripts/prueba-movil.cjs capturas # (tras el build, con Playwright) sirve la PWA como Vercel, comprueba que abre sin conexión y juega una partida completa a toques en un iPhone emulado
+npm run iconos                         # regenera los iconos de la PWA en public/
 npm run cartas                         # imprime el listado de cartas en Markdown
 npx tsx scripts/prompts-imagenes.ts    # regenera docs/PROMPTS_IMAGENES.md
 ```
@@ -37,6 +39,8 @@ npx tsx scripts/prompts-imagenes.ts    # regenera docs/PROMPTS_IMAGENES.md
 | `src/ia` | IA: simula cada jugada candidata sobre una copia en la que baraja lo que no ve y valora por escaños, PV esperados y Maquinaria. Corre en un Web Worker |
 | `src/narrativa` | El plató: crónica semanal y especial de la noche electoral a partir de lo que ha pasado en la partida |
 | `src/app` | Interfaz móvil en React: mapa por zonas, mano, hoja de jugada con previsión, hojas de zona, Congreso, Agenda y Maquinaria, momentos del rival, debates y noche electoral |
+| `src/sw.ts` | Service worker: precarga del juego para jugar sin conexión y avisos de turno del modo online |
+| `public` | Iconos de la PWA |
 | `scripts` | Generación de datos y mapa, simulaciones, listado de cartas, prompts de imagen y prueba en móvil |
 | `data/fuentes` | Datos de origen (resultados de 2023, encuestas, geografía) |
 
