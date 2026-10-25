@@ -12,7 +12,7 @@ Juego de estrategia por cartas **para el móvil** sobre las elecciones generales
 - Contra la IA (fácil, normal, difícil). El modo online por turnos está en camino.
 - Proyección de escaños en directo con datos reales: la media de 16 encuestadoras de octubre de 2026 repartida por provincias.
 
-El reglamento y el listado de cartas están en [`docs/REGLAMENTO.md`](docs/REGLAMENTO.md). Los prompts para generar la ilustración de cada carta (con un estilo común) están en [`docs/PROMPTS_IMAGENES.md`](docs/PROMPTS_IMAGENES.md): guarda las imágenes en `src/assets/cartas/<id>.webp` y aparecerán solas al compilar.
+El reglamento y el listado de cartas están en [`docs/REGLAMENTO.md`](docs/REGLAMENTO.md). Las cartas no llevan ilustración: cada una tiene su efecto y un breve comentario de lore.
 
 ## Uso
 
@@ -27,7 +27,6 @@ scripts/simular-paralelo.sh 80         # lo mismo, en 4 procesos
 node scripts/prueba-movil.cjs capturas # (tras el build, con Playwright) sirve la PWA como Vercel, comprueba que abre sin conexión y juega una partida completa a toques en un iPhone emulado
 npm run iconos                         # regenera los iconos de la PWA en public/
 npm run cartas                         # imprime el listado de cartas en Markdown
-npx tsx scripts/prompts-imagenes.ts    # regenera docs/PROMPTS_IMAGENES.md
 ```
 
 ## Estructura
@@ -35,7 +34,7 @@ npx tsx scripts/prompts-imagenes.ts    # regenera docs/PROMPTS_IMAGENES.md
 | Carpeta | Contenido |
 |---|---|
 | `src/motor` | Motor puro y serializable: núcleo de tareas y decisiones, reglas, Agenda, Maquinaria, semana, efectos de las cartas, modelo electoral (D'Hondt e investidura), la vista de cada jugador y la previsión de jugadas |
-| `src/data` | Circunscripciones, partidos y candidaturas, mazos (`mazos/`), mapa, estilo de las ilustraciones, personajes del plató y `base.json` (voto de partida) |
+| `src/data` | Circunscripciones, partidos y candidaturas, mazos (`mazos/`), mapa, personajes del plató y `base.json` (voto de partida) |
 | `src/ia` | IA: simula cada jugada candidata sobre una copia en la que baraja lo que no ve y valora por escaños, PV esperados y Maquinaria. Corre en un Web Worker |
 | `src/narrativa` | El plató: crónica semanal y especial de la noche electoral a partir de lo que ha pasado en la partida |
 | `src/app` | Interfaz móvil en React: mapa por zonas, mano, hoja de jugada con previsión, hojas de zona, Congreso, Agenda y Maquinaria, momentos del rival, debates y noche electoral |

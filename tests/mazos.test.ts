@@ -61,7 +61,9 @@ describe('Mazos', () => {
     for (const c of BLOQUES) expect(c.texto.length, c.nombre).toBeLessThanOrEqual(170);
     for (const c of CARTAS_LISTA) {
       expect(c.texto.length, c.nombre).toBeLessThanOrEqual(200);
-      expect(c.escena.length, c.nombre).toBeGreaterThan(20);
+      // cada carta lleva su comentario de lore
+      expect(c.contexto.length, c.nombre).toBeGreaterThan(20);
+      expect(c.contexto.length, c.nombre).toBeLessThanOrEqual(200);
     }
   });
 

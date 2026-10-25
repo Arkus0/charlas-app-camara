@@ -5,9 +5,7 @@
   "type": "module",
   "description": "Juego de estrategia por cartas para el móvil sobre las elecciones generales del 29N de 2026.",
   "scripts": {
-    "predev": "node scripts/preparar-ilustraciones.mjs",
     "dev": "vite",
-    "prebuild": "node scripts/preparar-ilustraciones.mjs",
     "build": "tsc --noEmit && tsc --noEmit -p tsconfig.sw.json && vite build",
     "preview": "vite preview",
     "test": "vitest run",
@@ -15,7 +13,6 @@
     "datos": "tsx scripts/construir-datos.ts",
     "simulate": "tsx scripts/simular.ts",
     "cartas": "tsx scripts/listar-cartas.ts",
-    "prebuild:artefacto": "node scripts/preparar-ilustraciones.mjs",
     "build:artefacto": "tsc --noEmit && vite build --mode artefacto",
     "iconos": "node scripts/iconos.mjs"
   },

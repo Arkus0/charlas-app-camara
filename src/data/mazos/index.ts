@@ -15,5 +15,3 @@ export function idsDeBloque(b: Bando, fase: 1 | 2 | 3): number[] {
 export const ACTUALIDAD_IDS: number[] = CARTAS_ACTUALIDAD.map((c) => c.id);
 export const AGENDA_PODEMOS_IDS: number[] = CARTAS_PODEMOS.map((c) => c.id);
 
-/** Id de la ilustración de una carta (las copias comunes usan la de la original). */
-export const idArte = (c: Carta): number => c.arte ?? c.id;

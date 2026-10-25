@@ -1,17 +1,9 @@
-// La carta: papeleta con la fuerza, el tema y el evento. Si existe su ilustración (src/assets/cartas/<id>),
-// se muestra; si no, un fondo del color del mazo.
-import { useState } from 'react';
-import { CARTAS, idArte } from '../../data/mazos';
+// La carta: papeleta con la fuerza, el tema, el evento y un comentario de lore. Sin ilustraciones: la cabecera
+// lleva el color del mazo.
+import { CARTAS } from '../../data/mazos';
 import { DUENO_TEMA, NOMBRE_TEMA } from '../../motor/agenda';
 import type { Bando } from '../../motor/base';
 import { IconoTema } from './Iconos';
-
-const ARCHIVOS = import.meta.glob('../../assets/web/cartas/*.webp', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
-const IMAGEN: Record<number, string> = {};
-for (const [ruta, url] of Object.entries(ARCHIVOS)) {
-  const m = ruta.match(/(\d+)\.webp$/);
-  if (m) IMAGEN[Number(m[1])] = url;
-}
 
 export const MAZO_TXT = { P: 'Progresista', C: 'Conservador', actualidad: 'Noticia de la semana', podemos: 'Agenda de Podemos' } as const;
 const FASE_TXT = { 1: 'Precampaña', 2: 'Campaña', 3: 'Recta final' } as const;
@@ -20,14 +12,6 @@ const FASE_TXT = { 1: 'Precampaña', 2: 'Campaña', 3: 'Recta final' } as const;
 export function temaAjeno(id: number, b: Bando): boolean {
   const t = CARTAS[id].tema;
   return t !== 'COR' && DUENO_TEMA[t] !== b;
-}
-
-export function Ilustracion({ id, className = '' }: { id: number; className?: string }) {
-  const c = CARTAS[id];
-  const [rota, setRota] = useState(false);
-  const url = IMAGEN[idArte(c)];
-  if (!url || rota) return <div className={`arte arte-${c.mazo} ${className}`} aria-hidden="true" />;
-  return <img className={`arte ${className}`} src={url} alt="" loading="lazy" onError={() => setRota(true)} />;
 }
 
 interface Props {
@@ -52,8 +36,7 @@ export function CartaMano({ id, de, pc, seleccionada, apagada, onClick }: Props)
       data-testid={`carta-${id}`}
       aria-label={`${c.nombre}, fuerza ${c.fuerza}, tema ${NOMBRE_TEMA[c.tema]}`}
     >
-      <Ilustracion id={id} />
-      <span className="carta-cab">
+      <span className={`carta-cab fondo-${c.mazo}`}>
         <span className="fuerza dato">{pc ?? c.fuerza}</span>
         <span className={`tema-carta tema-${c.tema} ${ajeno ? 'ajeno' : ''}`} title={NOMBRE_TEMA[c.tema]}>
           <IconoTema tema={c.tema} size={15} />
@@ -71,7 +54,7 @@ export function CartaGrande({ id, de }: { id: number; de?: Bando }) {
   const ajeno = de ? temaAjeno(id, de) : false;
   return (
     <article className={`carta-grande mazo-${c.mazo}`}>
-      <Ilustracion id={id} />
+      <div className={`carta-grande-franja fondo-${c.mazo}`} aria-hidden="true" />
       <div className="carta-grande-cuerpo">
         <div className="carta-grande-cab">
           {c.fuerza > 0 && <span className="fuerza dato">{c.fuerza}</span>}
@@ -80,7 +63,7 @@ export function CartaGrande({ id, de }: { id: number; de?: Bando }) {
         </div>
         <h3>{c.nombre}</h3>
         <p className="carta-texto">{c.texto}</p>
-        <p className="carta-contexto">{c.contexto}</p>
+        <blockquote className="carta-lore">{c.contexto}</blockquote>
         {ajeno && <p className="aviso">Es un tema de tu rival: si la juegas, le das calor a su conversación.</p>}
       </div>
     </article>

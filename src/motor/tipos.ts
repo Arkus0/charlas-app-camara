@@ -115,7 +115,6 @@ export interface Carta {
   fase: 1 | 2 | 3;
   texto: string;
   contexto: string;
-  escena: string;
   efectos: Efecto[];
   destino?: Destino;
   requisito?: Cond;
@@ -125,8 +124,6 @@ export interface Carta {
   pareja?: number;
   /** basada en una noticia real */
   noticia?: boolean;
-  /** id de la ilustración si es distinto del de la carta (copias de una carta común) */
-  arte?: number;
 }
 
 // —— decisiones y respuestas ——

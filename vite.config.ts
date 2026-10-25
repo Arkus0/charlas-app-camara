@@ -7,10 +7,6 @@ import { viteSingleFile } from 'vite-plugin-singlefile';
 // - por defecto, la PWA que se publica en Vercel (archivos aparte, service worker, manifiesto y fuentes propias);
 // - `vite build --mode artefacto`, un único index.html jugable sin servidor (sin PWA y con las fuentes de Google).
 
-// Las ilustraciones (cartas y capas del mapa, ya preparadas en src/assets/web por scripts/preparar-ilustraciones.mjs)
-// van como archivos aparte también en el artefacto para que el HTML siga siendo ligero.
-const ILUSTRACION = /[\\/]assets[\\/]web[\\/]/;
-
 const FUENTES_GOOGLE =
   'https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;600&family=Source+Serif+4:opsz,wght@8..60,400..600&display=swap';
 
@@ -49,12 +45,11 @@ export default defineConfig(({ mode }) => {
       publicDir: false,
       build: {
         outDir: 'dist-artefacto',
-        // el JS va dentro del index.html: las rutas de las imágenes se resuelven desde la raíz
-        assetsDir: '',
-        assetsInlineLimit: (archivo: string) => !ILUSTRACION.test(archivo),
+        // todo dentro del index.html
+        assetsInlineLimit: Number.MAX_SAFE_INTEGER,
         chunkSizeWarningLimit: 100000000,
         cssCodeSplit: false,
-        rollupOptions: { output: { inlineDynamicImports: true, assetFileNames: 'ilustraciones/[name]-[hash][extname]' } },
+        rollupOptions: { output: { inlineDynamicImports: true } },
       },
     };
   }

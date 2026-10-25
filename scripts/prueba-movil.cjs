@@ -56,7 +56,10 @@ function servir(raiz) {
         const b = el.getBoundingClientRect();
         if (b.width && b.height && (b.width < 43.5 || b.height < 43.5)) malos.push(`${el.className.split(' ')[0]} «${(el.textContent || el.getAttribute('aria-label') || '').trim().slice(0, 24)}» ${Math.round(b.width)}×${Math.round(b.height)}`);
       }
-      return { malos, desborda: document.documentElement.scrollWidth > window.innerWidth + 1 };
+      // ni la página ni las hojas inferiores se salen por los lados
+      const hojas = [...document.querySelectorAll('.hoja')].some((h) => h.getBoundingClientRect().right > window.innerWidth + 1);
+      const cuerpos = [...document.querySelectorAll('.hoja-cuerpo')].some((c) => c.scrollWidth > c.clientWidth + 1);
+      return { malos, desborda: document.documentElement.scrollWidth > window.innerWidth + 1 || hojas || cuerpos };
     });
     r.malos.forEach((m) => pequenos.add(m));
     return r.desborda;
@@ -92,6 +95,7 @@ function servir(raiz) {
     const modos = await p.$$('.modos .modo:not([disabled])');
     if (modos.length) {
       if (!hechas.has('modos')) { hechas.add('modos'); await foto('modos'); }
+      if (jugadas % 5 === 0) desborda = (await medir()) || desborda;
       const preferidos = ['evento', 'implantar', 'agenda', 'atacar', 'maquinaria', 'negociar'];
       const orden = jugadas % 4 === 0 ? preferidos : [preferidos[1], preferidos[0], ...preferidos.slice(2)];
       let tocado = false;

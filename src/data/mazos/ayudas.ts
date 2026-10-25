@@ -24,7 +24,6 @@ export interface Mitad {
   nombre: string;
   texto: string;
   contexto: string;
-  escena: string;
   tema: Tema;
   efectos: Efecto[];
   destino?: Destino;
@@ -46,10 +45,9 @@ export function espejo(idP: number, idC: number, comun: Comun, def: (b: Bando) =
   ];
 }
 
-/** Carta común a los dos mazos: el Conservador recibe una copia (id + 1000) con la misma ilustración. */
+/** Carta común a los dos mazos: el Conservador recibe una copia (id + 1000). */
 export function enAmbos(id: number, comun: Comun, def: (b: Bando) => Mitad): Carta[] {
-  const [p, c] = espejo(id, id + 1000, comun, def);
-  return [p, { ...c, arte: id }];
+  return espejo(id, id + 1000, comun, def);
 }
 
 /** Noticia de la semana (mazo de Actualidad): se resuelve sola como si la jugara quien lidera la Ventaja. */
@@ -61,7 +59,3 @@ export function noticia(id: number, tema: Tema, d: Omit<Mitad, 'tema'>): Carta {
 export function morada(id: number, tema: Tema, d: Omit<Mitad, 'tema'>): Carta {
   return { ...d, id, tema, fuerza: 0, fase: 1, mazo: 'podemos' };
 }
-
-/** Color del bloque con su concordancia: col('P', 'as') → «rojas», col('C', 'as') → «azules». */
-export const col = (b: Bando, f: 'o' | 'a' | 'os' | 'as') => (b === 'P' ? 'roj' + f : f.endsWith('s') ? 'azules' : 'azul');
-export const colRival = (b: Bando, f: 'o' | 'a' | 'os' | 'as') => col(b === 'P' ? 'C' : 'P', f);

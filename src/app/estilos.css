@@ -196,11 +196,10 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s, opacity 0.2s;
 }
-.carta-mano .arte { position: absolute; inset: 0 0 auto; height: 52px; width: 100%; object-fit: cover; }
-.arte-P { background: linear-gradient(135deg, #c7362f, #7d1e1a); }
-.arte-C { background: linear-gradient(135deg, #2f6fc4, #1a3f75); }
-.arte-actualidad { background: linear-gradient(135deg, #c9a227, #6e5a17); }
-.arte-podemos { background: linear-gradient(135deg, #8e44c4, #4b1f6e); }
+.fondo-P { background: linear-gradient(135deg, #c7362f, #7d1e1a); }
+.fondo-C { background: linear-gradient(135deg, #2f6fc4, #1a3f75); }
+.fondo-actualidad { background: linear-gradient(135deg, #c9a227, #6e5a17); }
+.fondo-podemos { background: linear-gradient(135deg, #8e44c4, #4b1f6e); }
 .carta-cab { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 5px 6px; height: 52px; align-items: flex-start; }
 .fuerza { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: #fff; color: #1c2233; font-weight: 800; font-size: 15px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4); }
 .tema-carta { display: inline-flex; align-items: center; gap: 4px; padding: 3px 6px; border-radius: 999px; background: #fff; color: #1c2233; font-size: 12px; font-weight: 700; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); }
@@ -219,20 +218,20 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 /* pantallas bajas (iPhone SE): cartas más bajas para que el mapa tenga sitio */
 @media (max-height: 700px) {
   .carta-mano { height: 112px; }
-  .carta-mano .arte, .carta-cab { height: 40px; }
+  .carta-cab { height: 40px; }
   .carta-nombre { padding-top: 4px; font-size: 12.5px; -webkit-line-clamp: 3; }
 }
 
 /* carta grande */
 .carta-grande { border-radius: 12px; overflow: hidden; background: #f3f1ea; color: #1c2233; margin-bottom: 12px; }
-.carta-grande .arte { display: block; width: 100%; height: 130px; object-fit: cover; }
-.carta-grande div.arte { height: 10px; }
+.carta-grande-franja { height: 10px; }
 .carta-grande-cuerpo { padding: 10px 12px 12px; }
 .carta-grande-cab { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .carta-grande .etiqueta { color: #5a6378; }
 .carta-grande h3 { margin: 8px 0 4px; font-size: 19px; line-height: 1.15; }
 .carta-texto { margin: 0 0 6px; font-size: 15px; font-weight: 600; }
-.carta-contexto { margin: 0; font-family: var(--f-texto); font-size: 13.5px; color: #4b5468; }
+/* el comentario de lore: una cita breve, en la voz de la crónica */
+.carta-lore { margin: 10px 0 0; padding: 2px 0 2px 10px; border-left: 3px solid #c9c3b3; font-family: var(--f-texto); font-style: italic; font-size: 14px; line-height: 1.4; color: #4b5468; }
 .carta-grande .aviso { margin: 8px 0 0; color: #b8461e; }
 
 /* hojas inferiores */
@@ -246,6 +245,8 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
   max-height: 88dvh;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
+  /* la columna no crece con el contenido: una etiqueta larga no ensancha la hoja */
+  grid-template-columns: minmax(0, 1fr);
   background: var(--tablero);
   border-radius: 18px 18px 0 0;
   border-top: 1px solid var(--linea);

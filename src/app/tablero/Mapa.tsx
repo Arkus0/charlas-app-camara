@@ -20,11 +20,6 @@ const pos = (id: string): [number, number] => {
   return [x + dx, y + dy];
 };
 
-const CAPAS = import.meta.glob('../../assets/web/mapa/*.webp', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
-const capa = (nombre: string) => Object.entries(CAPAS).find(([ruta]) => ruta.endsWith(`/${nombre}.webp`))?.[1];
-const MAR = capa('mar');
-const TIERRA = capa('tierra');
-
 /** Dónde va la insignia de cada zona (coordenadas del lienzo), colocadas a mano para que no se pisen. */
 const CENTRO_ZONA: Record<ZonaId, [number, number]> = {
   NOR: [430, 95], INT: [610, 225], CAT: [850, 158], MAD: [450, 355], LEV: [795, 375], AND: [525, 512], CAN: [255, 655],
@@ -133,11 +128,8 @@ export const Mapa = memo(function Mapa({ v, zona, provincias, zonas, seleccion, 
             <stop offset="0%" stopColor="#13213a" />
             <stop offset="100%" stopColor="#0a1220" />
           </radialGradient>
-          {TIERRA && <clipPath id="silueta">{Object.keys(RUTAS).map((id) => <path key={id} d={RUTAS[id]} />)}</clipPath>}
         </defs>
         <rect x={-2000} y={-2000} width={5000} height={5000} fill="url(#mar)" />
-        {MAR && <image href={MAR} x={-ANCHO * 0.25} y={-ALTO * 0.25} width={ANCHO * 1.5} height={ALTO * 1.5} preserveAspectRatio="xMidYMid slice" />}
-        {TIERRA && <image href={TIERRA} x={0} y={0} width={ANCHO} height={ALTO} preserveAspectRatio="none" clipPath="url(#silueta)" />}
         <path d={mapa.recuadro} fill="none" stroke="var(--linea)" strokeWidth={1.2} strokeDasharray="5 5" />
         <path d={mapa.gibraltar} fill="#2a3550" />
         <g>
@@ -149,7 +141,7 @@ export const Mapa = memo(function Mapa({ v, zona, provincias, zonas, seleccion, 
             const atenuada = (provincias || zonas) && !elegible;
             const fuera = zona && p.zona !== zona;
             const relleno = ctrl === -1 ? 'var(--prog)' : ctrl === 1 ? 'var(--cons)' : dif > 0 ? '#7a3a43' : dif < 0 ? '#2e4c78' : '#34405a';
-            const op = TIERRA ? (ctrl !== 0 ? 0.62 : 0.45) : ctrl !== 0 ? 0.88 : 0.8;
+            const op = ctrl !== 0 ? 0.88 : 0.8;
             return (
               <path
                 key={p.id}
