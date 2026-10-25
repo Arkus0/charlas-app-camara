@@ -56,6 +56,13 @@ export function pvFuturo(e: Estado, b: Bando): number {
     if (enMano.has(id)) p = propio > 0 ? 0.95 : 1;
     else p = 0.35 * Math.min(1, (8 - e.turno) / 3);
     total += neto * p;
+    // controlar Madrid y Centro y Cataluña cuando se publica una de sus Encuestas gana la partida
+    if (z === 'MAD' || z === 'CAT') {
+      const a = puntuarZona(e, 'MAD').nivel;
+      const c = puntuarZona(e, 'CAT').nivel;
+      if (a.C === 3 && c.C === 3) total += 12 * p;
+      if (a.P === 3 && c.P === 3) total -= 12 * p;
+    }
   }
   return total;
 }

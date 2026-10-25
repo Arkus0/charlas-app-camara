@@ -17,7 +17,7 @@ interface Guardada {
   estado: Estado;
 }
 
-const CLAVE = '176-29n-partida-v2';
+const CLAVE = '176-29n-partida-v3';
 const CONFIG_INICIAL: Config = { modo: 'ia', humano: 'P', nivel: 'normal', escenario: 'abierto' };
 
 function cargar(): Guardada | null {
@@ -25,7 +25,7 @@ function cargar(): Guardada | null {
     const s = localStorage.getItem(CLAVE);
     if (!s) return null;
     const g = JSON.parse(s) as Guardada;
-    return g?.estado?.version === 2 ? g : null;
+    return g?.estado?.version === 3 ? g : null;
   } catch {
     return null;
   }

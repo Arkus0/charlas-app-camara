@@ -1,20 +1,25 @@
-// Reglas puras: control, costes, objetivos válidos, puntuación de zonas y Carrera Programática.
+// Reglas puras: control, costes, objetivos válidos, efectos en curso, puntuación de zonas y Carrera Programática.
 import { MADRID, PROV, PROVINCIAS, ZONAS } from '../data/provincias';
 import { TERRITORIO } from '../data/partidos';
 import { CARTAS } from '../data/cartas';
 import { controlDe, proyectar, REGIONALES, vetoVoxActivo } from './electoral';
-import type { Bando, Carta, Cond, Estado, Filtro, Negociable, Provincia, Uso, ZonaId } from './tipos';
+import type { Bando, Carta, Cond, EfectoActivo, Estado, Filtro, Negociable, Provincia, TipoEfectoActivo, Uso, ZonaId } from './tipos';
 import { RIVAL } from './tipos';
 
 export const ZONA_IDS = Object.keys(ZONAS) as ZonaId[];
 
+// —— control ——
+export function fidelidadEf(e: Estado, id: string): number {
+  return PROV[id].fidelidad + (e.morado[id] ?? 0);
+}
+
 export function controla(e: Estado, id: string, b: Bando): boolean {
-  const c = controlDe(PROV[id], e.presencia[id]);
+  const c = controlDe(PROV[id], e.presencia[id], e.morado[id] ?? 0);
   return b === 'C' ? c === 1 : c === -1;
 }
 
 export function controlador(e: Estado, id: string): Bando | null {
-  const c = controlDe(PROV[id], e.presencia[id]);
+  const c = controlDe(PROV[id], e.presencia[id], e.morado[id] ?? 0);
   return c === 1 ? 'C' : c === -1 ? 'P' : null;
 }
 
@@ -24,24 +29,58 @@ export function presenciaTotal(e: Estado, b: Bando): number {
   return n;
 }
 
+export function clavesControladas(e: Estado, b: Bando): number {
+  return PROVINCIAS.filter((p) => p.clave && controla(e, p.id, b)).length;
+}
+
 export function cumpleFiltro(e: Estado, p: Provincia, f: Filtro | undefined, yo: Bando): boolean {
   if (!f) return true;
+  const quien = (x: 'yo' | 'rival') => (x === 'yo' ? yo : RIVAL[yo]);
   if (f.zonas && !f.zonas.includes(p.zona)) return false;
   if (f.excluirZonas && f.excluirZonas.includes(p.zona)) return false;
   if (f.provs && !f.provs.includes(p.id)) return false;
   if (f.clave !== undefined && p.clave !== f.clave) return false;
   if (f.maxEscanos !== undefined && p.escanos > f.maxEscanos) return false;
   if (f.minEscanos !== undefined && p.escanos < f.minEscanos) return false;
-  if (f.conPresencia && e.presencia[p.id][f.conPresencia === 'yo' ? yo : RIVAL[yo]] <= 0) return false;
-  if (f.controla && !controla(e, p.id, f.controla === 'yo' ? yo : RIVAL[yo])) return false;
-  if (f.feudo && p.feudo !== (f.feudo === 'yo' ? yo : RIVAL[yo])) return false;
+  if (f.maxFidelidad !== undefined && fidelidadEf(e, p.id) > f.maxFidelidad) return false;
+  if (f.conPresencia && e.presencia[p.id][quien(f.conPresencia)] <= 0) return false;
+  if (f.controla && !controla(e, p.id, quien(f.controla))) return false;
+  if (f.noControla && controla(e, p.id, quien(f.noControla))) return false;
+  if (f.sinControl && controlador(e, p.id) !== null) return false;
+  if (f.vacia && e.presencia[p.id].P + e.presencia[p.id].C > 0) return false;
+  if (f.feudo && p.feudo !== quien(f.feudo)) return false;
   return true;
+}
+
+// —— efectos en curso ——
+export function efectosDe(e: Estado, tipo: TipoEfectoActivo, dueno?: Bando): EfectoActivo[] {
+  return e.efectos.filter((x) => x.tipo === tipo && (dueno === undefined || x.dueno === dueno));
+}
+
+export function tieneEfecto(e: Estado, tipo: TipoEfectoActivo, dueno: Bando): boolean {
+  return e.efectos.some((x) => x.tipo === tipo && x.dueno === dueno);
+}
+
+/** PC de una carta usada por operaciones, con los efectos en curso (mín. 1, máx. 5). */
+export function opsEfectivos(e: Estado, b: Bando, carta: number): number {
+  const base = CARTAS[carta].ops;
+  if (base <= 0) return 0;
+  const mas = efectosDe(e, 'masOps', b).length;
+  const menos = efectosDe(e, 'menosOpsRival', RIVAL[b]).length;
+  return Math.max(1, Math.min(5, base + mas - menos));
+}
+
+/** Zonas con +1 PC si todas las operaciones van allí (como Vietnam Revolts). */
+export function zonasBono(e: Estado, b: Bando): ZonaId[] {
+  return efectosDe(e, 'bonoZona', b).map((x) => x.zona as ZonaId);
 }
 
 /** Provincias donde se puede colocar presencia por operaciones (adyacencia o Madrid, sede nacional). */
 export function elegiblesPresencia(e: Estado, b: Bando): string[] {
+  const cerradas = efectosDe(e, 'cerrojo', RIVAL[b]).map((x) => x.zona);
   const res: string[] = [];
   for (const p of PROVINCIAS) {
+    if (cerradas.includes(p.zona)) continue;
     if (p.id === MADRID || e.presencia[p.id][b] > 0 || p.vecinos.some((v) => e.presencia[v]?.[b] > 0)) res.push(p.id);
   }
   return res;
@@ -59,8 +98,32 @@ export function zonaVetada(e: Estado, z: ZonaId): boolean {
   return false;
 }
 
-export function objetivosAtaque(e: Estado, b: Bando, filtro?: Filtro): string[] {
-  return PROVINCIAS.filter((p) => e.presencia[p.id][RIVAL[b]] > 0 && !zonaVetada(e, p.zona) && cumpleFiltro(e, p, filtro, b)).map((p) => p.id);
+/** ¿Está protegida la provincia frente a ofensivas y debates de b? (pactos y bastiones del rival) */
+export function protegida(e: Estado, id: string, b: Bando): boolean {
+  const rv = RIVAL[b];
+  for (const x of e.efectos) {
+    if (x.dueno !== rv) continue;
+    if (x.tipo === 'bastion' && x.prov === id) return true;
+    if (x.tipo === 'protegeZonas' && x.zonas?.includes(PROV[id].zona) && controla(e, id, rv)) return true;
+  }
+  return false;
+}
+
+export function objetivosAtaque(e: Estado, b: Bando, filtro?: Filtro, ignorarClima = false): string[] {
+  return PROVINCIAS.filter(
+    (p) => e.presencia[p.id][RIVAL[b]] > 0 && (ignorarClima || !zonaVetada(e, p.zona)) && !protegida(e, p.id, b) && cumpleFiltro(e, p, filtro, b),
+  ).map((p) => p.id);
+}
+
+/** Modificador a la tirada de ofensiva de b en una provincia por efectos en curso. */
+export function modOfensiva(e: Estado, id: string, b: Bando): number {
+  const z = PROV[id].zona;
+  let m = 0;
+  for (const x of e.efectos) {
+    if (x.tipo === 'fontaneria' && x.zona === z) m += x.dueno === b ? 1 : -1;
+    if (x.tipo === 'tregua') m -= 1;
+  }
+  return m;
 }
 
 export function partidosNegociables(e: Estado, b: Bando): Negociable[] {
@@ -119,25 +182,34 @@ export interface PuntuacionZona {
   neto: number; // a favor del Conservador
 }
 
-export function puntuarZona(e: Estado, z: ZonaId): PuntuacionZona {
+/** Puntúa una zona. `menosClave`: bando al que la mediación le resta una provincia clave. */
+export function puntuarZona(e: Estado, z: ZonaId, menosClave: Bando | null = null): PuntuacionZona {
   const provs = PROVINCIAS.filter((p) => p.zona === z);
-  const totalClaves = provs.filter((p) => p.clave).length;
+  const fuertes = (b: Bando) => new Set(efectosDe(e, 'plazaFuerte', b).map((x) => x.prov));
+  const plazas = { P: fuertes('P'), C: fuertes('C') };
+  const esClave = (id: string, b: Bando) => PROV[id].clave || plazas[b].has(id);
   const cuenta = { P: 0, C: 0 };
   const claves = { P: 0, C: 0 };
   const noClaves = { P: 0, C: 0 };
   const feudos = { P: 0, C: 0 };
+  const totalClaves = { P: 0, C: 0 };
+  for (const b of ['P', 'C'] as Bando[]) totalClaves[b] = provs.filter((p) => esClave(p.id, b)).length;
   for (const p of provs) {
     const c = controlador(e, p.id);
     if (!c) continue;
     cuenta[c]++;
-    if (p.clave) claves[c]++;
+    if (esClave(p.id, c)) claves[c]++;
     else noClaves[c]++;
     if (p.feudo && p.feudo !== c) feudos[c]++;
+  }
+  if (menosClave && claves[menosClave] > 0) {
+    claves[menosClave]--;
+    noClaves[menosClave]++;
   }
   const nivel = { P: 0, C: 0 } as PuntuacionZona['nivel'];
   for (const b of ['P', 'C'] as Bando[]) {
     const r = RIVAL[b];
-    if (cuenta[b] > cuenta[r] && claves[b] === totalClaves && totalClaves > 0) nivel[b] = 3;
+    if (cuenta[b] > cuenta[r] && claves[b] === totalClaves[b] && totalClaves[b] > 0) nivel[b] = 3;
     else if (cuenta[b] > cuenta[r] && claves[b] > claves[r] && claves[b] > 0 && noClaves[b] > 0) nivel[b] = 2;
     else if (cuenta[b] > 0) nivel[b] = 1;
   }
@@ -160,7 +232,19 @@ export function puntuarCIS(e: Estado): number {
   return Math.max(-3, Math.min(3, n));
 }
 
-/** Zonas en las que el bando tiene dominio o control (para debates televisados). */
+/** España vaciada (como Southeast Asia Scoring): +1 por provincia de 3 escaños o menos controlada; Soria y Teruel, 2. */
+export const DOBLE_VACIADA = ['42', '44'];
+export function puntuarVaciada(e: Estado): { P: number; C: number } {
+  const r = { P: 0, C: 0 };
+  for (const p of PROVINCIAS) {
+    if (p.escanos > 3) continue;
+    const c = controlador(e, p.id);
+    if (c) r[c] += DOBLE_VACIADA.includes(p.id) ? 2 : 1;
+  }
+  return r;
+}
+
+/** Zonas en las que el bando tiene dominio o control (para debates televisados y la cumbre). */
 export function zonasDominadas(e: Estado, b: Bando): number {
   let n = 0;
   for (const z of ZONA_IDS) if (puntuarZona(e, z).nivel[b] >= 2) n++;
@@ -189,12 +273,12 @@ export function usosCarta(e: Estado, b: Bando, id: number): Uso[] {
   const u: Uso[] = [];
   if (c.lado !== RIVAL[b] && eventoJugable(e, id, b)) u.push('evento');
   u.push('ops');
-  if (puedeCarrera(e, b, c.ops)) u.push('carrera');
+  if (puedeCarrera(e, b, opsEfectivos(e, b, id))) u.push('carrera');
   return u;
 }
 
 export function rondasDe(e: Estado, b: Bando): number {
-  return (e.turno <= 3 ? 6 : 7) + (tieneVentajaCarrera(e, b, 'ronda') ? 1 : 0);
+  return (e.turno <= 3 ? 6 : 7) + (tieneVentajaCarrera(e, b, 'ronda') ? 1 : 0) + e.rondaExtra[b];
 }
 
 export function tamanoMano(turno: number): number {
@@ -217,29 +301,36 @@ export const HITOS: Record<number, string> = {
 };
 
 // —— Condiciones de los eventos ——
-
 export function cumpleCond(e: Estado, c: Cond, yo: Bando): boolean {
   const r = RIVAL[yo];
   const favor = (b: Bando) => (b === 'C' ? e.ventaja : -e.ventaja);
   switch (c.c) {
     case 'climaMin': return e.clima >= c.n;
     case 'climaMax': return e.clima <= c.n;
+    case 'climaIgual': return e.clima === c.n;
     case 'rivalAventaja': return favor(r) >= c.n;
     case 'yoAventajo': return favor(yo) >= c.n;
     case 'turnoMax': return e.turno <= c.n;
     case 'humorPodemosMin': return e.podemos.humor >= c.n;
+    case 'humorPodemosMax': return e.podemos.humor <= c.n;
+    case 'exigenciaMas': return e.exigencia[yo] > e.exigencia[r];
+    case 'exigenciaCumplida': return e.exigencia[yo] >= e.clima;
     case 'socioMin': return e.socio[c.bloque === 'yo' ? yo : r] >= c.n;
     case 'socioMax': return e.socio[c.bloque === 'yo' ? yo : r] <= c.n;
     case 'mayoriaRival': return proyectar(PROVINCIAS, e).apoyos[r] >= 176;
     case 'afinidadMin': return (yo === 'C' ? e.afinidad[c.partido] : -e.afinidad[c.partido]) >= c.n;
     case 'vetoVox': return vetoVoxActivo(e) === c.activo;
-    case 'soyGobierno': return yo === 'P';
     case 'controlaMas': {
       const a = c.provs.filter((id) => controla(e, id, yo)).length;
       const b = c.provs.filter((id) => controla(e, id, r)).length;
       return a > b;
     }
+    case 'masClaves': return clavesControladas(e, yo) > clavesControladas(e, r);
     case 'menosPresencia': return presenciaTotal(e, yo) < presenciaTotal(e, r);
+    case 'tengoCartaRival': return e.manos[yo].some((id) => CARTAS[id].lado === r || CARTAS[id].lado === 'W');
+    case 'bandera': return e.banderas.includes(c.k);
+    case 'carreraDelante': return e.carrera[yo] > e.carrera[r];
+    case 'carreraDetras': return e.carrera[yo] < e.carrera[r];
   }
 }
 

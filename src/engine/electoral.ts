@@ -40,14 +40,18 @@ export const MOVILIZACION_SOCIO = 0.004; // votos válidos que añade/quita cada
 export const PASO_PODEMOS = 0.25; // cada paso de fuerza multiplica su voto de partida por ±25%
 export const PODEMOS_DESDE_IZQUIERDA = 0.8; // lo que gana Podemos sale en un 80% del bloque progresista y en un 20% del conservador
 
+export const PODEMOS_POR_MARCADOR = 0.3; // cada marcador morado sube un 30% el voto de Podemos en la provincia
+
 export type EntradaModelo = Pick<
   Estado,
   'presencia' | 'presencia0' | 'control0' | 'ventaja' | 'socio' | 'podemos' | 'modsProv' | 'modsPartido'
-> & { sesgo?: number };
+> & { sesgo?: number; morado?: Record<string, number> };
 
-export function controlDe(p: Provincia, pres: { P: number; C: number }): -1 | 0 | 1 {
-  if (pres.C - pres.P >= p.fidelidad) return 1;
-  if (pres.P - pres.C >= p.fidelidad) return -1;
+/** Control de una provincia. Los marcadores morados de Podemos suben su Fidelidad efectiva. */
+export function controlDe(p: Provincia, pres: { P: number; C: number }, morado = 0): -1 | 0 | 1 {
+  const f = p.fidelidad + morado;
+  if (pres.C - pres.P >= f) return 1;
+  if (pres.P - pres.C >= f) return -1;
   return 0;
 }
 
@@ -56,7 +60,7 @@ export function efectoCampana(p: Provincia, e: EntradaModelo): number {
   const pr = e.presencia[p.id];
   const p0 = e.presencia0[p.id];
   const neto = pr.C - pr.P - (p0.C - p0.P);
-  const ctrl = controlDe(p, pr) - e.control0[p.id];
+  const ctrl = controlDe(p, pr, e.morado?.[p.id] ?? 0) - e.control0[p.id];
   const k = ppPorPresencia(p.escanos);
   const ef = k * neto + 1.25 * k * ctrl;
   return Math.max(-12, Math.min(12, ef));
@@ -81,8 +85,9 @@ export function votosProvincia(p: Provincia, e: EntradaModelo, extraPP = 0): Vot
 
   // 2. Podemos, el comodín: su fuerza le quita (o le devuelve) voto sobre todo a la izquierda
   const podemosBase = g('PODEMOS');
-  if (podemosBase > 0 && e.podemos.fuerza) {
-    const nuevo = podemosBase * Math.max(0, 1 + PASO_PODEMOS * e.podemos.fuerza);
+  const marcadores = e.morado?.[p.id] ?? 0;
+  if (podemosBase > 0 && (e.podemos.fuerza || marcadores)) {
+    const nuevo = podemosBase * Math.max(0, 1 + PASO_PODEMOS * e.podemos.fuerza + PODEMOS_POR_MARCADOR * marcadores);
     const delta = nuevo - podemosBase;
     const quitar = (bloque: PartidoId[], cantidad: number) => {
       const total = bloque.reduce((a, q) => a + g(q), 0);

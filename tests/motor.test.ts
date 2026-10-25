@@ -18,7 +18,7 @@ describe('Motor', () => {
   it('las cartas tienen identificadores únicos y PC válidos', () => {
     const ids = new Set(CARTAS_LISTA.map((c) => c.id));
     expect(ids.size).toBe(CARTAS_LISTA.length);
-    for (const c of CARTAS_LISTA) if (c.lado !== 'E') expect(c.ops).toBeGreaterThanOrEqual(1);
+    for (const c of CARTAS_LISTA) if (c.lado !== 'E' && c.lado !== 'A') expect(c.ops).toBeGreaterThanOrEqual(1);
   });
 
   it('empieza pidiendo la colocación inicial del Progresista', () => {

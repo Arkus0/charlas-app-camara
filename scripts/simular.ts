@@ -28,7 +28,7 @@ for (let i = 0; i < N; i++) {
   ventaja += e.ventaja;
   const r = proyectar(PROVINCIAS, e);
   escC += r.bloque.C;
-  const m = e.ganador!.motivo.split(':')[0].split('(')[0].trim();
+  const m = e.ganador!.motivo.split(':')[0].split('(')[0].trim() + ' → ' + (e.ganador!.bando ?? '=');
   motivos.set(m, (motivos.get(m) ?? 0) + 1);
   if (e.ganador!.bando) victorias[e.ganador!.bando]++;
   else victorias.empate++;
