@@ -7,7 +7,7 @@ import { PLATO, type Personaje } from '../data/plato';
 import { PARTIDOS } from '../data/partidos';
 import { PROV } from '../data/provincias';
 import { PROVINCIAS } from '../data/provincias';
-import { proyectar, type Resultado } from '../engine/electoral';
+import { posturaPodemos, proyectar, votoPodemos, type Resultado } from '../engine/electoral';
 import type { Bando, Estado, FotoTurno, RegionalId, Suceso, ZonaId } from '../engine/tipos';
 import { RIVAL } from '../engine/tipos';
 
@@ -48,7 +48,16 @@ const NOMBRE_HABLADO: Record<string, string> = { '38': 'Santa Cruz de Tenerife',
 const prov = (id: string) => NOMBRE_HABLADO[id] ?? PROV[id].corto;
 
 const HUMOR: Record<number, string> = { [-3]: 'en guerra abierta con el PSOE', [-2]: 'en ruptura con el PSOE', [-1]: 'enfadado', 0: 'en modo exigente', 1: 'dispuesto a negociar', 2: 'en modo socio', 3: 'como socio firme' };
-const votoPodemosTxt = (h: number) => (h >= 1 ? 'votaría sí a Sánchez' : h === 0 ? 'se abstendría con Sánchez' : 'votaría no a Sánchez');
+const posturaDe = (f: Pick<FotoTurno, 'podemos' | 'socio'>) => ({ humor: f.podemos.humor, pinza: f.podemos.pinza ?? 0, socioC: f.socio.C });
+/** Lo que haría Podemos hoy en la investidura, contado en una frase. */
+function votoPodemosTxt(f: Pick<FotoTurno, 'podemos' | 'socio'>): string {
+  const pod = posturaDe(f);
+  const c = votoPodemos('C', pod);
+  if (c === 'si') return 'votaría sí a Feijóo';
+  if (c === 'abst') return 'se abstendría para dejar gobernar a Feijóo';
+  const p = votoPodemos('P', pod);
+  return p === 'si' ? 'votaría sí a Sánchez' : p === 'abst' ? 'se abstendría con Sánchez' : 'votaría no a Sánchez';
+}
 const FECHAS_HABLADAS: Record<number, string> = {
   1: 'del 6 al 11 de octubre', 2: 'del 12 al 18 de octubre', 3: 'del 19 al 25 de octubre', 4: 'del 26 de octubre al 1 de noviembre',
   5: 'del 2 al 8 de noviembre', 6: 'del 9 al 15 de noviembre', 7: 'del 16 al 22 de noviembre', 8: 'del 23 al 28 de noviembre',
@@ -344,12 +353,21 @@ function titular(a: Analisis, el: ReturnType<typeof selector>): { rotulo: string
     };
   }
   // 6. Podemos se mueve
-  if (a.prev && votoPodemosTxt(a.prev.podemos.humor) !== votoPodemosTxt(a.foto.podemos.humor)) {
+  if (a.prev && votoPodemos('C', posturaDe(a.foto)) !== 'no' && votoPodemos('C', posturaDe(a.prev)) === 'no') {
+    return {
+      rotulo: 'VUELVE LA PINZA',
+      texto: el('tit-pinza', [
+        `Lo que parecía imposible: Podemos ${votoPodemosTxt(a.foto)}. La pinza con la derecha, como la de Anguita y Aznar en los noventa, vuelve a la política española.`,
+        `Terremoto en la izquierda: hoy Podemos ${votoPodemosTxt(a.foto)}. Su guerra con el PSOE ha llegado hasta ahí.`,
+      ]),
+    };
+  }
+  if (a.prev && votoPodemosTxt(a.prev) !== votoPodemosTxt(a.foto)) {
     return {
       rotulo: 'PODEMOS CAMBIA SU VOTO',
       texto: el('tit-pod', [
-        `Podemos cambia de posición: hoy ${votoPodemosTxt(a.foto.podemos.humor)}, y eso mueve toda la aritmética de la investidura.`,
-        `El comodín se ha movido. Podemos ${votoPodemosTxt(a.foto.podemos.humor)} y los dos bloques recalculan.`,
+        `Podemos cambia de posición: hoy ${votoPodemosTxt(a.foto)}, y eso mueve toda la aritmética de la investidura.`,
+        `El comodín se ha movido. Podemos ${votoPodemosTxt(a.foto)} y los dos bloques recalculan.`,
       ]),
     };
   }
@@ -567,13 +585,23 @@ function politologo(e: Estado, a: Analisis, el: ReturnType<typeof selector>): st
     else if (blanco) partes.push(el('agx' + blanco, [`Esta vez el golpe es para ${V[blanco].partido}.`, `Quien lo paga es ${V[blanco].bloque}.`]));
   }
   if (pod.humor !== podAntes.humor) {
-    partes.push(`Podemos estaba ${HUMOR[podAntes.humor]} y ahora está ${HUMOR[pod.humor]}: hoy ${votoPodemosTxt(pod.humor)}.`);
+    partes.push(`Podemos estaba ${HUMOR[podAntes.humor]} y ahora está ${HUMOR[pod.humor]}: hoy ${votoPodemosTxt(a.foto)}.`);
   } else if (pod.fuerza !== podAntes.fuerza) {
     partes.push(pod.fuerza > podAntes.fuerza
       ? el('podf+', ['Y crece: cada punto que gana Podemos sale sobre todo del PSOE, así que su subida es una mala noticia para el Gobierno aunque luego le necesite.', 'Podemos sube, y eso es un arma de doble filo para el PSOE: le quita votos pero le puede dar la investidura.'])
       : el('podf-', ['Podemos baja: parte de su electorado vuelve al PSOE, que gana escaños pero pierde un socio con peso.', 'Podemos pierde fuelle y el PSOE recupera voto. Otra cosa es que luego le salgan las cuentas.']));
   } else if (a.agenda === null) {
-    partes.push(`Podemos sigue ${HUMOR[pod.humor]}: ${votoPodemosTxt(pod.humor)}. Y nunca votará a Feijóo.`);
+    partes.push(`Podemos sigue ${HUMOR[pod.humor]}: ${votoPodemosTxt(a.foto)}.${(pod.pinza ?? 0) === 0 ? ' Y a Feijóo, de momento, no le vota.' : ''}`);
+  }
+  const pinza = pod.pinza ?? 0;
+  const pinzaAntes = podAntes.pinza ?? 0;
+  if (pinza > pinzaAntes) {
+    partes.push(el('pinza+', [
+      `Y atención a la pinza: Podemos y la derecha coinciden contra el Gobierno, como Anguita y Aznar en los noventa. Lleva ${pinza} de 3${pinza >= 2 ? ', y eso ya es una abstención con Feijóo' : ''}.`,
+      `La pinza avanza: ${pinza} de 3. En el PSOE nadie quiere pronunciar la palabra, pero todos la tienen en la cabeza.`,
+    ]));
+  } else if (pinza < pinzaAntes) {
+    partes.push(el('pinza-', ['La pinza se enfría: Podemos vuelve a mirar a su izquierda antes que a su derecha.', `La pinza retrocede a ${pinza} de 3. En el PSOE respiran.`]));
   }
   const morados = a.flips.filter((f) => f.morado);
   if (morados.length) partes.push(`Su desembarco en ${prov(morados[0].id)} ha descolocado ${V[morados[0].antes ?? 'P'].a}.`);
@@ -713,10 +741,22 @@ function cambiosDeLider(e: Estado): number {
   return n;
 }
 
-function papelDePodemos(r: Resultado, humor: number): string {
+function papelDePodemos(r: Resultado, e: Estado): string {
+  const humor = e.podemos.humor;
   const pod = Math.round(r.escanos.PODEMOS ?? 0);
   const invP = r.investiduras.find((i) => i.candidato === 'P');
+  const invC = r.investiduras.find((i) => i.candidato === 'C');
   if (!pod) return 'Podemos se queda fuera del Congreso. El comodín que tanto ha movido la campaña no tendrá voz en la investidura.';
+  const conFeijoo = votoPodemos('C', posturaPodemos(e));
+  if (conFeijoo !== 'no') {
+    // sin la pinza, esos escaños habrían votado no
+    const decisiva = r.ganador === 'C' && invC?.exito && (conFeijoo === 'abst'
+      ? invC.si < 176 && invC.si <= invC.no + pod
+      : invC.si - pod < 176 && invC.si - pod <= invC.no + pod);
+    return decisiva
+      ? `Y la noticia de la noche: la pinza ha funcionado. ${conFeijoo === 'si' ? 'El apoyo' : 'La abstención'} de los ${pod} diputados de Podemos hace presidente a Feijóo. Hace dos meses nadie lo habría apostado.`
+      : `Podemos ha llegado a ${conFeijoo === 'si' ? 'votar a Feijóo' : 'abstenerse con Feijóo'}: la pinza ha existido, aunque sus ${pod} escaños no han decidido la noche.`;
+  }
   if (r.ganador === 'P' && invP?.exito && humor >= 1 && (invP.si - pod < 176 && invP.si - pod <= invP.no + pod)) {
     return `Y Podemos tiene la llave: sus ${pod} escaños son los que hacen presidente a Sánchez. Va a cobrárselo, no les quepa duda.`;
   }
@@ -813,7 +853,7 @@ export function especialFinal(e: Estado): Segmento {
   // el análisis
   const ana: string[] = [temprano
     ? el('esp-podt', ['Podemos se queda sin su noche: la campaña ha terminado antes de que sus escaños pudieran decidir nada.', 'El gran damnificado es Podemos, que soñaba con tener la llave y ya no podrá usarla.'])
-    : papelDePodemos(r, e.podemos.humor)];
+    : papelDePodemos(r, e)];
   if (r.vetoVox) ana.push('El peso de Vox ha cerrado al PP la puerta del PNV, Junts y Coalición Canaria.');
   const regionales = (Object.keys(e.afinidad) as RegionalId[]).filter((k) => (r.escanos[k] ?? 0) >= 3);
   if (regionales.length) {

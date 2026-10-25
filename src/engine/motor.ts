@@ -4,7 +4,7 @@
 import { AGENDA_IDS, CARTAS, ID_JUNTA, MAZO_IDS } from '../data/cartas';
 import { AFINIDAD_INICIAL, CESIONES_CARAS, CORTO_BANDO, PARTIDOS, TERRITORIO } from '../data/partidos';
 import { MADRID, PRESENCIA_INICIAL, PROV, PROVINCIAS, ZONAS } from '../data/provincias';
-import { controlDe, proyectar, REGIONALES, VETADOS_POR_VOX, vetoVoxActivo } from './electoral';
+import { controlDe, PINZA_APOYO, posturaPodemos, proyectar, REGIONALES, VETADOS_POR_VOX, vetoVoxActivo, votoPodemos } from './electoral';
 import { aleatorio, barajar, d6 } from './rng';
 import {
   CARRERA, clavesControladas, controla, controlador, costePresencia, cumpleCond, cumpleFiltro, efectosDe, elegiblesPresencia,
@@ -150,16 +150,27 @@ function moverAfinidad(e: Estado, k: RegionalId, hacia: Bando, n: number) {
 }
 
 /** Mueve los marcadores de Podemos (fuerza y humor, de −3 a +3). */
-function cambiarPodemos(e: Estado, fuerza: number, humor: number) {
+/** Mueve los marcadores de Podemos. La pinza (0-3) solo puede avanzar si Podemos está en ruptura con el PSOE (humor −2 o menos). */
+function cambiarPodemos(e: Estado, fuerza: number, humor: number, pinza = 0) {
   const antes = { ...e.podemos };
   e.podemos.fuerza = Math.max(-3, Math.min(3, e.podemos.fuerza + fuerza));
   e.podemos.humor = Math.max(-3, Math.min(3, e.podemos.humor + humor));
+  if (pinza > 0 && e.podemos.humor > -2) log(e, 'Podemos no está en guerra con el PSOE: no hay pinza posible');
+  else e.podemos.pinza = Math.max(0, Math.min(PINZA_APOYO, e.podemos.pinza + pinza));
   const df = e.podemos.fuerza - antes.fuerza;
   const dh = e.podemos.humor - antes.humor;
+  const dp = e.podemos.pinza - antes.pinza;
   if (df) log(e, `Fuerza de Podemos: ${fmtSigno(antes.fuerza)} → ${fmtSigno(e.podemos.fuerza)}`);
-  if (dh) log(e, `Humor de Podemos: ${HUMOR_PODEMOS[antes.humor]} → ${HUMOR_PODEMOS[e.podemos.humor]} (${e.podemos.humor >= 1 ? 'votaría sí a Sánchez' : e.podemos.humor === 0 ? 'se abstendría con Sánchez' : 'votaría no a Sánchez'})`);
-  if (df || dh) suceso(e, { s: 'podemos', fuerza: df, humor: dh });
+  if (dh || dp) {
+    const pod = posturaPodemos(e);
+    if (dh) log(e, `Humor de Podemos: ${HUMOR_PODEMOS[antes.humor]} → ${HUMOR_PODEMOS[e.podemos.humor]}`);
+    if (dp) log(e, `La pinza de Podemos con la derecha: ${antes.pinza} → ${e.podemos.pinza} de ${PINZA_APOYO}`, undefined, dp > 0 ? 'C' : 'P');
+    log(e, `Hoy Podemos ${VOTO_TXT[votoPodemos('P', pod)]} a Sánchez y ${VOTO_TXT[votoPodemos('C', pod)]} a Feijóo`);
+  }
+  if (df || dh || dp) suceso(e, { s: 'podemos', fuerza: df, humor: dh, pinza: dp });
 }
+
+const VOTO_TXT = { si: 'votaría sí', no: 'votaría no', abst: 'se abstendría ante' } as const;
 
 function cambiarSocio(e: Estado, b: Bando, n: number) {
   const antes = e.socio[b];
@@ -269,7 +280,7 @@ export function crearPartida(semilla = Date.now(), escenario: Escenario = 'abier
     carrera: { P: 0, C: 0 },
     carreraTurno: { P: 0, C: 0 },
     socio: { P: 0, C: 0 },
-    podemos: { fuerza: 0, humor: 0 },
+    podemos: { fuerza: 0, humor: 0, pinza: 0 },
     afinidad: { ...AFINIDAD_INICIAL },
     negociado: [],
     modsProv: {},
@@ -1304,9 +1315,11 @@ function tareaNegociacion(e: Estado, t: Tarea, r: Respuesta | undefined): boolea
   suceso(e, { s: 'negocia', bando: b, partido: k });
   e.negociado.push(k);
   if (k === 'PODEMOS') {
-    cambiarPodemos(e, 0, 1);
-    log(e, 'Las concesiones a Podemos tienen coste', undefined, 'C');
-    pv(e, 'C', 1);
+    // el Progresista lo corteja y desarma la pinza; el Conservador solo puede tejerla con Podemos en guerra con el PSOE
+    if (b === 'P') cambiarPodemos(e, 0, 1, -1);
+    else cambiarPodemos(e, 0, 0, 1);
+    log(e, b === 'P' ? 'Las concesiones a Podemos tienen coste' : 'Pactar con Podemos desconcierta al votante conservador', undefined, RIVAL[b]);
+    pv(e, RIVAL[b], 1);
   } else {
     moverAfinidad(e, k, b, 1);
     if (b === 'P' && CESIONES_CARAS.includes(k)) {
@@ -1572,7 +1585,7 @@ function aplicarEfecto(e: Estado, ef: Efecto, yo: Bando, carta: number): boolean
       return false;
     }
     case 'podemos':
-      cambiarPodemos(e, ef.fuerza ?? 0, ef.humor ?? 0);
+      cambiarPodemos(e, ef.fuerza ?? 0, ef.humor ?? 0, ef.pinza ?? 0);
       return false;
     case 'morado': {
       const quien = ef.quien === 'rival' ? rv : yo;
@@ -1864,6 +1877,11 @@ function finTurno(e: Estado): boolean {
     }
   }
   if (e.ganador) return true;
+  // La pinza se enfría si Podemos ya no está en guerra con el PSOE
+  if (e.podemos.pinza > 0 && e.podemos.humor > -2) {
+    log(e, 'Podemos ya no está en guerra con el PSOE: la pinza se enfría', undefined, 'P');
+    cambiarPodemos(e, 0, 0, -1);
+  }
   // Los efectos de una semana caducan; la crisis también
   quitarEfectos(e, (x) => x.hasta === 'turno');
   e.votoUtil.disponible = true;

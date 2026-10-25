@@ -48,9 +48,10 @@ export function Ayuda({ onCerrar }: { onCerrar: () => void }) {
           <h3>Podemos, el comodín</h3>
           <ul>
             <li>Podemos va por libre: no pertenece a ningún bloque. Su <b>fuerza</b> (−3…+3) le quita voto sobre todo a PSOE y Frente Amplio, y algo de voto protesta a la derecha.</li>
-            <li>Su <b>humor</b> (−3…+3) decide su voto en la investidura de Sánchez: sí con +1 o más, abstención con 0, no con −1 o menos. A Feijóo no le vota nunca.</li>
+            <li>Su <b>humor</b> (−3…+3) decide su voto en la investidura de Sánchez: sí con +1 o más, abstención con 0, no con −1 o menos.</li>
+            <li><b>La pinza</b> (0…3): la vía difícil para que Podemos apoye al Conservador, como la de Anguita y Aznar en los noventa. Solo avanza con Podemos en ruptura con el PSOE (humor −2 o menos): el Conservador negocia con Podemos (2 PC por paso; el Progresista gana 1 PV) o juega «La pinza». Con <b>pinza 2</b>, Podemos se abstiene con Feijóo; con <b>pinza 3, humor −3 y Vox en −2 o menos</b>, le vota sí. El Progresista la desarma negociando con Podemos o con «El decreto, otra vez», y se enfría sola cada semana que Podemos no está en guerra con el PSOE.</li>
             <li>Las <b>cartas moradas</b> son sus comodines: su evento se activa siempre, aunque las uses por sus PC (solo la Carrera lo evita). Siembran el caos en los dos bloques: elige bien cuándo soltarlas.</li>
-            <li>Solo el Progresista puede negociar con Podemos (2 PC por punto de humor), y cada cesión da 1 PV al Conservador.</li>
+            <li>El Progresista negocia con Podemos para mejorar su humor (y desarmar la pinza); cada cesión da 1 PV al Conservador.</li>
             <li><b>Agenda de Podemos:</b> cada semana, tras las Portadas, Podemos destapa una carta propia. Casi siempre golpea a quien lidera la Ventaja.</li>
             <li><b>Marcadores morados:</b> donde Podemos desembarca, la provincia gana +1 de Fidelidad y Podemos sube allí. Puede dejar sin control a quien la tenía.</li>
           </ul>

@@ -2,7 +2,7 @@
 import { MADRID, PROV, PROVINCIAS, ZONAS } from '../data/provincias';
 import { TERRITORIO } from '../data/partidos';
 import { CARTAS } from '../data/cartas';
-import { controlDe, proyectar, REGIONALES, vetoVoxActivo } from './electoral';
+import { controlDe, PINZA_APOYO, proyectar, REGIONALES, vetoVoxActivo } from './electoral';
 import type { Bando, Carta, Cond, EfectoActivo, Estado, Filtro, Negociable, Provincia, TipoEfectoActivo, Uso, ZonaId } from './tipos';
 import { RIVAL } from './tipos';
 
@@ -133,8 +133,11 @@ export function partidosNegociables(e: Estado, b: Bando): Negociable[] {
     if (b === 'P' ? a <= -3 : a >= 3) return false;
     return TERRITORIO[k].some((id) => e.presencia[id][b] > 0);
   });
-  // A Podemos solo puede cortejarlo el Progresista: nunca apoyará a Feijóo
-  if (b === 'P' && !e.negociado.includes('PODEMOS') && e.podemos.humor < 3) res.unshift('PODEMOS');
+  // A Podemos lo corteja el Progresista; el Conservador solo puede tejer la pinza cuando Podemos está en guerra con el PSOE
+  if (!e.negociado.includes('PODEMOS')) {
+    if (b === 'P' && (e.podemos.humor < 3 || e.podemos.pinza > 0)) res.unshift('PODEMOS');
+    if (b === 'C' && e.podemos.humor <= -2 && e.podemos.pinza < PINZA_APOYO) res.unshift('PODEMOS');
+  }
   return res;
 }
 

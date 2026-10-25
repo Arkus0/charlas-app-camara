@@ -3,6 +3,8 @@ import { CARTAS_LISTA } from '../src/data/cartas';
 import { PROVINCIAS } from '../src/data/provincias';
 import { respuestaAzar } from '../src/ai/azar';
 import type { Bando, Estado } from '../src/engine/tipos';
+import { partidosNegociables } from '../src/engine/reglas';
+import { posturaPodemos, votoPodemos } from '../src/engine/electoral';
 
 /** Una partida al azar avanzada hasta la semana indicada. */
 function partidaEn(semilla: number, turno: number): Estado {
@@ -59,5 +61,40 @@ describe('Cartas', () => {
         }
       }
     }
+  });
+});
+
+describe('La pinza', () => {
+  it('el Conservador puede llevar a Podemos a apoyar a Feijóo, pero solo con Podemos en guerra con el PSOE', () => {
+    const e = crearPartida(5);
+    expect(partidosNegociables(e, 'C')).not.toContain('PODEMOS');
+    e.podemos.humor = -3;
+    e.socio.C = -2;
+    expect(partidosNegociables(e, 'C')).toContain('PODEMOS');
+    const ventaja = e.ventaja;
+    for (let i = 0; i < 3; i++) {
+      e.negociado = [];
+      ejecutarAislado(e, [{ t: 'negociacion', bando: 'C', pasos: 1 }]);
+      responder(e, { tipo: 'partido', id: 'PODEMOS' });
+    }
+    expect(e.podemos.pinza).toBe(3);
+    expect(e.ventaja).toBe(ventaja - 3); // cada paso da 1 PV al Progresista
+    expect(votoPodemos('C', posturaPodemos(e))).toBe('si');
+    e.socio.C = 0;
+    expect(votoPodemos('C', posturaPodemos(e))).toBe('abst'); // con Vox fuerte, como mucho se abstiene
+  });
+
+  it('el Progresista la desarma y se enfría si Podemos deja la guerra con el PSOE', () => {
+    const e = crearPartida(6);
+    e.podemos.humor = -2;
+    e.podemos.pinza = 2;
+    e.negociado = [];
+    ejecutarAislado(e, [{ t: 'negociacion', bando: 'P', pasos: 1 }]);
+    responder(e, { tipo: 'partido', id: 'PODEMOS' });
+    expect(e.podemos).toMatchObject({ humor: -1, pinza: 1 });
+    expect(partidosNegociables(e, 'C')).not.toContain('PODEMOS');
+    e.turno = 1;
+    ejecutarAislado(e, [{ t: 'finTurno' }]);
+    expect(e.podemos.pinza).toBe(0);
   });
 });

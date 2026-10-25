@@ -25,7 +25,9 @@ function cargar(): Guardada | null {
     const s = localStorage.getItem(CLAVE);
     if (!s) return null;
     const g = JSON.parse(s) as Guardada;
-    return g?.estado?.version === 3 ? g : null;
+    if (g?.estado?.version !== 3) return null;
+    g.estado.podemos.pinza ??= 0; // partidas guardadas antes de la pinza
+    return g;
   } catch {
     return null;
   }

@@ -3,8 +3,8 @@
 Juego de estrategia por cartas, al estilo de *Twilight Struggle*, sobre las elecciones generales anticipadas del **29 de noviembre de 2026**. Dos bloques (Progresista: PSOE y Frente Amplio; Conservador: PP y Vox) se disputan las 52 circunscripciones durante las ocho semanas de precampaña y campaña. La noche electoral se reparten los escaños con D'Hondt y se vota la investidura.
 
 - **Todas las mecánicas de Twilight Struggle** traducidas a la campaña: efectos en vigor, guerras (batallas), Quagmire (guerra interna), crisis de los misiles (crisis institucional), carta China (El Voto Útil), Europa (Asalto a la Moncloa), Defectors, UN Intervention…
-- **220 cartas** en tres mazos más la Agenda de Podemos. Cada carta de un bloque tiene su **pareja espejo** en el otro (74 y 74, los mismos PC), y muchas son **noticias reales verificadas**: caso Koldo y caso Kitchen, «la fontanera» y caso Montoro, Torre Pacheco, la flotilla, La Vuelta, Vito Quiles…
-- **Podemos es el caos**: va por libre, su fuerza resta votos sobre todo a la izquierda, su humor decide si apoya a Sánchez, sus cartas moradas se activan siempre y cada semana su Agenda golpea a quien va primero.
+- **222 cartas** en tres mazos más la Agenda de Podemos. Cada carta de un bloque tiene su **pareja espejo** en el otro (75 y 75, los mismos PC), y muchas son **noticias reales verificadas**: caso Koldo y caso Kitchen, «la fontanera» y caso Montoro, Torre Pacheco, la flotilla, La Vuelta, Vito Quiles…
+- **Podemos es el caos**: va por libre, su fuerza resta votos sobre todo a la izquierda, su humor decide si apoya a Sánchez, sus cartas moradas se activan siempre y cada semana su Agenda golpea a quien va primero. Y un buen jugador conservador puede tejer **la pinza** para que se abstenga con Feijóo o, en el caso extremo, le vote.
 - **El plató**: al cerrar cada semana, presentador y tertulianos cuentan la campaña como una historia; la noche electoral tiene su especial.
 - Contra la IA (fácil, normal, difícil) o a dos jugadores en el mismo PC.
 - Proyección de escaños en directo con datos reales: la media de 16 encuestadoras de octubre de 2026 repartida por provincias.

@@ -4,7 +4,7 @@
 // así que se puede calcular provincia a provincia y actualizar solo lo que cambia.
 import { CARTAS } from '../data/cartas';
 import { PROV, PROVINCIAS } from '../data/provincias';
-import { dhondt, investir, votosProvincia, vetoVoxActivo } from '../engine/electoral';
+import { dhondt, investir, posturaPodemos, votoPodemos, votosProvincia, vetoVoxActivo } from '../engine/electoral';
 import { puntuarZona, ZONA_IDS, esEncuesta, rondasDe } from '../engine/reglas';
 import type { Bando, Efecto, Estado, PartidoId, Votos, ZonaId } from '../engine/tipos';
 
@@ -23,9 +23,11 @@ export function escanosSuaves(e: Estado, id: string): Votos {
 /** Peso de cada escaño en X (+1 suma al Conservador, −1 al Progresista). */
 export function pesos(e: Estado): Partial<Record<PartidoId, number>> {
   const veto = vetoVoxActivo(e);
-  // Podemos nunca vota a Feijóo; a Sánchez, según su humor (sí −1, abstención −0,5, no 0)
-  const hp = e.podemos.humor;
-  const w: Partial<Record<PartidoId, number>> = { PP: 1, VOX: 1, PSOE: -1, SUMAR: -1, PODEMOS: hp >= 1 ? -1 : hp === 0 ? -0.5 : 0, SALF: 0.5 };
+  // Podemos: a Sánchez según su humor (sí −1, abstención −0,5, no 0); a Feijóo solo con la pinza (abstención +0,5, sí +1)
+  const pod = posturaPodemos(e);
+  const valor = { si: 1, abst: 0.5, no: 0 };
+  const wPodemos = valor[votoPodemos('C', pod)] - valor[votoPodemos('P', pod)];
+  const w: Partial<Record<PartidoId, number>> = { PP: 1, VOX: 1, PSOE: -1, SUMAR: -1, PODEMOS: wPodemos, SALF: 0.5 };
   for (const [k, a] of Object.entries(e.afinidad)) {
     let v = a >= 2 ? 1 : a === 1 ? 0.5 : a === 0 ? 0 : a === -1 ? -0.5 : -1;
     if (veto && v === 1 && (k === 'PNV' || k === 'JUNTS' || k === 'CC')) v = 0.5;
@@ -124,8 +126,9 @@ export function valorar(e: Estado, b: Bando): Valoracion {
     for (const k in r) esc[k as PartidoId] = (esc[k as PartidoId] ?? 0) + (r[k as PartidoId] as number);
   }
   const veto = vetoVoxActivo(e);
-  const ic = investir(esc, 'C', e.afinidad, veto, e.podemos.humor);
-  const ip = investir(esc, 'P', e.afinidad, veto, e.podemos.humor);
+  const pod = posturaPodemos(e);
+  const ic = investir(esc, 'C', e.afinidad, veto, pod);
+  const ip = investir(esc, 'P', e.afinidad, veto, pod);
   const dpv = pvFuturo(e, b) + pvExigencia(e);
   const ajuste = 2 * ESCANOS_POR_PV * dpv;
   const mC = ic.si - ic.no + ajuste;

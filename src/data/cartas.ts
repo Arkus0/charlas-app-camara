@@ -18,7 +18,7 @@ const clima = (n: number, minimo?: number): Efecto => ({ e: 'clima', n, minimo }
 const colocar = (n: number, filtro?: Filtro, maxPor?: number, unaSola?: boolean): Efecto => ({ e: 'colocar', n, filtro, maxPor, unaSola });
 const retirar = (n: number, filtro?: Filtro, maxPor?: number, unaSola?: boolean): Efecto => ({ e: 'retirar', n, filtro, maxPor, unaSola });
 const socio = (bloque: 'yo' | 'rival' | 'P' | 'C', n: number): Efecto => ({ e: 'socio', bloque, n });
-const podemos = (fuerza: number, humor: number): Efecto => ({ e: 'podemos', fuerza, humor });
+const podemos = (fuerza: number, humor: number, pinza = 0): Efecto => ({ e: 'podemos', fuerza, humor, pinza });
 const activar = (tipo: TipoEfectoActivo, hasta: 'turno' | 'partida' | 'uso', extra: Partial<Extract<Efecto, { e: 'activar' }>> = {}): Efecto => ({ e: 'activar', tipo, hasta, ...extra });
 const si = (cond: Cond, entonces: Efecto[], sino?: Efecto[]): Efecto => ({ e: 'si', cond, entonces, sino });
 const como = (bando: Bloque | 'rival', efectos: Efecto[]): Efecto => ({ e: 'como', bando, efectos });
@@ -736,6 +736,21 @@ const MAZO_2: Def[] = [
     efectos: [pv(1), retirar(2, { zonas: [b === 'P' ? 'LEV' : 'AND'] }, 1)],
   }), { noticia: true }),
 
+  // La pinza: la vía difícil para que Podemos apoye al bloque conservador, y su antídoto
+  ...espejo(232, 272, 2, (b) => ({
+    nombre: b === 'P' ? 'El decreto, otra vez' : 'La pinza',
+    texto: b === 'P'
+      ? 'La pinza de Podemos con la derecha retrocede 1 y su humor mejora 1.'
+      : 'Si Podemos está en ruptura con el PSOE (humor −2 o menos), la pinza avanza 1. Si no, su humor empeora 1.',
+    contexto: b === 'P'
+      ? 'En junio de 2024 Podemos apoyó la segunda versión del decreto del subsidio de desempleo que había tumbado en enero.'
+      : 'Como la «pinza» de Anguita y Aznar contra González en los noventa. En enero de 2024 los cinco diputados de Podemos tumbaron, junto a PP, Vox y UPN, el decreto del subsidio de desempleo.',
+    escena: b === 'P'
+      ? 'Una mano roja que separa con cuidado las dos patas de unas tenazas, una morada y otra azul'
+      : 'Unas tenazas con una pata morada y otra azul que se cierran sobre una rosa roja de papel',
+    efectos: b === 'P' ? [podemos(0, 1, -1)] : [si({ c: 'humorPodemosMax', n: -2 }, [podemos(0, 0, 1)], [podemos(0, -1)])],
+  }), { noticia: true }),
+
   // —— Neutrales ——
   { id: 276, nombre: 'Vito Quiles, micrófono en mano', ops: 2, lado: 'N', noticia: true,
     texto: 'Un agitador digital acorrala a ministros por los pasillos: el Conservador retira 2 presencia progresista de provincias clave (máx. 1 por provincia), el medidor de Vox sube 1 y el Clima baja 1.',
@@ -1221,6 +1236,16 @@ const AGENDA: Def[] = [
     contexto: 'Una propuesta morada que obliga a todos a posicionarse.',
     escena: 'Un pie morado que entra en un plató de televisión iluminado y aparta dos atriles',
     efectos: [{ e: 'aRezagado', efectos: [retirar(2, { clave: true }, 1)] }] },
+  { id: 519, nombre: 'Podemos tumba un decreto con la derecha', ops: 0, lado: 'A',
+    texto: 'Los votos de Podemos, junto a los de PP y Vox, tumban una ley del Gobierno: el Progresista pierde 1 PV y, si Podemos está en ruptura con el PSOE (humor −2 o menos), la pinza avanza 1.',
+    contexto: 'No sería la primera vez: en enero de 2024 sus cinco diputados tumbaron así el decreto del subsidio.',
+    escena: 'Tres botones de votación encendidos, morado, azul y verde, frente a uno rojo apagado',
+    efectos: [como('P', [pv(-1)]), si({ c: 'humorPodemosMax', n: -2 }, [podemos(0, 0, 1)])] },
+  { id: 520, nombre: 'Podemos, ni con Vox ni con el PP', ops: 0, lado: 'A',
+    texto: 'Podemos recuerda que nunca gobernará con la derecha: el Conservador pierde 1 PV y la pinza retrocede 1.',
+    contexto: '«Una cosa es votar contra un decreto y otra muy distinta abrirle la puerta a Vox».',
+    escena: 'Una puerta azul cerrada con un candado morado',
+    efectos: [como('C', [pv(-1)]), podemos(0, 0, -1)] },
   { id: 518, nombre: 'Marcha morada', ops: 0, lado: 'A',
     texto: 'Podemos planta un marcador morado en la provincia más grande que controle quien lidera la Ventaja y el Clima baja 1 (nunca por debajo de 2).',
     contexto: 'Una marcha que acaba frente a la sede del favorito.',

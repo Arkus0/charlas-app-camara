@@ -5,6 +5,9 @@ import { CORTO_BANDO } from '../data/partidos';
 import { CARTAS } from '../data/cartas';
 import { PLATO } from '../data/plato';
 import type { Estado, ZonaId } from '../engine/tipos';
+import { posturaPodemos, votoPodemos } from '../engine/electoral';
+
+const VOTO_CORTO = { si: 'sí', no: 'no', abst: 'abst.' } as const;
 
 const COLOR_CLIMA: Record<number, string> = { 5: '#52c08a', 4: '#c8c24a', 3: '#e8a33c', 2: '#e5603f', 1: '#9e1f2b' };
 
@@ -73,11 +76,12 @@ export function Marcadores({ e, onAyuda, onMenu, onPlato }: { e: Estado; onAyuda
         <span className="hito fila-medidor"><b className="p">Frente Amplio</b><Medidor valor={e.socio.P} min={-3} max={3} /></span>
         <span className="hito">Voto Útil: <b className={e.votoUtil.duenio === 'P' ? 'p' : 'c'}>{CORTO_BANDO[e.votoUtil.duenio]}</b>{e.votoUtil.disponible ? '' : ' (boca abajo)'}</span>
       </div>
-      <div className="marcador caja podemos" title="Podemos va por libre: su fuerza le quita voto sobre todo a la izquierda y su humor decide su voto en la investidura de Sánchez (a Feijóo nunca le vota).">
+      <div className="marcador caja podemos" title="Podemos va por libre: su fuerza le quita voto sobre todo a la izquierda y su humor decide su voto en la investidura de Sánchez. A Feijóo solo le apoya con la pinza: abstención con pinza 2 y humor −2 o menos; sí con pinza 3, humor −3 y Vox en −2 o menos.">
         <span className="etiqueta">Podemos · comodín</span>
         <span className="hito fila-medidor"><b>Fuerza</b><Medidor valor={e.podemos.fuerza} min={-3} max={3} /></span>
         <span className="hito fila-medidor"><b>Humor</b><Medidor valor={e.podemos.humor} min={-3} max={3} /></span>
-        <span className="hito">{HUMOR_PODEMOS[e.podemos.humor]}: {e.podemos.humor >= 1 ? 'sí a Sánchez' : e.podemos.humor === 0 ? 'abstención' : 'no a Sánchez'}</span>
+        {(e.podemos.pinza > 0 || e.podemos.humor <= -2) && <span className="hito fila-medidor"><b>Pinza</b><Medidor valor={e.podemos.pinza} min={0} max={3} /></span>}
+        <span className="hito">{HUMOR_PODEMOS[e.podemos.humor]} · Sánchez: {VOTO_CORTO[votoPodemos('P', posturaPodemos(e))]} · Feijóo: {VOTO_CORTO[votoPodemos('C', posturaPodemos(e))]}</span>
         {e.agendaActual !== null && <span className="hito agenda" title={CARTAS[e.agendaActual].texto}>Agenda: «{CARTAS[e.agendaActual].nombre}»</span>}
       </div>
     </header>

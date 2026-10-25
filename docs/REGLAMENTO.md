@@ -46,7 +46,7 @@ Al final de la campaña, quien tenga **El Voto Útil** suma 1 PV (como la carta 
 1. **Clima +1** (desde la semana 2).
 2. **Reparto**: hasta 8 cartas (semanas 1–3) o 9 (desde la 4).
 3. **Portada**: ambos eligen a la vez una carta; se resuelven sus eventos, primero la de más PC (empate: el Gobierno). Un **tránsfuga** propio como Portada anula la del rival. La Junta Electoral no puede ser Portada.
-4. **Agenda de Podemos**: Podemos destapa una carta de su propio mazo (18 cartas) y la resuelve como si la jugara quien lidera la Ventaja. Casi siempre le perjudica: es el comodín del caos.
+4. **Agenda de Podemos**: Podemos destapa una carta de su propio mazo (20 cartas) y la resuelve como si la jugara quien lidera la Ventaja. Casi siempre le perjudica: es el comodín del caos.
 5. **Rondas de acción**: 6 (semanas 1–3) o 7, más las extra que den las cartas; el Progresista juega primero en cada ronda.
 6. **Fin de semana**: Exigencia de las bases, caducan los efectos de la semana, El Voto Útil vuelve a estar disponible, llegan los hitos del calendario y **conectamos con el plató** (sección 10).
 
@@ -89,7 +89,7 @@ Las cartas marcadas con **\*** se retiran del juego tras activar su evento.
 - **Presencia**: 1 PC por punto (2 donde el rival tiene el control). Solo en provincias con tu presencia, vecinas de ellas o en Madrid (sede nacional). Las provincias válidas se fijan al empezar la operación.
 - **Ofensiva**: en una provincia con presencia rival, tira dado + PC − 2 × Fidelidad. Si es positivo, quitas esa cantidad de presencia rival y el sobrante se convierte en presencia tuya. Cuenta para la Exigencia. En una provincia clave, el Clima baja 1.
 - **Debate local**: un intento por PC en una provincia con presencia rival. Cada bloque tira un dado y suma +1 por vecina controlada, +1 si tiene más presencia allí y +1 si es su feudo. El perdedor pierde la diferencia.
-- **Negociación**: 2 PC por paso de afinidad de una fuerza regional, una vez por fuerza y semana, y solo si tienes presencia en su territorio. Cada paso del Progresista hacia ERC, Junts o EH Bildu da 1 PV al Conservador. **Con Podemos** solo puede negociar el Progresista: cada paso mejora 1 su humor y da 1 PV al Conservador.
+- **Negociación**: 2 PC por paso de afinidad de una fuerza regional, una vez por fuerza y semana, y solo si tienes presencia en su territorio. Cada paso del Progresista hacia ERC, Junts o EH Bildu da 1 PV al Conservador. **Con Podemos**: el Progresista mejora 1 su humor y le resta 1 a la pinza; el Conservador, solo con Podemos en ruptura con el PSOE, suma 1 a la pinza. En los dos casos el rival gana 1 PV.
 
 Restricciones de Clima para ofensivas y debates: con Clima 4 no hay en Cataluña; con 3, tampoco en la Cornisa Norte; con 2, tampoco en Madrid y Centro.
 
@@ -115,6 +115,7 @@ Restricciones de Clima para ofensivas y debates: con Clima 4 no hay en Cataluña
 - **Veto de Vox**: mientras el medidor de Vox esté en 0 o más, PNV, Junts y CC no votarán sí al candidato conservador (se abstienen como mucho).
 - **Podemos · fuerza** (−3…+3): cada paso cambia su voto de partida un 25%. Lo que gana sale en un 80% de PSOE y Frente Amplio y en un 20% de PP y Vox (voto protesta).
 - **Podemos · humor** (−3…+3, empieza en 0 «exigente»): decide su voto en la investidura (sección 8).
+- **La pinza** (0…3): la vía difícil para que Podemos apoye al bloque conservador, como la «pinza» de Anguita y Aznar contra González en los noventa (y como en enero de 2024, cuando Podemos tumbó con PP, Vox y UPN el decreto del subsidio). Solo puede avanzar mientras Podemos esté en ruptura con el PSOE (humor −2 o menos): el Conservador negocia con Podemos (2 PC por paso, una vez por semana; cada paso da 1 PV al Progresista) o juega «La pinza»; también la mueven dos cartas de la Agenda de Podemos. El Progresista la desarma al negociar con Podemos (+1 humor, −1 pinza) o con «El decreto, otra vez», y al final de cada semana en que Podemos no esté en guerra con el PSOE, la pinza baja 1.
 - **Cierre de listas** (fin de la semana 3): Podemos va en solitario y tira un dado. Con 1–2 va a por todas (+1 fuerza, −1 humor); con 3–4 sigue igual; con 5–6 guiña al PSOE (+1 humor).
 - **El Voto Útil** (la «carta China»): 4 PC (+1 si se emplean en circunscripciones de 5 escaños o menos). Solo para operaciones. Empieza en el Gobierno; tras usarla pasa boca abajo al rival. Quien la tenga al final suma 1 PV.
 - **Marcadores morados** de Podemos (0–2 por provincia): cada uno suma 1 a la Fidelidad de la provincia y un 30% al voto de Podemos allí. Si Podemos desembarca donde controlabas por poco, puedes perder el control.
@@ -138,7 +139,9 @@ Cada fuerza regional tiene una **afinidad** de −3 (socia del progresismo) a +3
 
 Afinidad inicial: Compromís −3; ERC, EH Bildu, BNG y Adelante Andalucía −2; PNV y Nueva Canarias −1; Junts y CC 0; UPN +3.
 
-**Podemos** nunca vota a Feijóo. A Sánchez le vota según su humor: **sí** con +1 o más, **abstención** con 0 y **no** con −1 o menos. Empieza en 0: el Progresista tiene que ganárselo, y sus comodines pueden torcerlo en cualquier momento.
+**Podemos** vota a Sánchez según su humor: **sí** con +1 o más, **abstención** con 0 y **no** con −1 o menos. Empieza en 0: el Progresista tiene que ganárselo, y sus comodines pueden torcerlo en cualquier momento.
+
+A Feijóo le vota **no**, salvo con **la pinza**: con pinza 2 y humor −2 o menos se **abstiene** para dejarle gobernar, y con pinza 3, humor −3 y el medidor de Vox en −2 o menos (un PP que gobernaría sin Vox) le vota **sí**. Es difícil a propósito: exige romper a Podemos con el PSOE, mantener la ruptura varias semanas y desinflar a Vox, y el Progresista puede desmontarla en cualquier momento.
 
 ## 9. La noche electoral: el modelo de voto
 
@@ -251,7 +254,7 @@ Al cerrar cada semana se conecta con el plató de *En Caliente*: el presentador,
 | Ultimátum al PSOE | 2 | Comodín de Podemos | Podemos exige compromisos por escrito. El Progresista elige: ceder (el Conservador gana 2 PV) o plantarse (el humor de Podemos empeora 2). |
 | Podemos señala a la derecha | 2 | Comodín de Podemos | Podemos centra su campaña contra el PP y Vox. El Conservador elige: responder (el medidor de Vox sube 2 con la polarización) o ignorarlo (el Progresista gana 2 PV). |
 
-### Mazo II · Campaña (semana 4) (93 cartas)
+### Mazo II · Campaña (semana 4) (95 cartas)
 
 | Carta | PC | Evento | Efecto |
 |---|---|---|---|
@@ -322,6 +325,8 @@ Al cerrar cada semana se conecta con el plató de *En Caliente*: el presentador,
 | Prioridad nacional · noticia | 2 | Conservador | Ganas 1 PV y colocas 1 presencia en 2 provincias de Levante y Baleares o de Andalucía. |
 | Revuelta y el dinero de la DANA · noticia | 2 | Progresista | Ganas 1 PV y retiras 2 presencia conservadora en Levante y Baleares (máx. 1 por provincia). |
 | La sombra de los ERE · noticia | 2 | Conservador | Ganas 1 PV y retiras 2 presencia progresista en Andalucía (máx. 1 por provincia). |
+| El decreto, otra vez · noticia | 2 | Progresista | La pinza de Podemos con la derecha retrocede 1 y su humor mejora 1. |
+| La pinza · noticia | 2 | Conservador | Si Podemos está en ruptura con el PSOE (humor −2 o menos), la pinza avanza 1. Si no, su humor empeora 1. |
 | Vito Quiles, micrófono en mano · noticia | 2 | Neutral | Un agitador digital acorrala a ministros por los pasillos: el Conservador retira 2 presencia progresista de provincias clave (máx. 1 por provincia), el medidor de Vox sube 1 y el Clima baja 1. |
 | Huelga de médicos · noticia | 2 | Neutral | Los médicos paran contra el Estatuto Marco del Gobierno, pero también en los hospitales de las comunidades: el Conservador gana 1 PV y el Progresista retira 2 presencia conservadora de provincias clave (máx. 1 por provincia). |
 | España se baja de Eurovisión · noticia | 1 | Neutral | La retirada divide a la audiencia: los medidores de Frente Amplio y de Vox suben 1. Después, cada bando tira un dado y el mayor gana 1 PV. |
@@ -406,7 +411,7 @@ Al cerrar cada semana se conecta con el plató de *En Caliente*: el presentador,
 | Remontada morada | 2 | Comodín de Podemos | Podemos gana 2 de fuerza y la polarización también da alas a Vox (+1). |
 | Podemos se planta | 2 | Comodín de Podemos | Podemos avisa de que no apoyará a nadie gratis: su humor se acerca 1 a «exigente» (abstención) y quien lidera la Ventaja pierde 1 PV. |
 
-### Agenda de Podemos (una por semana) (18 cartas)
+### Agenda de Podemos (una por semana) (20 cartas)
 
 | Carta | PC | Evento | Efecto |
 |---|---|---|---|
@@ -427,6 +432,8 @@ Al cerrar cada semana se conecta con el plató de *En Caliente*: el presentador,
 | Podemos hace campaña con ERC | — | Agenda de Podemos | ERC crece un 5% y Podemos planta un marcador morado en la provincia catalana más grande que controle cada bloque. |
 | Podemos baja el tono | — | Agenda de Podemos | El Clima sube 1 y el humor de Podemos mejora 1. |
 | Podemos irrumpe en la agenda | — | Agenda de Podemos | Quien va por detrás en la Ventaja retira 2 presencia de su rival en provincias clave (máx. 1 por provincia). |
+| Podemos tumba un decreto con la derecha | — | Agenda de Podemos | Los votos de Podemos, junto a los de PP y Vox, tumban una ley del Gobierno: el Progresista pierde 1 PV y, si Podemos está en ruptura con el PSOE (humor −2 o menos), la pinza avanza 1. |
+| Podemos, ni con Vox ni con el PP | — | Agenda de Podemos | Podemos recuerda que nunca gobernará con la derecha: el Conservador pierde 1 PV y la pinza retrocede 1. |
 | Marcha morada | — | Agenda de Podemos | Podemos planta un marcador morado en la provincia más grande que controle quien lidera la Ventaja y el Clima baja 1 (nunca por debajo de 2). |
 
-Resumen: 74 progresistas (188 PC), 74 conservadoras (188 PC), 11 comodines de Podemos (25 PC), 51 neutrales, 9 encuestas y 18 cartas de la Agenda de Podemos. * = se retira tras jugar el evento. «noticia» = basada en un hecho real.
+Resumen: 75 progresistas (190 PC), 75 conservadoras (190 PC), 11 comodines de Podemos (25 PC), 51 neutrales, 9 encuestas y 20 cartas de la Agenda de Podemos. * = se retira tras jugar el evento. «noticia» = basada en un hecho real.

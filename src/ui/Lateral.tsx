@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { PARTIDOS, ORDEN_HEMICICLO, LIDER } from '../data/partidos';
-import { REGIONALES, VETADOS_POR_VOX, type Resultado } from '../engine/electoral';
+import { posturaPodemos, REGIONALES, VETADOS_POR_VOX, votoPodemos, type Resultado } from '../engine/electoral';
 import type { EntradaLog, Estado, PartidoId } from '../engine/tipos';
 import { Hemiciclo } from './Hemiciclo';
 import { fmtAfin, NOMBRE_EFECTO } from '../engine/motor';
@@ -43,10 +43,10 @@ export const Afinidades = memo(function Afinidades({ e, r }: { e: Estado; r: Res
   return (
     <section className="caja afinidades" aria-label="Afinidad de las fuerzas regionales">
       <h3 className="etiqueta">Apoyos en la investidura</h3>
-      <div className="afin-fila" title="Podemos va por libre. A Feijóo nunca le vota; a Sánchez, según su humor: sí (+1 o más), abstención (0) o no (−1 o menos).">
+      <div className="afin-fila" title={`Podemos va por libre. A Sánchez le vota según su humor: sí (+1 o más), abstención (0) o no (−1 o menos). A Feijóo solo con la pinza (ahora ${e.podemos.pinza} de 3): abstención con pinza 2 y humor −2 o menos; sí con pinza 3, humor −3 y Vox en −2 o menos.`}>
         <span style={{ color: 'var(--morado-claro)' }}>Podemos <span className="dato" style={{ color: 'var(--tenue)' }}>{r.escanos.PODEMOS ?? 0}</span></span>
         <span className="afin-escala"><b style={{ left: `${((3 - e.podemos.humor) / 6) * 100}%`, background: 'var(--morado-claro)' }} /></span>
-        <span className="dato" style={{ fontSize: 11, color: 'var(--tenue)' }}>{e.podemos.humor >= 1 ? 'sí' : e.podemos.humor === 0 ? 'abst' : 'no'}</span>
+        <span className="dato" style={{ fontSize: 11, color: votoPodemos('C', posturaPodemos(e)) !== 'no' ? 'var(--cons)' : 'var(--tenue)' }}>{votoPodemos('C', posturaPodemos(e)) === 'si' ? 'sí F' : votoPodemos('C', posturaPodemos(e)) === 'abst' ? 'abs F' : e.podemos.humor >= 1 ? 'sí' : e.podemos.humor === 0 ? 'abst' : 'no'}</span>
       </div>
       {REGIONALES.map((k) => {
         const a = e.afinidad[k];

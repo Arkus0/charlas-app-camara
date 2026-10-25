@@ -3,7 +3,7 @@
 import { CARTAS } from '../data/cartas';
 import { CESIONES_CARAS } from '../data/partidos';
 import { PROV, PROVINCIAS } from '../data/provincias';
-import { REGIONALES } from '../engine/electoral';
+import { PINZA_ABSTENCION, PINZA_APOYO, REGIONALES } from '../engine/electoral';
 import { clonar, ejecutarAislado, responder } from '../engine/motor';
 import { aleatorio, barajar } from '../engine/rng';
 import {
@@ -460,14 +460,26 @@ function simularColocacion(e: Estado, b: Bando, pc: number, ctx: Ctx): number {
 /** Valor (en X, para b) de acercar 1 a una fuerza. `sinCoste`: por evento (sin límite por turno ni cesiones). */
 function valorNegociar(e: Estado, k: Negociable, b: Bando, sinCoste = false): number {
   if (k === 'PODEMOS') {
-    if (b !== 'P' || e.podemos.humor >= 3 || (!sinCoste && e.negociado.includes(k))) return -Infinity;
-    const w0 = pesos(e).PODEMOS ?? 0;
-    e.podemos.humor++;
-    const w1 = pesos(e).PODEMOS ?? 0;
-    e.podemos.humor--;
+    if (!sinCoste && e.negociado.includes(k)) return -Infinity;
+    const { humor, pinza } = e.podemos;
+    // el Progresista mejora su humor y desarma la pinza; el Conservador teje la pinza si Podemos está en guerra con el PSOE
+    if (b === 'P' ? humor >= 3 && pinza === 0 : humor > -2 || pinza >= PINZA_APOYO) return -Infinity;
+    const peso = (h: number, p: number) => {
+      e.podemos.humor = h;
+      e.podemos.pinza = p;
+      const w = pesos(e).PODEMOS ?? 0;
+      e.podemos.humor = humor;
+      e.podemos.pinza = pinza;
+      return w;
+    };
+    const w0 = peso(humor, pinza);
+    let w1 = b === 'P' ? peso(Math.min(3, humor + 1), Math.max(0, pinza - 1)) : peso(humor, pinza + 1);
+    // el primer paso de la pinza aún no cambia el voto: cuenta parte de lo que vale llegar a la abstención
+    if (b === 'C' && pinza + 1 < PINZA_ABSTENCION) w1 = w0 + 0.4 * (peso(humor, PINZA_ABSTENCION) - w0);
     let esc = 0;
     for (const id of territorioDe('PODEMOS')) esc += escanosSuaves(e, id).PODEMOS ?? 0;
-    return -esc * (w1 - w0) - (sinCoste ? 0 : VALOR_PV);
+    const dx = esc * (w1 - w0);
+    return (b === 'C' ? dx : -dx) - (sinCoste ? 0 : VALOR_PV);
   }
   const a = e.afinidad[k];
   if (b === 'P' ? a <= -3 : a >= 3) return -Infinity;

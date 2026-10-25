@@ -152,10 +152,31 @@ export function vetoVoxActivo(e: Pick<Estado, 'socio'>): boolean {
   return e.socio.C >= 0;
 }
 
-/** Voto de Podemos según su humor: nunca a Feijóo; a Sánchez, sí (≥1), abstención (0) o no (≤−1). */
-export function votoPodemos(cand: Bando, humor: number): 'si' | 'no' | 'abst' {
-  if (cand === 'C') return 'no';
-  return humor >= 1 ? 'si' : humor === 0 ? 'abst' : 'no';
+/** Lo que decide el voto de Podemos: su humor con el PSOE, la pinza (0-3) y el peso de Vox. */
+export interface PosturaPodemos {
+  humor: number;
+  pinza: number;
+  socioC: number;
+}
+
+/** Umbrales de la pinza: con 2 Podemos se abstiene con Feijóo; con 3, humor −3 y Vox muy débil, le vota sí. */
+export const PINZA_ABSTENCION = 2;
+export const PINZA_APOYO = 3;
+export const VOX_MAXIMO_APOYO = -2;
+
+/** Voto de Podemos. A Sánchez, según su humor: sí (≥1), abstención (0) o no (≤−1).
+ *  A Feijóo, no, salvo la pinza: abstención con pinza 2 y humor ≤−2; sí con pinza 3, humor −3 y Vox en −2 o menos. */
+export function votoPodemos(cand: Bando, pod: Partial<PosturaPodemos> = {}): 'si' | 'no' | 'abst' {
+  const humor = pod.humor ?? 0;
+  const pinza = pod.pinza ?? 0;
+  if (cand === 'P') return humor >= 1 ? 'si' : humor === 0 ? 'abst' : 'no';
+  if (pinza >= PINZA_APOYO && humor <= -3 && (pod.socioC ?? 0) <= VOX_MAXIMO_APOYO) return 'si';
+  if (pinza >= PINZA_ABSTENCION && humor <= -2) return 'abst';
+  return 'no';
+}
+
+export function posturaPodemos(e: Pick<Estado, 'podemos' | 'socio'>): PosturaPodemos {
+  return { humor: e.podemos.humor, pinza: e.podemos.pinza ?? 0, socioC: e.socio.C };
 }
 
 /** Voto de un partido en la investidura del candidato de `cand`. */
@@ -164,11 +185,11 @@ export function votoInvestidura(
   cand: Bando,
   afinidad: Record<RegionalId, number>,
   veto: boolean,
-  humorPodemos = 0,
+  pod: Partial<PosturaPodemos> = {},
 ): 'si' | 'no' | 'abst' {
   if (partido === 'PP' || partido === 'VOX') return cand === 'C' ? 'si' : 'no';
   if (partido === 'PSOE' || partido === 'SUMAR') return cand === 'P' ? 'si' : 'no';
-  if (partido === 'PODEMOS') return votoPodemos(cand, humorPodemos);
+  if (partido === 'PODEMOS') return votoPodemos(cand, pod);
   if (partido === 'SALF') return cand === 'C' ? 'abst' : 'no';
   const a = (afinidad as Record<string, number>)[partido];
   if (a === undefined) return 'abst'; // Soria ¡Ya!, UPL, Teruel Existe…
@@ -182,11 +203,11 @@ export function votoInvestidura(
   return 'no';
 }
 
-export function investir(escanos: Votos, cand: Bando, afinidad: Record<RegionalId, number>, veto: boolean, humorPodemos = 0): Investidura {
+export function investir(escanos: Votos, cand: Bando, afinidad: Record<RegionalId, number>, veto: boolean, pod: Partial<PosturaPodemos> = {}): Investidura {
   let si = 0, no = 0, abst = 0;
   for (const [k, n] of Object.entries(escanos) as [PartidoId, number][]) {
     if (!n) continue;
-    const v = votoInvestidura(k, cand, afinidad, veto, humorPodemos);
+    const v = votoInvestidura(k, cand, afinidad, veto, pod);
     if (v === 'si') si += n;
     else if (v === 'no') no += n;
     else abst += n;
@@ -215,8 +236,9 @@ export function proyectar(
     P: BLOQUE_P.reduce((a, k) => a + (escanos[k] ?? 0), 0),
   };
   const veto = vetoVoxActivo(e);
-  const invC = investir(escanos, 'C', e.afinidad, veto, e.podemos.humor);
-  const invP = investir(escanos, 'P', e.afinidad, veto, e.podemos.humor);
+  const pod = posturaPodemos(e);
+  const invC = investir(escanos, 'C', e.afinidad, veto, pod);
+  const invP = investir(escanos, 'P', e.afinidad, veto, pod);
   const apoyos = { C: invC.si, P: invP.si };
   // el Rey propone primero al candidato del bloque con más escaños
   const orden: Bando[] = bloque.C >= bloque.P ? ['C', 'P'] : ['P', 'C'];

@@ -833,7 +833,7 @@ Escena: Un foco morado apuntando a una puerta azul cerrada en un callejón, con 
 Color dominante: morado #8e44c4 (comodín de Podemos), con rojo y azul en segundo plano.
 ```
 
-## Mazo II · Campaña (93 cartas)
+## Mazo II · Campaña (95 cartas)
 
 ### 105 · Encuesta: Interior
 
@@ -1569,6 +1569,28 @@ Conservador · pareja de la 231 · archivo `src/assets/cartas/271.webp`
 Ilustración editorial para una carta de un juego de mesa de estrategia política, en estilo serigrafía o risografía: formas planas y geométricas, grano de impresión visible, sombras de trama, composición simbólica y limpia, encuadre horizontal 4:3. Paleta limitada: azul noche #0d1524 de fondo, papel crudo #f3f1ea, rojo #e5483f, azul #3a86e8 y dorado #e8b64a; el morado #8e44c4 solo en las cartas de Podemos. Sin personas reconocibles ni políticos reales (solo siluetas anónimas o manos), sin logotipos ni símbolos de partidos, sin banderas oficiales ni escudos, y sin ningún texto, letra o número legible.
 
 Escena: Archivadores verdes y blancos amontonados en un sótano, con una lámpara roja colgando.
+Color dominante: azul #3a86e8 (carta del bloque conservador).
+```
+
+### 232 · El decreto, otra vez
+
+Progresista · pareja de la 272 · archivo `src/assets/cartas/232.webp`
+
+```
+Ilustración editorial para una carta de un juego de mesa de estrategia política, en estilo serigrafía o risografía: formas planas y geométricas, grano de impresión visible, sombras de trama, composición simbólica y limpia, encuadre horizontal 4:3. Paleta limitada: azul noche #0d1524 de fondo, papel crudo #f3f1ea, rojo #e5483f, azul #3a86e8 y dorado #e8b64a; el morado #8e44c4 solo en las cartas de Podemos. Sin personas reconocibles ni políticos reales (solo siluetas anónimas o manos), sin logotipos ni símbolos de partidos, sin banderas oficiales ni escudos, y sin ningún texto, letra o número legible.
+
+Escena: Una mano roja que separa con cuidado las dos patas de unas tenazas, una morada y otra azul.
+Color dominante: rojo #e5483f (carta del bloque progresista).
+```
+
+### 272 · La pinza
+
+Conservador · pareja de la 232 · archivo `src/assets/cartas/272.webp`
+
+```
+Ilustración editorial para una carta de un juego de mesa de estrategia política, en estilo serigrafía o risografía: formas planas y geométricas, grano de impresión visible, sombras de trama, composición simbólica y limpia, encuadre horizontal 4:3. Paleta limitada: azul noche #0d1524 de fondo, papel crudo #f3f1ea, rojo #e5483f, azul #3a86e8 y dorado #e8b64a; el morado #8e44c4 solo en las cartas de Podemos. Sin personas reconocibles ni políticos reales (solo siluetas anónimas o manos), sin logotipos ni símbolos de partidos, sin banderas oficiales ni escudos, y sin ningún texto, letra o número legible.
+
+Escena: Unas tenazas con una pata morada y otra azul que se cierran sobre una rosa roja de papel.
 Color dominante: azul #3a86e8 (carta del bloque conservador).
 ```
 
@@ -2432,7 +2454,7 @@ Escena: Una silla morada plantada sola en mitad de una calle, frente a dos coche
 Color dominante: morado #8e44c4 (comodín de Podemos), con rojo y azul en segundo plano.
 ```
 
-## Agenda de Podemos (18 cartas)
+## Agenda de Podemos (20 cartas)
 
 ### 501 · Podemos señala al favorito
 
@@ -2618,6 +2640,28 @@ Agenda de Podemos · archivo `src/assets/cartas/517.webp`
 Ilustración editorial para una carta de un juego de mesa de estrategia política, en estilo serigrafía o risografía: formas planas y geométricas, grano de impresión visible, sombras de trama, composición simbólica y limpia, encuadre horizontal 4:3. Paleta limitada: azul noche #0d1524 de fondo, papel crudo #f3f1ea, rojo #e5483f, azul #3a86e8 y dorado #e8b64a; el morado #8e44c4 solo en las cartas de Podemos. Sin personas reconocibles ni políticos reales (solo siluetas anónimas o manos), sin logotipos ni símbolos de partidos, sin banderas oficiales ni escudos, y sin ningún texto, letra o número legible.
 
 Escena: Un pie morado que entra en un plató de televisión iluminado y aparta dos atriles.
+Color dominante: morado #8e44c4 sobre azul noche (Agenda de Podemos), con un marco morado más grueso.
+```
+
+### 519 · Podemos tumba un decreto con la derecha
+
+Agenda de Podemos · archivo `src/assets/cartas/519.webp`
+
+```
+Ilustración editorial para una carta de un juego de mesa de estrategia política, en estilo serigrafía o risografía: formas planas y geométricas, grano de impresión visible, sombras de trama, composición simbólica y limpia, encuadre horizontal 4:3. Paleta limitada: azul noche #0d1524 de fondo, papel crudo #f3f1ea, rojo #e5483f, azul #3a86e8 y dorado #e8b64a; el morado #8e44c4 solo en las cartas de Podemos. Sin personas reconocibles ni políticos reales (solo siluetas anónimas o manos), sin logotipos ni símbolos de partidos, sin banderas oficiales ni escudos, y sin ningún texto, letra o número legible.
+
+Escena: Tres botones de votación encendidos, morado, azul y verde, frente a uno rojo apagado.
+Color dominante: morado #8e44c4 sobre azul noche (Agenda de Podemos), con un marco morado más grueso.
+```
+
+### 520 · Podemos, ni con Vox ni con el PP
+
+Agenda de Podemos · archivo `src/assets/cartas/520.webp`
+
+```
+Ilustración editorial para una carta de un juego de mesa de estrategia política, en estilo serigrafía o risografía: formas planas y geométricas, grano de impresión visible, sombras de trama, composición simbólica y limpia, encuadre horizontal 4:3. Paleta limitada: azul noche #0d1524 de fondo, papel crudo #f3f1ea, rojo #e5483f, azul #3a86e8 y dorado #e8b64a; el morado #8e44c4 solo en las cartas de Podemos. Sin personas reconocibles ni políticos reales (solo siluetas anónimas o manos), sin logotipos ni símbolos de partidos, sin banderas oficiales ni escudos, y sin ningún texto, letra o número legible.
+
+Escena: Una puerta azul cerrada con un candado morado.
 Color dominante: morado #8e44c4 sobre azul noche (Agenda de Podemos), con un marco morado más grueso.
 ```
 

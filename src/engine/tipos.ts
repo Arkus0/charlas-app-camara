@@ -140,7 +140,7 @@ export type Efecto =
   | { e: 'fugaNacionalista'; pct: number }
   | { e: 'afinidadNeutral'; partido: RegionalId }
   | { e: 'socio'; bloque: 'yo' | 'rival' | 'P' | 'C'; n: number }
-  | { e: 'podemos'; fuerza?: number; humor?: number }
+  | { e: 'podemos'; fuerza?: number; humor?: number; pinza?: number }
   | { e: 'morado'; n: number; filtro?: Filtro; maxPor?: number; quien?: 'yo' | 'rival' } // marcadores de Podemos (+/−)
   | { e: 'afinidad'; partido: RegionalId; n: number }
   | { e: 'afinidadElegir'; n: number; veces: number; sinVetados?: boolean }
@@ -267,7 +267,7 @@ export type Suceso =
   | { s: 'debateTV'; tipo: 'cara' | 'cuatro'; ganador: Bando | null; dif: number }
   | { s: 'carrera'; bando: Bando; casilla: number }
   | { s: 'exigencia'; bando: Bando; falta: number }
-  | { s: 'podemos'; fuerza: number; humor: number }
+  | { s: 'podemos'; fuerza: number; humor: number; pinza?: number }
   | { s: 'agenda'; carta: number; lider: Bando }
   | { s: 'negocia'; bando: Bando; partido: Negociable }
   | { s: 'socio'; bando: Bando; n: number }
@@ -286,7 +286,7 @@ export interface FotoTurno {
   ganadorProyectado: Bando | null;
   controles: Record<string, Bando | null>;
   morado: Record<string, number>;
-  podemos: { fuerza: number; humor: number };
+  podemos: { fuerza: number; humor: number; pinza: number };
   socio: { P: number; C: number };
   carrera: { P: number; C: number };
   afinidad: Record<RegionalId, number>;
@@ -316,8 +316,9 @@ export interface Estado {
   carreraTurno: { P: number; C: number };
   socio: { P: number; C: number }; // peso de los socios (Frente Amplio | Vox) respecto a la base
   /** Podemos, el comodín: fuerza (−3…+3, su voto respecto a las encuestas) y humor
-   *  (−3…+3: 1 o más, sí a Sánchez; 0, abstención; −1 o menos, no). Nunca vota a Feijóo. */
-  podemos: { fuerza: number; humor: number };
+   *  (−3…+3: 1 o más, sí a Sánchez; 0, abstención; −1 o menos, no) y pinza (0…3): la vía difícil para
+   *  que apoye al bloque conservador (abstención con pinza 2 y humor ≤−2; sí con pinza 3, humor −3 y Vox ≤−2). */
+  podemos: { fuerza: number; humor: number; pinza: number };
   afinidad: Record<RegionalId, number>; // − hacia P, + hacia C
   negociado: Negociable[]; // fuerzas negociadas este turno
   modsProv: Record<string, number>; // pp a favor del Conservador por eventos

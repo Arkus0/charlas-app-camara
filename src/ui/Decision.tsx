@@ -100,7 +100,7 @@ export function Decision({ e, humano, seleccion, onResponder, onSeleccion, onHov
           <div className="botones">
             {d.opciones.map((k) => (
               <button key={k} className="boton" type="button" onClick={() => onResponder({ tipo: 'partido', id: k })}>
-                {PARTIDOS[k].siglas} <span className="dato" style={{ color: 'var(--tenue)' }}>{k === 'PODEMOS' ? `humor ${e.podemos.humor > 0 ? '+' : ''}${e.podemos.humor} · cuesta 1 PV` : fmtAfin(e.afinidad[k])}</span>
+                {PARTIDOS[k].siglas} <span className="dato" style={{ color: 'var(--tenue)' }}>{k === 'PODEMOS' ? (b === 'P' ? `humor ${e.podemos.humor > 0 ? '+' : ''}${e.podemos.humor} · 1 PV al rival` : `pinza ${e.podemos.pinza}/3 · 1 PV al rival`) : fmtAfin(e.afinidad[k])}</span>
               </button>
             ))}
             {d.opcional && <button className="boton" type="button" onClick={() => onResponder({ tipo: 'partido', id: null })}>Terminar</button>}
