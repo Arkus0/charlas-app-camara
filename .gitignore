@@ -1,7 +1,6 @@
 node_modules
 dist
+dist-artefacto
 *.log
 .DS_Store
 capturas/
-dist-artefacto
-dev-dist
