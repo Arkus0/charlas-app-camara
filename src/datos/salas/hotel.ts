@@ -37,7 +37,7 @@ export const HOTEL: DefSala[] = [
     ],
     puertas: { '1': ['hotel1', '2'], '3': ['hotel3', '1'] },
     cofres: ['llave'],
-    deco: [['lampara', 10, 1], ['lampara', 13, 1], ['maquina', 12, 2], ['maquina', 13, 2], ['maquina', 14, 2], ['mesa', 10, 8]],
+    deco: [['lampara', 10, 1], ['lampara', 13, 1], ['maquina', 12, 2], ['maquina', 13, 2], ['maquina', 14, 2], ['mesa', 3, 8]],
   },
   {
     id: 'hotel3', zona: 'hotel', nombre: 'Cocinas',
@@ -56,7 +56,7 @@ export const HOTEL: DefSala[] = [
     ],
     puertas: { '1': ['hotel2', '3'], '2': ['hotel4', '1'] },
     tiempo: { a: 280 },
-    deco: [['aparador', 8, 7], ['radiador', 14, 9]],
+    deco: [['radiador', 14, 9], ['planta_i', 12, 7]],
   },
   {
     id: 'hotel4', zona: 'hotel', nombre: 'Andamios', tema: 'obra',
@@ -110,7 +110,7 @@ export const HOTEL: DefSala[] = [
     ],
     puertas: { '1': ['hotel7', '3'] },
     cofres: ['llave'],
-    deco: [['cama', 11, 9], ['cuadro2', 2, 1], ['cuadro3', 10, 1]],
+    deco: [['arcon', 5, 9], ['cuadro2', 2, 1], ['cuadro3', 10, 1]],
   },
   {
     id: 'hotel7', zona: 'hotel', nombre: 'Pasillo de las suites',

@@ -72,6 +72,6 @@ export const TEMAS: Record<string, Tema> = {
     cara: ['pared'], caraBase: 'pared_base',
     muroTop: 'techo', muroCara: ['pared_sup', 'pared'], muroBase: 'pared_base',
     olas: 'ola', colorAgua: '#1878b8', colorFoso: '#100818',
-    ambiente: '#a0a0c0', musica: 'mazmorra', fondo: true,
+    ambiente: '#a0a0c0', musica: 'mazmorra',
   },
 };

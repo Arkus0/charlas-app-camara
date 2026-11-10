@@ -53,9 +53,17 @@ export function actualizarJefe(j: Juego, e: Ent): void {
   if (e.est === 'espera') {
     mirar(e, dx, dy);
     if (dist < 96) {
-      e.est = 'anda'; e.t = 0;
+      e.est = 'presenta'; e.t = 0;
       j.tarjeta = { titulo: d.nombre, sub: d.titulo, t: 150 };
       j.sfx('jefe');
+      j.musica = 'jefe';
+    }
+    return;
+  }
+  if (e.est === 'presenta') {
+    // la tarjeta de presentación congela el juego; al acabar, habla y empieza el combate
+    if (!j.tarjeta) {
+      e.est = d.vida2 && e.fase === 2 ? 'acecha' : 'anda';
       const antes = GUION.jefes[e.nom]?.antes(j);
       if (antes?.length) j.decir(antes);
     }

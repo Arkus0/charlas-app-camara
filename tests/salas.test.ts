@@ -69,6 +69,11 @@ describe('mapas', () => {
     }
   });
 
+  it.each(ids)('en %s nada queda metido dentro del decorado', (id) => {
+    const s = new Sala(SALAS[id]);
+    for (const o of s.objetos) expect(s.extra[o.fila * s.an + o.col], `«${o.c}» en (${o.col},${o.fila})`).toBe(0);
+  });
+
   it.each(ids)('las rejas de %s tienen quien las abra', (id) => {
     const def = SALAS[id];
     const s = new Sala(def);

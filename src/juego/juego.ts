@@ -249,7 +249,7 @@ export class Juego {
     this.jug.seguro.z = this.jug.z;
     this.actualizarCanales(true);
     this.centrarCamara(true);
-    this.musica = def.jefe && this.jefe ? 'jefe' : def.musica ?? this.tema.musica;
+    this.musica = def.musica ?? this.tema.musica;
     if (def.zona !== this.zonaVista) {
       this.zonaVista = def.zona;
       this.rotulo = { texto: def.nombre ?? NOMBRE_ZONA[def.zona] ?? '', t: 150 };
@@ -794,7 +794,7 @@ export class Juego {
       return false;
     }
     if (o.tipo !== 'enemigo' && o.tipo !== 'jefe') return false;
-    if (o.tipo === 'jefe' && (o.est === 'vencido' || o.est === 'cambio' || o.est === 'espera')) return false;
+    if (o.tipo === 'jefe' && (o.est === 'vencido' || o.est === 'cambio' || o.est === 'espera' || o.est === 'presenta')) return false;
     const def = o.tipo === 'jefe' ? JEFES[o.nom] : ENEMIGOS[o.cls];
     const mult = def.recibe ? def.recibe(this, o, clase, ox, oy) : 1;
     o.alerta = true;

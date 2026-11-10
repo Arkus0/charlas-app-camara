@@ -363,7 +363,7 @@ export class Vista {
         g.d(ctx, 'i_llave', x - 6, y - 14);
         return;
       }
-      case 'grieta': g.d(ctx, j.tema.muroBase, x - 8, y - 8); g.d(ctx, 'grieta', x - 8, y - 7); return;
+      case 'grieta': g.d(ctx, j.tema.muroCara[0], x - 8, y - 24); g.d(ctx, j.tema.muroBase, x - 8, y - 8); g.d(ctx, 'grieta', x - 8, y - 22); g.d(ctx, 'grieta', x - 8, y - 9); return;
       case 'barricada':
         g.d(ctx, 'barricada', x - 8, y + 8 - 26);
         if (e.arde) { g.d(ctx, 'fuego' + (Math.floor(j.tic / 4) % 7), x - 8, y - 20); g.d(ctx, 'fuego' + (Math.floor(j.tic / 4 + 3) % 7), x - 4, y - 10); foco(40, '#ff9040'); }

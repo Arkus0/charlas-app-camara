@@ -6,7 +6,7 @@ import { entrada, leerTodo, pasos, usar } from './util';
 function tumbar(j: Juego): void {
   const b = j.jefe!;
   j.jug.x = b.x; j.jug.y = b.y + 30;
-  for (let i = 0; i < 400 && (b.est === 'espera' || j.modo !== 'juego' || j.tarjeta); i++) { j.paso(entrada()); leerTodo(j); }
+  for (let i = 0; i < 600 && (b.est === 'espera' || b.est === 'presenta' || j.modo !== 'juego' || j.tarjeta); i++) { j.paso(entrada()); leerTodo(j); }
   for (let fase = 0; fase < 2 && b.vivo; fase++) {
     j.golpear(b, 9999, j.jug.x, j.jug.y, 0, 'remate');
     for (let i = 0; i < 300 && j.jefe; i++) { j.p.vida = j.p.vidaMax; j.paso(entrada()); leerTodo(j); if (b.est === 'acecha') break; }
