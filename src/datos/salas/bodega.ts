@@ -54,7 +54,7 @@ export const BODEGA: DefSala[] = [
     ],
     puertas: { '1': ['bodega2', '2'], '2': ['bodega4', '1'], '3': ['bodega5', '1'] },
     plataformas: [[1, 0, 2], [0, -1, 4]],
-    cofres: ['bocata'],
+    cofres: ['cromo'],
     deco: [['antorcha', 6, 1], ['antorcha', 11, 1]],
   },
   {

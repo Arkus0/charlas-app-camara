@@ -51,7 +51,7 @@ export class Juego {
   jefe: Ent | null = null;
   hayGuardado = false;
   private sigId = 1;
-  private puertaCelda = new Map<number, string>();
+  puertaCelda = new Map<number, string>();
   private indicePuerta = 0;
   private antDy = 0;
   private antDx = 0;
@@ -66,6 +66,8 @@ export class Juego {
   // ───────────────────────── utilidades ─────────────────────────
 
   sfx(n: string): void { this.sonidos.push(n); }
+  /** Durante el combate con un jefe no se puede salir de la sala. */
+  sellada(): boolean { return !!this.jefe && this.jefe.est !== 'espera' && this.jefe.est !== 'vencido'; }
   ban(k: string): boolean { return !!this.p.banderas[k]; }
   pon(k: string, v = 1): void { this.p.banderas[k] = v; }
   sellos(): number { return (this.ban('jefe:percebe') ? 1 : 0) + (this.ban('jefe:faraona') ? 1 : 0) + (this.ban('jefe:miura') ? 1 : 0); }
@@ -90,12 +92,13 @@ export class Juego {
   probar(x: number, y: number, rx: number, ry: number, z: number, ign?: Ent): { sup: number; blq: boolean; ent: Ent | null } {
     const s = this.sala;
     let sup = -999, blq = false, ent: Ent | null = null;
+    const sellada = this.sellada();
     const c0 = Math.floor((x - rx) / T), c1 = Math.floor((x + rx - 0.01) / T);
     const f0 = Math.floor((y - ry) / T), f1 = Math.floor((y + ry - 0.01) / T);
     for (let f = f0; f <= f1; f++) {
       for (let c = c0; c <= c1; c++) {
         const h = s.suelo(c, f);
-        if (h > z + PASO) blq = true; else if (h > sup) sup = h;
+        if (h > z + PASO || (sellada && this.puertaCelda.has(f * s.an + c))) blq = true; else if (h > sup) sup = h;
       }
     }
     for (const o of this.ents) {
@@ -791,6 +794,7 @@ export class Juego {
       return false;
     }
     if (o.tipo !== 'enemigo' && o.tipo !== 'jefe') return false;
+    if (o.tipo === 'jefe' && (o.est === 'vencido' || o.est === 'cambio' || o.est === 'espera')) return false;
     const def = o.tipo === 'jefe' ? JEFES[o.nom] : ENEMIGOS[o.cls];
     const mult = def.recibe ? def.recibe(this, o, clase, ox, oy) : 1;
     o.alerta = true;

@@ -19,14 +19,14 @@ export interface DefJefe {
 }
 
 export const JEFES: Record<string, DefJefe> = {
-  percebe: { nombre: 'EL PERCEBE', titulo: 'Patrón de la Lonja', vida: 44, pal: 'percebe', pesado: true, rx: 7, ry: 5, recibe: (_j, e) => (e.est === 'cansado' ? 1.5 : 1) },
-  faraona: { nombre: 'LA FARAONA', titulo: 'Reina de las Bodegas', vida: 40, pal: 'faraona', pesado: true, recibe: (_j, e) => (e.est === 'deslumbrada' ? 2 : 1) },
+  percebe: { nombre: 'EL PERCEBE', titulo: 'Patrón de la Lonja', vida: 56, pal: 'percebe', pesado: true, rx: 7, ry: 5, recibe: (_j, e) => (e.est === 'cansado' ? 1.5 : 1) },
+  faraona: { nombre: 'LA FARAONA', titulo: 'Reina de las Bodegas', vida: 52, pal: 'faraona', pesado: true, recibe: (_j, e) => (e.est === 'deslumbrada' ? 2 : 1) },
   miura: {
-    nombre: 'EL MIURA', titulo: 'Seiscientos kilos de mala idea', vida: 46, pal: 'miura', pesado: true, grande: true, rx: 9, ry: 7,
+    nombre: 'EL MIURA', titulo: 'Seiscientos kilos de mala idea', vida: 60, pal: 'miura', pesado: true, grande: true, rx: 9, ry: 7,
     recibe: (_j, e, clase) => (e.est === 'aturdido' ? (e.ole ? 2 : 1.25) : clase === 'remate' || clase === 'explosion' ? 1 : 0.3),
   },
   notario: {
-    nombre: 'DON FERMÍN', titulo: '«El Notario»', vida: 30, vida2: 46, pal: 'notario', pesado: true,
+    nombre: 'DON FERMÍN', titulo: '«El Notario»', vida: 40, vida2: 64, pal: 'notario', pesado: true,
     recibe: (_j, e, clase, ox, oy) => {
       if (e.fase === 1) return 1;
       if (e.est !== 'acecha' && e.est !== 'tajo') return 1;
@@ -102,7 +102,7 @@ export function actualizarJefe(j: Juego, e: Ent): void {
           break;
         case 'barrido':
           e.t--;
-          if (e.t === 8) { j.sfx('zas'); if (dist < 36 && Math.abs(p.z - e.z) < 16) j.danarJugador(3, e.x, e.y, 3.5); }
+          if (e.t === 8) { j.sfx('zas'); if (dist < 36 && Math.abs(p.z - e.z) < 16) j.danarJugador(2, e.x, e.y, 3.5); }
           if (e.t <= 0) { e.est = 'recupera'; e.t = 44; e.n++; }
           break;
         case 'gancho':

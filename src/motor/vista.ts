@@ -92,6 +92,7 @@ export class Vista {
       while (k < cosas.length && cosas[k].y < (f + 1) * T) cosas[k++].f();
     }
     while (k < cosas.length) cosas[k++].f();
+    if (j.sellada()) for (const i of j.puertaCelda.keys()) g.d(ctx, 'reja', (i % s.an) * T, Math.floor(i / s.an) * T - 8);
     ctx.restore();
 
     // Luz: la escena se multiplica por un mapa de luz ambiente al que se suman los focos.
