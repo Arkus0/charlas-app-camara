@@ -6,28 +6,40 @@
     <meta name="theme-color" content="#080510" />
     <meta name="description" content="Clavel Negro: action RPG de aventura con estética de 16 bits. Drama criminal en la costa de Levante, verano de 1999." />
     <title>Clavel Negro</title>
+    <meta name="claude:viewport-fit-sides" content="cover" />
     <style>
-      html, body { margin: 0; height: 100%; background: #080510; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
-      body { display: flex; align-items: center; justify-content: center; font-family: sans-serif; }
-      canvas { display: block; image-rendering: pixelated; image-rendering: crisp-edges; background: #080510; }
+      /* Una sola pantalla oscura: el lienzo del juego centrado y, en táctil, los mandos en los márgenes. */
+      :root {
+        color-scheme: dark;
+        --fondo: #080510; --mando: #1a1630; --mando-centro: #2a2444; --mando-borde: #4a4470; --cruz: #6a64a0; --texto: #ffffff;
+        --golpe: #b02848; --salto: #2860b0; --objeto: #2c8a50; --cambio: #80702c; --pausa: #3a3458;
+        --izq: max(16px, env(safe-area-inset-left, 0px)); --der: max(16px, env(safe-area-inset-right, 0px));
+      }
+      html, body { height: 100%; }
+      body {
+        margin: 0; background: var(--fondo); color: var(--texto); overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+        display: flex; align-items: center; justify-content: center; font-family: system-ui, sans-serif; box-sizing: border-box;
+        padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+      }
+      canvas { display: block; flex: none; image-rendering: pixelated; image-rendering: crisp-edges; background: var(--fondo); }
       #tactil { display: none; position: fixed; inset: 0; pointer-events: none; }
       .tactil #tactil { display: block; }
       #tactil > * { pointer-events: auto; position: absolute; }
-      [data-cruz] { left: max(14px, env(safe-area-inset-left)); bottom: 22px; width: 132px; height: 132px; border-radius: 50%; background: radial-gradient(circle, #2a2444 0 30%, #1a1630 31% 100%); border: 2px solid #4a4470; box-sizing: border-box; opacity: 0.8; }
-      [data-cruz]::before, [data-cruz]::after { content: ''; position: absolute; background: #6a64a0; border-radius: 4px; }
+      [data-cruz] { left: var(--izq); bottom: calc(22px + env(safe-area-inset-bottom, 0px)); width: 132px; height: 132px; border-radius: 50%; background: radial-gradient(circle, var(--mando-centro) 0 30%, var(--mando) 31% 100%); border: 2px solid var(--mando-borde); box-sizing: border-box; opacity: 0.8; }
+      [data-cruz]::before, [data-cruz]::after { content: ''; position: absolute; background: var(--cruz); border-radius: 4px; }
       [data-cruz]::before { left: 50%; top: 12px; bottom: 12px; width: 30px; margin-left: -15px; }
       [data-cruz]::after { top: 50%; left: 12px; right: 12px; height: 30px; margin-top: -15px; }
-      .boton { width: 58px; height: 58px; border-radius: 50%; border: 2px solid #4a4470; box-sizing: border-box; color: #fff; font: bold 11px sans-serif; display: flex; align-items: center; justify-content: center; opacity: 0.8; text-align: center; line-height: 1.05; }
+      .boton { width: 58px; height: 58px; border-radius: 50%; border: 2px solid var(--mando-borde); box-sizing: border-box; color: var(--texto); font: bold 11px system-ui, sans-serif; display: flex; align-items: center; justify-content: center; opacity: 0.8; text-align: center; line-height: 1.05; }
       .boton.pulsado { filter: brightness(1.6); transform: scale(0.94); }
-      [data-boton='a'] { right: max(14px, env(safe-area-inset-right)); bottom: 62px; background: #b02848; }
-      [data-boton='b'] { right: calc(max(14px, env(safe-area-inset-right)) + 62px); bottom: 20px; background: #2860b0; }
-      [data-boton='c'] { right: calc(max(14px, env(safe-area-inset-right)) + 62px); bottom: 100px; background: #2c8a50; }
-      [data-boton='d'] { right: max(14px, env(safe-area-inset-right)); bottom: 136px; width: 44px; height: 44px; background: #80702c; font-size: 9px; }
-      [data-boton='e'] { right: max(14px, env(safe-area-inset-right)); top: 12px; width: 62px; height: 28px; border-radius: 14px; background: #3a3458; font-size: 10px; }
+      [data-boton='a'] { right: var(--der); bottom: calc(62px + env(safe-area-inset-bottom, 0px)); background: var(--golpe); }
+      [data-boton='b'] { right: calc(var(--der) + 62px); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--salto); }
+      [data-boton='c'] { right: calc(var(--der) + 62px); bottom: calc(100px + env(safe-area-inset-bottom, 0px)); background: var(--objeto); }
+      [data-boton='d'] { right: var(--der); bottom: calc(136px + env(safe-area-inset-bottom, 0px)); width: 44px; height: 44px; background: var(--cambio); font-size: 9px; }
+      [data-boton='e'] { right: var(--der); top: calc(12px + env(safe-area-inset-top, 0px)); width: 62px; height: 28px; border-radius: 14px; background: var(--pausa); font-size: 10px; }
       @media (orientation: portrait) {
         body { align-items: flex-start; }
-        canvas { margin-top: max(8px, env(safe-area-inset-top)); }
-        [data-boton='e'] { top: auto; bottom: 190px; }
+        canvas { margin-top: 8px; }
+        [data-boton='e'] { top: auto; bottom: calc(190px + env(safe-area-inset-bottom, 0px)); }
       }
     </style>
   </head>

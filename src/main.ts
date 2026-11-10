@@ -26,7 +26,7 @@ async function arrancar(): Promise<void> {
     const dpr = window.devicePixelRatio || 1;
     const vertical = innerHeight > innerWidth;
     const altoUtil = tactil && vertical ? innerHeight - 250 : innerHeight;
-    const k = Math.max(1, Math.floor(Math.min((innerWidth * dpr) / ANCHO, (altoUtil * dpr) / ALTO)));
+    const k = Math.max(1, Math.floor(Math.min(((innerWidth - 32) * dpr) / ANCHO, (altoUtil * dpr) / ALTO)));
     lienzo.style.width = `${(ANCHO * k) / dpr}px`;
     lienzo.style.height = `${(ALTO * k) / dpr}px`;
   };

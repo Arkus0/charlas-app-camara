@@ -128,7 +128,7 @@ export const LONJA: DefSala[] = [
       '#######1########',
     ],
     puertas: { '1': ['lonja5', '2'], '2': ['lonja_jefe', '1'] },
-    deco: [['lampara', 4, 1], ['lampara', 11, 1]],
+    deco: [['lampara', 5, 1], ['lampara', 10, 1], ['barril', 3, 2], ['barril', 12, 2]],
   },
   {
     id: 'lonja_jefe', zona: 'lonja', nombre: 'Despacho del patrón', jefe: 'percebe',
