@@ -28,6 +28,8 @@ export class Sala {
   alt: Uint8Array;
   /** altura añadida por el decorado fijo, en píxeles */
   extra: Uint8Array;
+  /** en los muros: 1 = base de la cara, 2… = filas superiores, 0 = techo */
+  cara: Uint8Array;
   objetos: Objeto[] = [];
 
   constructor(public def: DefSala) {
@@ -38,6 +40,7 @@ export class Sala {
     this.terr = new Uint8Array(n).fill(TERR.VACIO);
     this.alt = new Uint8Array(n);
     this.extra = new Uint8Array(n);
+    this.cara = new Uint8Array(n);
     const pend: number[] = [];
     const cuenta: Record<string, number> = {};
     for (let f = 0; f < this.al; f++) {
@@ -80,16 +83,15 @@ export class Sala {
       this.terr[i] = ch === 'x' || ch === 'm' ? TERR.FOSO : TERR.SUELO;
       this.alt[i] = 0;
     }
-    // Muros: si al sur hay suelo, enseñan su cara (son altos); si no, son un techo plano.
-    const altoMuro = def.altoMuro ?? 2;
+    // Muros: las casillas justo encima de un suelo enseñan su cara; el resto son techo.
+    const filasCara = def.altoMuro ?? 2;
     for (let c = 0; c < this.an; c++) {
-      for (let f = 0; f < this.al; f++) {
+      for (let f = this.al - 1; f >= 0; f--) {
         const i = f * this.an + c;
         if (this.terr[i] !== TERR.MURO) continue;
-        let g = f + 1;
-        while (g < this.al && this.terr[g * this.an + c] === TERR.MURO) g++;
-        const debajo = g < this.al ? this.terr[g * this.an + c] : TERR.VACIO;
-        this.alt[i] = debajo === TERR.VACIO ? 0 : altoMuro;
+        const debajo = f + 1 < this.al ? this.terr[i + this.an] : TERR.VACIO;
+        if (debajo === TERR.MURO) { const d = this.cara[i + this.an]; this.cara[i] = d > 0 && d < filasCara ? d + 1 : 0; }
+        else this.cara[i] = debajo === TERR.VACIO ? 0 : 1;
       }
     }
     // Decorado sólido.

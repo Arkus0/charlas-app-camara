@@ -36,6 +36,8 @@ export const TERR = {
 export interface DefSala {
   id: string;
   zona: string;
+  /** tema gráfico, si no es el de la zona */
+  tema?: string;
   nombre?: string;
   mapa: string[];
   /** carácter de puerta → [sala destino, puerta destino] */

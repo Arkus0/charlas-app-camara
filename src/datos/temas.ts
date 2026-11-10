@@ -24,19 +24,19 @@ export interface Tema {
 }
 
 const base: Tema = {
-  suelo: ['adoquin0', 'adoquin1', 'adoquin2'],
+  suelo: ['adoquin0', 'adoquin1'],
   alt: ['hierba0', 'hierba1', 'hierba2', 'hierba3'],
-  ter: ['asfalto0', 'asfalto1', 'asfalto2'],
+  ter: ['asfalto0'],
   alto: ['losa0', 'losa1'],
   cara: ['muralla'], caraBase: 'muralla_base',
   muroTop: 'teja', muroCara: ['ladrillo_ama'], muroBase: 'ladrillo_ama',
   olas: 'ola', colorAgua: '#1878b8', colorFoso: '#100818',
-  ambiente: '#5a64b4', musica: 'pueblo', exterior: true,
+  ambiente: '#6a72bc', musica: 'pueblo', exterior: true,
 };
 
 export const TEMAS: Record<string, Tema> = {
   pueblo: base,
-  muelle: { ...base, suelo: ['tabla0', 'tabla1'], alt: ['adoquin0', 'adoquin1', 'adoquin2'], fondo: true },
+  muelle: { ...base, suelo: ['tabla0', 'tabla1'], alt: ['adoquin0', 'adoquin1'], fondo: true },
   paseo: { ...base, suelo: ['losa0', 'losa1'], muroCara: ['ladrillo_ama'] },
   obra: { ...base, suelo: ['losa0', 'losa1'], alt: ['tierra0', 'tierra1'], alto: ['tabla0', 'tabla1'], cara: ['pared'], caraBase: 'pared_base', muroTop: 'techo', muroCara: ['pared_sup', 'pared'], muroBase: 'pared_base', fondo: true },
   interior: {

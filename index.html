@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#080510" />
+    <meta name="description" content="Clavel Negro: action RPG de aventura con estética de 16 bits. Drama criminal en la costa de Levante, verano de 1999." />
+    <title>Clavel Negro</title>
+    <style>
+      html, body { margin: 0; height: 100%; background: #080510; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+      body { display: flex; align-items: center; justify-content: center; font-family: sans-serif; }
+      canvas { display: block; image-rendering: pixelated; image-rendering: crisp-edges; background: #080510; }
+      #tactil { display: none; position: fixed; inset: 0; pointer-events: none; }
+      .tactil #tactil { display: block; }
+      #tactil > * { pointer-events: auto; position: absolute; }
+      [data-cruz] { left: max(14px, env(safe-area-inset-left)); bottom: 22px; width: 132px; height: 132px; border-radius: 50%; background: radial-gradient(circle, #2a2444 0 30%, #1a1630 31% 100%); border: 2px solid #4a4470; box-sizing: border-box; opacity: 0.8; }
+      [data-cruz]::before, [data-cruz]::after { content: ''; position: absolute; background: #6a64a0; border-radius: 4px; }
+      [data-cruz]::before { left: 50%; top: 12px; bottom: 12px; width: 30px; margin-left: -15px; }
+      [data-cruz]::after { top: 50%; left: 12px; right: 12px; height: 30px; margin-top: -15px; }
+      .boton { width: 58px; height: 58px; border-radius: 50%; border: 2px solid #4a4470; box-sizing: border-box; color: #fff; font: bold 11px sans-serif; display: flex; align-items: center; justify-content: center; opacity: 0.8; text-align: center; line-height: 1.05; }
+      .boton.pulsado { filter: brightness(1.6); transform: scale(0.94); }
+      [data-boton='a'] { right: max(14px, env(safe-area-inset-right)); bottom: 62px; background: #b02848; }
+      [data-boton='b'] { right: calc(max(14px, env(safe-area-inset-right)) + 62px); bottom: 20px; background: #2860b0; }
+      [data-boton='c'] { right: calc(max(14px, env(safe-area-inset-right)) + 62px); bottom: 100px; background: #2c8a50; }
+      [data-boton='d'] { right: max(14px, env(safe-area-inset-right)); bottom: 136px; width: 44px; height: 44px; background: #80702c; font-size: 9px; }
+      [data-boton='e'] { right: max(14px, env(safe-area-inset-right)); top: 12px; width: 62px; height: 28px; border-radius: 14px; background: #3a3458; font-size: 10px; }
+      @media (orientation: portrait) {
+        body { align-items: flex-start; }
+        canvas { margin-top: max(8px, env(safe-area-inset-top)); }
+        [data-boton='e'] { top: auto; bottom: 190px; }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="pantalla" width="256" height="224"></canvas>
+    <div id="tactil">
+      <div data-cruz></div>
+      <div class="boton" data-boton="a">GOLPE</div>
+      <div class="boton" data-boton="b">SALTO</div>
+      <div class="boton" data-boton="c">OBJ</div>
+      <div class="boton" data-boton="d">CAMB</div>
+      <div class="boton" data-boton="e">PAUSA</div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

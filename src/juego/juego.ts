@@ -231,7 +231,8 @@ export class Juego {
       const i = celdas[Math.min(this.indicePuerta, celdas.length - 1)];
       const c = i % s.an, f = (i / s.an) | 0;
       jx = c * T + 8; jy = f * T + 8;
-      for (const d of [0, 2, 1, 3] as Dir[]) {
+      const orden: Dir[] = c === 0 ? [1, 0, 2, 3] : c === s.an - 1 ? [3, 0, 2, 1] : f === 0 ? [0, 1, 3, 2] : f === s.al - 1 ? [2, 1, 3, 0] : [0, 2, 1, 3];
+      for (const d of orden) {
         const nc = c + DX[d], nf = f + DY[d];
         if (s.suelo(nc, nf) < SOLIDO_Z && s.suelo(nc, nf) > AGUA_Z && !this.puertaCelda.has(nf * s.an + nc)) { jx = nc * T + 8; jy = nf * T + 8; jdir = d; break; }
       }
@@ -399,6 +400,7 @@ export class Juego {
       case 'mechero': p.mechero = true; p.objeto = this.objetosTenidos().indexOf('mechero'); return ['¡El MECHERO de gasolina! Enciende velas y mechas, quema barricadas de madera y alumbra en la oscuridad.'];
       case 'capote': p.capote = true; p.objeto = this.objetosTenidos().indexOf('capote'); return ['¡El CAPOTE de brega! Un quiebro rápido que esquiva embestidas. Úsalo en pleno salto para cruzar vacíos enormes.'];
       case 'vida': p.vida = p.vidaMax; return ['Te sientes como nuevo.'];
+      case 'cana': this.pon('cana'); return ['Una caña de pescar con «CARMELA» grabado a navaja en el mango. Chema, el pescador del muelle, la estará echando de menos.'];
     }
     return [];
   }
@@ -413,6 +415,23 @@ export class Juego {
     if (this.temblor > 0) this.temblor--;
     if (this.destello > 0) this.destello--;
     if (this.rotulo && --this.rotulo.t <= 0) this.rotulo = null;
+    if (this.trans) {
+      // fundido entre salas: bloquea todo lo demás mientras dura
+      const t = this.trans;
+      t.t++;
+      if (t.t === 12 && !t.hecho) {
+        t.hecho = true;
+        this.cargarSala(t.sala, t.puerta);
+        this.guardar();
+      }
+      if (t.t >= 24) {
+        this.trans = null;
+        if (this.modo === 'trans') {
+          if (this.dlg) { this.modo = 'dialogo'; this.avanzarDialogo(); } else this.modo = 'juego';
+        }
+      }
+      return;
+    }
     switch (this.modo) {
       case 'titulo':
         if (arriba || abajo) { this.menu.sel = (this.menu.sel + 1) % this.menu.ops.length; this.sfx('cursor'); }
@@ -451,17 +470,7 @@ export class Juego {
         this.congelado++;
         if ((en.p.a || en.p.e) && this.congelado > 240) this.abrirTitulo();
         break;
-      case 'trans': {
-        const t = this.trans!;
-        t.t++;
-        if (t.t === 12 && !t.hecho) {
-          t.hecho = true;
-          this.cargarSala(t.sala, t.puerta);
-          this.guardar();
-        }
-        if (t.t >= 24) { this.trans = null; if (this.modo === 'trans') this.modo = this.dlg ? 'dialogo' : 'juego'; }
-        break;
-      }
+      case 'trans': break;
       case 'juego': this.actJuego(en); break;
     }
   }
@@ -951,8 +960,12 @@ export class Juego {
 
     // ── acción: hablar, abrir o golpear ──
     if (en.p.a && j.est === 'normal') {
-      const px = j.x + DX[j.dir] * 12, py = j.y + DY[j.dir] * 10;
-      const o = this.ents.find((e) => e.vivo && e.inter && Math.abs(e.x - px) < e.rx + 5 && Math.abs(e.y - py) < e.ry + 6 && Math.abs(e.z - j.z) < 12);
+      const cerca = (k: number, soloPnj: boolean) => {
+        const px = j.x + DX[j.dir] * 12 * k, py = j.y + DY[j.dir] * 10 * k;
+        return this.ents.find((e) => e.vivo && e.inter && (!soloPnj || e.tipo === 'pnj') && Math.abs(e.x - px) < e.rx + 5 && Math.abs(e.y - py) < e.ry + 6 && Math.abs(e.z - j.z) < 12);
+      };
+      // a los personajes se les puede hablar por encima de un mostrador
+      const o = cerca(1, false) ?? cerca(2.6, true);
       if (o && j.suelo) this.interactuar(o);
       else if (arma) { j.est = 'ataque'; j.t = 0; j.combo = 1; j.sig = false; j.dados.clear(); this.sfx('zas'); }
     }

@@ -11,7 +11,7 @@ const fila = (n, hoja, cx, cy, cuantos, w = 1, h = 1) => { for (let i = 0; i < c
 t('hierba0', 'o', 0, 0); t('hierba1', 'o', 0, 9); t('hierba2', 'o', 1, 9); t('hierba3', 'o', 0, 10);
 fila('ola', 'o', 0, 1, 4);
 t('agua0', 'o', 3, 3); t('agua1', 'o', 4, 3);
-t('adoquin0', 'o', 13, 13); t('adoquin1', 'o', 13, 14); t('adoquin2', 'o', 12, 14);
+t('adoquin0', 'o', 12, 13); t('adoquin1', 'o', 12, 14);
 t('ladrillo0', 'o', 13, 15); t('ladrillo1', 'o', 14, 15); t('ladrillo2', 'o', 13, 16); t('ladrillo3', 'o', 14, 16);
 t('losa0', 'o', 14, 11); t('losa1', 'o', 14, 12);
 t('marmol', 'o', 23, 1);

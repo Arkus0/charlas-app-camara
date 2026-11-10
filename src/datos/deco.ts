@@ -70,9 +70,5 @@ export const DECO: Record<string, DefDeco> = {
   // cueva
   idolo0: d('idolo0', 1, 1, 48), idolo1: d('idolo1', 1, 1, 48), idolo2: d('idolo2', 1, 1, 48), idolo3: d('idolo3', 1, 1, 48),
   pedrusco: d('pedrusco', 1, 1, 48), pedrusco2: d('pedrusco2', 1, 1, 48), penasco: d('penasco', 2, 1, 48), roca_musgo: d('roca_musgo', 2, 1, 48),
-  // arte propio
-  cabina_deco: d('cabina', 1, 1, 48), tragaperras: d('tragaperras', 1, 1, 48, { luz: [8, -10, 26, '#ff60c0'] }),
-  altar: d('altar', 2, 1, 48, { luz: [16, -12, 34, '#ffd080'] }), ruleta: d('ruleta', 2, 2, 48),
-  andamio: d('andamio', 1, 1, 0, { plano: true }), palmera: d('palmera', 1, 1, 48, { dx: -8 }),
-  barca: d('barca', 3, 1, 48),
+  taburete: d('taburete', 2, 1, 48),
 };
