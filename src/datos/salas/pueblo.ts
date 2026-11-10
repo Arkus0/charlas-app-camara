@@ -117,7 +117,7 @@ export const PUEBLO: DefSala[] = [
       ['farola_v', 7, 5], ['farola_v', 15, 5], ['farola_v', 0, 9], ['barril', 8, 7], ['saco', 9, 7], ['maceta', 1, 7], ['planta', 14, 7],
       ['banco', 4, 12], ['papelera2', 19, 12], ['caja', 10, 12],
     ],
-    neones: [['BODEGAS', 0.3, 0.6, AMBAR]],
+    neones: [['BODEGAS', 4.6, 1.2, AMBAR]],
   } as DefSala,
   {
     id: 'toros_ext', zona: 'pueblo', nombre: 'Explanada de la plaza de toros', tema: 'pueblo',

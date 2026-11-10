@@ -17,6 +17,8 @@ export class Vista {
   private luz: HTMLCanvasElement;
   private lctx: Ctx;
   private focos: [number, number, number, string][] = [];
+  /** se juega con controles táctiles (cambia los textos de ayuda) */
+  tactil = false;
 
   constructor(private g: Graficos, private ctx: Ctx) {
     [this.luz, this.lctx] = lienzo(ANCHO, ALTO);
@@ -658,7 +660,7 @@ export class Vista {
       g.t(ctx, o, ANCHO / 2, 138 + i * 16, i === j.menu.sel ? '#ffd040' : '#fff', 1);
       if (i === j.menu.sel) this.cursor(ANCHO / 2 - g.ancho(o) / 2 - 10, 143 + i * 16);
     });
-    g.t(ctx, 'Z golpe · X salto · C objeto · V cambiar · Intro pausa', ANCHO / 2, 196, '#8088b0', 1);
+    g.t(ctx, this.tactil ? 'Pulsa GOLPE para empezar' : 'Z golpe · X salto · C objeto · V cambiar · Intro pausa', ANCHO / 2, 196, '#8088b0', 1);
     g.t(ctx, 'Gráficos CC0 de ArMM1998 y Kenney', ANCHO / 2, 208, '#505880', 1);
   }
 

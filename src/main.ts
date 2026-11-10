@@ -37,6 +37,7 @@ async function arrancar(): Promise<void> {
   await graficos.cargar();
   const juego = new Juego(almacen);
   const vista = new Vista(graficos, ctx);
+  vista.tactil = tactil;
   const mandos = new Mandos();
   const sonido = new Sonido();
   mandos.alTocar = () => sonido.iniciar();

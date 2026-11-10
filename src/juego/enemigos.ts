@@ -30,14 +30,14 @@ function escudo(_j: Juego, e: Ent, clase: string, ox: number, oy: number): numbe
 }
 
 export const ENEMIGOS: Record<string, DefEnemigo> = {
-  maton: { nombre: 'Matón', vida: 6, vel: 0.55, dano: 1, pal: 'maton', botin: [1, 2], ia: 'cuerpo', alcance: 17, prep: 24 },
-  navajero: { nombre: 'Navajero', vida: 4, vel: 0.8, dano: 2, pal: 'navajero', botin: [1, 3], ia: 'embiste' },
-  botellero: { nombre: 'Lanzabotellas', vida: 4, vel: 0.5, dano: 1, pal: 'botellero', botin: [1, 3], ia: 'lanza' },
-  perro: { nombre: 'Perro de presa', vida: 3, vel: 1.1, dano: 1, pal: 'perro', botin: [0, 1], ia: 'perro', rx: 5, ry: 4 },
-  estibador: { nombre: 'Estibador', vida: 14, vel: 0.4, dano: 2, pal: 'estibador', botin: [2, 4], ia: 'cuerpo', alcance: 21, prep: 32, pausa: 44, pesado: true },
-  crupier: { nombre: 'Crupier', vida: 6, vel: 0.65, dano: 2, pal: 'crupier', botin: [2, 4], ia: 'cartas' },
-  novillero: { nombre: 'Novillero', vida: 8, vel: 0.5, dano: 2, pal: 'novillero', botin: [2, 3], ia: 'carga' },
-  guardaespaldas: { nombre: 'Guardaespaldas', vida: 12, vel: 0.55, dano: 2, pal: 'guardaespaldas', botin: [2, 5], ia: 'cuerpo', alcance: 18, prep: 20, pausa: 38, recibe: escudo },
+  maton: { nombre: 'Matón', vida: 8, vel: 0.55, dano: 1, pal: 'maton', botin: [1, 2], ia: 'cuerpo', alcance: 17, prep: 24 },
+  navajero: { nombre: 'Navajero', vida: 6, vel: 0.8, dano: 2, pal: 'navajero', botin: [1, 3], ia: 'embiste' },
+  botellero: { nombre: 'Lanzabotellas', vida: 5, vel: 0.5, dano: 1, pal: 'botellero', botin: [1, 3], ia: 'lanza' },
+  perro: { nombre: 'Perro de presa', vida: 4, vel: 1.1, dano: 1, pal: 'perro', botin: [0, 1], ia: 'perro', rx: 5, ry: 4 },
+  estibador: { nombre: 'Estibador', vida: 18, vel: 0.4, dano: 2, pal: 'estibador', botin: [2, 4], ia: 'cuerpo', alcance: 21, prep: 32, pausa: 44, pesado: true },
+  crupier: { nombre: 'Crupier', vida: 9, vel: 0.65, dano: 2, pal: 'crupier', botin: [2, 4], ia: 'cartas' },
+  novillero: { nombre: 'Novillero', vida: 10, vel: 0.5, dano: 2, pal: 'novillero', botin: [2, 3], ia: 'carga' },
+  guardaespaldas: { nombre: 'Guardaespaldas', vida: 16, vel: 0.55, dano: 2, pal: 'guardaespaldas', botin: [2, 5], ia: 'cuerpo', alcance: 18, prep: 20, pausa: 38, recibe: escudo },
 };
 
 export function mirar(e: Ent, dx: number, dy: number): void {

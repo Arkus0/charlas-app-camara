@@ -75,7 +75,7 @@ describe('ruta crítica', () => {
     j.cargarSala('hotel_jefe', '1');
     j.modo = 'juego';
     tumbar(j);
-    for (let i = 0; i < 4000 && j.modo !== 'creditos'; i++) j.paso(entrada(0, 0, [], i % 2 ? ['a'] : []));
+    for (let i = 0; i < 4000 && (j.modo as string) !== 'creditos'; i++) j.paso(entrada(0, 0, [], i % 2 ? ['a'] : []));
     expect(j.modo).toBe('creditos');
     expect(j.ban('fin')).toBe(true);
     expect(JSON.parse(disco!).banderas.fin).toBe(1);
